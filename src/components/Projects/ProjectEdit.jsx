@@ -339,7 +339,8 @@ const ProjectEdit = () => {
           title: "Success!",
           text: "Project updated successfully!",
           icon: "success",
-          confirmButtonColor: "#667eea",
+          timer: 1500,
+          showConfirmButton: false,
         });
         navigate(`/projects/${id}`);
       } else {
@@ -520,7 +521,7 @@ const ProjectEdit = () => {
 
         {/* Content */}
         <Box sx={{ p: 3 }}>
-          <Grid container spacing={3}>
+          <Grid container spacing={3} sx={{ flexDirection: "column" }}>
             {/* Basic Information */}
             <Grid item xs={12}>
               <Card
