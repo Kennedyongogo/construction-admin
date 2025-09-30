@@ -45,6 +45,22 @@ const ProjectEdit = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+
+  // Helper to build absolute URL for uploaded assets (same as Users component)
+  const VITE_API_URL = import.meta.env.VITE_API_URL;
+  const getBackendBaseUrl = () => {
+    if (!VITE_API_URL) return window.location.origin;
+    return VITE_API_URL.endsWith("/api")
+      ? VITE_API_URL.slice(0, -4)
+      : VITE_API_URL;
+  };
+  const buildImageUrl = (imageUrl) => {
+    if (!imageUrl) return "";
+    if (imageUrl.startsWith("http")) return imageUrl;
+    if (imageUrl.startsWith("uploads/"))
+      return `${getBackendBaseUrl()}/${imageUrl}`;
+    return imageUrl;
+  };
   const [projectForm, setProjectForm] = useState({
     name: "",
     description: "",
@@ -1160,13 +1176,8 @@ const ProjectEdit = () => {
                             /\.(jpg|jpeg|png|gif|bmp|webp)$/i
                           );
 
-                          // Construct full URL for the document
-                          const fullDocumentUrl =
-                            fileUrl && fileUrl.startsWith("http")
-                              ? fileUrl
-                              : fileUrl && fileUrl.startsWith("/uploads")
-                              ? `http://84.247.176.143:1133${fileUrl}`
-                              : `${window.location.origin}${fileUrl}`;
+                          // Construct full URL for the document (same as Users component)
+                          const fullDocumentUrl = buildImageUrl(fileUrl);
 
                           return (
                             <Grid item xs={12} sm={6} md={4} key={index}>
@@ -1291,12 +1302,8 @@ const ProjectEdit = () => {
                             /\.(jpg|jpeg|png|gif|bmp|webp)$/i
                           );
 
-                          // Construct full URL for the image
-                          const fullImageUrl = url.startsWith("http")
-                            ? url
-                            : url.startsWith("/uploads")
-                            ? `http://84.247.176.143:1133${url}`
-                            : `${window.location.origin}${url}`;
+                          // Construct full URL for the image (same as Users component)
+                          const fullImageUrl = buildImageUrl(url);
 
                           return (
                             <Grid item xs={12} sm={6} md={4} key={index}>
