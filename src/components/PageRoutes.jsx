@@ -4,8 +4,6 @@ import { Box, CircularProgress } from "@mui/material";
 import Navbar from "./Navbar";
 import Settings from "../Pages/Settings";
 import NotFound from "../Pages/NotFound";
-import Events from "./Events/Events";
-import EventView from "./Events/EventView";
 import Projects from "./Projects/Projects";
 import ProjectView from "./Projects/ProjectView";
 import ProjectEdit from "./Projects/ProjectEdit";
@@ -63,8 +61,6 @@ function PageRoutes() {
         ) : (
           <Routes>
             <Route path="home" element={<Navigate to="/analytics" replace />} />
-            <Route path="events" element={<Events />} />
-            <Route path="events/:id" element={<EventView />} />
             <Route path="projects" element={<Projects />} />
             <Route path="projects/create" element={<ProjectCreate />} />
             <Route path="projects/:id" element={<ProjectView />} />

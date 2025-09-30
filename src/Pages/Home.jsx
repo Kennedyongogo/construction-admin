@@ -20,7 +20,6 @@ import { BarChart, PieChart } from "@mui/x-charts";
 import {
   People as VotersIcon,
   LocationOn as PollingStationsIcon,
-  Event as EventsIcon,
   Group as SupportersIcon,
 } from "@mui/icons-material";
 import "../App.css";
@@ -228,15 +227,7 @@ export default function Home() {
   const [data, setData] = useState({
     Voters: 0,
     PollingStations: 0,
-    Events: 0,
     Supporters: 0,
-  });
-  const [eventStats, setEventStats] = useState({
-    totalEvents: 0,
-    eventsByStatus: [],
-    eventsByType: [],
-    upcomingEvents: 0,
-    totalExpectedAttendance: 0,
   });
   const [supporterStats, setSupporterStats] = useState({
     totalSupporters: 0,
@@ -264,34 +255,6 @@ export default function Home() {
       }
     } catch (error) {
       console.error("Error fetching stats:", error);
-    }
-  };
-
-  const fetchEventStats = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("/api/campaign/events/stats/overview", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success && result.data) {
-          setEventStats(result.data);
-          // Update the Events count in the main data
-          setData((prev) => ({
-            ...prev,
-            Events: result.data.totalEvents,
-          }));
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching event statistics:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -323,7 +286,6 @@ export default function Home() {
 
   useEffect(() => {
     fetchStats();
-    fetchEventStats();
     fetchSupporterStats();
   }, []);
 
@@ -353,50 +315,7 @@ export default function Home() {
       <Grid container spacing={3}>
         <CardItem title="Voters" value={data.Voters} />
         <CardItem title="Polling Stations" value={data.PollingStations} />
-        <CardItem title="Events" value={data.Events} />
         <CardItem title="Supporters" value={data.Supporters} />
-        <Grid size={{ xs: 12, sm: 6, md: 6 }}>
-          <ModernCard
-            title="Events by Status"
-            subtitle="Distribution of event statuses"
-            icon={<EventsIcon />}
-          >
-            <CustomPieChart
-              data={
-                eventStats.eventsByStatus
-                  ?.filter((item) => item.count > 0)
-                  .map((item) => ({
-                    name: item.status
-                      .replace("_", " ")
-                      .replace(/\b\w/g, (l) => l.toUpperCase()),
-                    value: item.count,
-                  })) || []
-              }
-              height={250}
-            />
-          </ModernCard>
-        </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 6 }}>
-          <ModernCard
-            title="Events by Type"
-            subtitle="Distribution of event types"
-            icon={<EventsIcon />}
-          >
-            <CustomPieChart
-              data={
-                eventStats.eventsByType
-                  ?.filter((item) => item.count > 0)
-                  .map((item) => ({
-                    name: item.eventType
-                      .replace("_", " ")
-                      .replace(/\b\w/g, (l) => l.toUpperCase()),
-                    value: item.count,
-                  })) || []
-              }
-              height={250}
-            />
-          </ModernCard>
-        </Grid>
         <Grid size={{ xs: 12, sm: 12, md: 12 }}>
           <Card
             sx={{ borderRadius: "12px", boxShadow: "0px 10px 30px #60606040" }}
@@ -506,13 +425,6 @@ const CardItem = (props) => {
           borderColor: "#388e3c",
           textColor: "#388e3c",
         };
-      case "Events":
-        return {
-          icon: <EventsIcon sx={{ fontSize: 45, color: "#f57c00" }} />,
-          bgColor: "linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%)",
-          borderColor: "#f57c00",
-          textColor: "#f57c00",
-        };
       case "Supporters":
         return {
           icon: <SupportersIcon sx={{ fontSize: 45, color: "#7b1fa2" }} />,
@@ -522,7 +434,7 @@ const CardItem = (props) => {
         };
       default:
         return {
-          icon: <EventsIcon sx={{ fontSize: 45, color: "#666" }} />,
+          icon: <VotersIcon sx={{ fontSize: 45, color: "#666" }} />,
           bgColor: "linear-gradient(135deg, #F5F5F5 0%, #EEEEEE 100%)",
           borderColor: "#666",
           textColor: "#666",

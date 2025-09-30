@@ -254,21 +254,40 @@ const Navbar = (props) => {
             <Fragment key={item.text}>
               {item.subItems ? (
                 <>
-                  <ListItem button onClick={() => handleToggle(item.text)}>
-                    <ListItemIcon>{item.icon}</ListItemIcon>
-                    <ListItemText
-                      sx={{
-                        fontSize: "small",
-                        color:
-                          location.pathname === item.path
-                            ? "primary"
-                            : "textSecondary",
-                        fontWeight:
-                          location.pathname === item.path ? "bold" : "normal", // Highlight text for selected item
-                      }}
-                      primary={item.text}
-                    />
-                    {openSections[item.text] ? <ExpandLess /> : <ExpandMore />}
+                  <ListItem
+                    button
+                    onClick={() => handleToggle(item.text)}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      pr: 1,
+                    }}
+                  >
+                    <Box
+                      sx={{ display: "flex", alignItems: "center", flex: 1 }}
+                    >
+                      <ListItemIcon>{item.icon}</ListItemIcon>
+                      <ListItemText
+                        sx={{
+                          fontSize: "small",
+                          color:
+                            location.pathname === item.path
+                              ? "primary"
+                              : "textSecondary",
+                          fontWeight:
+                            location.pathname === item.path ? "bold" : "normal",
+                        }}
+                        primary={item.text}
+                      />
+                    </Box>
+                    <Box sx={{ ml: "auto" }}>
+                      {openSections[item.text] ? (
+                        <ExpandLess />
+                      ) : (
+                        <ExpandMore />
+                      )}
+                    </Box>
                   </ListItem>
                   {openSections[item.text] && (
                     <List component="div" disablePadding>
