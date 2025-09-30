@@ -157,10 +157,8 @@ const Projects = () => {
         setProjects(data.data || []);
         setTotalProjects(data.count || 0);
 
-        // Update tab counts if we have the full data
-        if (data.count !== undefined) {
-          updateTabCounts(data.data || []);
-        }
+        // Don't update tab counts here - they should only be updated from fetchAllProjectsForCounts
+        // to avoid incorrect counts when switching tabs
       } else {
         setError(
           "Failed to fetch projects: " + (data.message || "Unknown error")
@@ -239,7 +237,7 @@ const Projects = () => {
 
   const updateTabCounts = (projectsData) => {
     const counts = {
-      all: projectsData.length,
+      all: 0,
       planning: 0,
       in_progress: 0,
       completed: 0,
@@ -248,6 +246,7 @@ const Projects = () => {
     };
 
     projectsData.forEach((project) => {
+      counts.all++; // Count all projects
       if (counts.hasOwnProperty(project.status)) {
         counts[project.status]++;
       }
@@ -643,19 +642,6 @@ const Projects = () => {
       setLoading(false);
     }
   };
-
-  if (loading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="50vh"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   if (error) {
     return (

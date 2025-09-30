@@ -153,10 +153,8 @@ const Tasks = () => {
         setTasks(data.data || []);
         setTotalTasks(data.count || 0);
 
-        // Update tab counts if we have the full data
-        if (data.count !== undefined) {
-          updateTabCounts(data.data || []);
-        }
+        // Don't update tab counts here - they should only be updated from fetchAllTasksForCounts
+        // to avoid incorrect counts when switching tabs
       } else {
         setError("Failed to fetch tasks: " + (data.message || "Unknown error"));
       }
@@ -204,13 +202,14 @@ const Tasks = () => {
 
   const updateTabCounts = (tasksData) => {
     const counts = {
-      all: tasksData.length,
+      all: 0,
       pending: 0,
       in_progress: 0,
       completed: 0,
     };
 
     tasksData.forEach((task) => {
+      counts.all++; // Count all tasks
       if (counts.hasOwnProperty(task.status)) {
         counts[task.status]++;
       }
@@ -534,19 +533,6 @@ const Tasks = () => {
       }
     }
   };
-
-  if (loading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="50vh"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   if (error) {
     return (

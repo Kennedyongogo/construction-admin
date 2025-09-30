@@ -140,10 +140,8 @@ const Budget = () => {
         setBudgets(data.data || []);
         setTotalBudgets(data.count || 0);
 
-        // Update tab counts if we have the full data
-        if (data.count !== undefined) {
-          updateTabCounts(data.data || []);
-        }
+        // Don't update tab counts here - they should only be updated from fetchAllBudgetsForCounts
+        // to avoid incorrect counts when switching tabs
       } else {
         setError(
           "Failed to fetch budgets: " + (data.message || "Unknown error")
@@ -191,12 +189,13 @@ const Budget = () => {
 
   const updateTabCounts = (budgetsData) => {
     const counts = {
-      all: budgetsData.length,
+      all: 0,
       budgeted: 0,
       actual: 0,
     };
 
     budgetsData.forEach((budget) => {
+      counts.all++; // Count all budgets
       if (counts.hasOwnProperty(budget.type)) {
         counts[budget.type]++;
       }
@@ -494,19 +493,6 @@ const Budget = () => {
       }
     }
   };
-
-  if (loading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="50vh"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   if (error) {
     return (
