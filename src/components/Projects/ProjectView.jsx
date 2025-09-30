@@ -526,6 +526,11 @@ const ProjectView = () => {
                           /\.(jpg|jpeg|png|gif|bmp|webp)$/i
                         );
 
+                        // Construct full URL for the image
+                        const fullImageUrl = url.startsWith("http")
+                          ? url
+                          : `${window.location.origin}${url}`;
+
                         return (
                           <Grid item xs={12} sm={6} md={4} key={index}>
                             <Box
@@ -541,13 +546,13 @@ const ProjectView = () => {
                                 },
                               }}
                               onClick={() => {
-                                window.open(url, "_blank");
+                                window.open(fullImageUrl, "_blank");
                               }}
                             >
                               {isImage ? (
                                 <Box>
                                   <img
-                                    src={url}
+                                    src={fullImageUrl}
                                     alt={fileName}
                                     style={{
                                       width: "100%",
@@ -669,6 +674,12 @@ const ProjectView = () => {
                           /\.(jpg|jpeg|png|gif|bmp|webp)$/i
                         );
 
+                        // Construct full URL for the document
+                        const fullDocumentUrl =
+                          fileUrl && fileUrl.startsWith("http")
+                            ? fileUrl
+                            : `${window.location.origin}${fileUrl}`;
+
                         return (
                           <Grid item xs={12} sm={6} md={4} key={index}>
                             <Box
@@ -684,15 +695,15 @@ const ProjectView = () => {
                                 },
                               }}
                               onClick={() => {
-                                if (fileUrl) {
-                                  window.open(fileUrl, "_blank");
+                                if (fullDocumentUrl) {
+                                  window.open(fullDocumentUrl, "_blank");
                                 }
                               }}
                             >
-                              {isImage && fileUrl ? (
+                              {isImage && fullDocumentUrl ? (
                                 <Box>
                                   <img
-                                    src={fileUrl}
+                                    src={fullDocumentUrl}
                                     alt={fileName}
                                     style={{
                                       width: "100%",
