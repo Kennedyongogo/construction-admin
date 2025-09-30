@@ -529,6 +529,8 @@ const ProjectView = () => {
                         // Construct full URL for the image
                         const fullImageUrl = url.startsWith("http")
                           ? url
+                          : url.startsWith("/uploads")
+                          ? `http://84.247.176.143:1133${url}`
                           : `${window.location.origin}${url}`;
 
                         return (
@@ -678,6 +680,8 @@ const ProjectView = () => {
                         const fullDocumentUrl =
                           fileUrl && fileUrl.startsWith("http")
                             ? fileUrl
+                            : fileUrl && fileUrl.startsWith("/uploads")
+                            ? `http://84.247.176.143:1133${fileUrl}`
                             : `${window.location.origin}${fileUrl}`;
 
                         return (

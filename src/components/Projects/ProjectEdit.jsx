@@ -511,274 +511,258 @@ const ProjectEdit = () => {
                     <ProjectIcon />
                     <Typography variant="h6">Basic Information</Typography>
                   </Box>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Project Name"
-                        value={projectForm.name}
+                  <Stack spacing={3}>
+                    <TextField
+                      fullWidth
+                      label="Project Name"
+                      value={projectForm.name}
+                      onChange={(e) =>
+                        handleInputChange("name", e.target.value)
+                      }
+                      required
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          "& fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.3)",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.5)",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "white",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "rgba(255, 255, 255, 0.8)",
+                        },
+                        "& .MuiInputBase-input": {
+                          color: "white",
+                        },
+                      }}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Location"
+                      value={projectForm.location_name}
+                      onChange={(e) =>
+                        handleInputChange("location_name", e.target.value)
+                      }
+                      required
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          "& fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.3)",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.5)",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "white",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "rgba(255, 255, 255, 0.8)",
+                        },
+                        "& .MuiInputBase-input": {
+                          color: "white",
+                        },
+                      }}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Start Date"
+                      type="date"
+                      value={projectForm.start_date}
+                      onChange={(e) =>
+                        handleInputChange("start_date", e.target.value)
+                      }
+                      required
+                      InputLabelProps={{ shrink: true }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          "& fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.3)",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.5)",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "white",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "rgba(255, 255, 255, 0.8)",
+                        },
+                        "& .MuiInputBase-input": {
+                          color: "white",
+                        },
+                      }}
+                    />
+                    <TextField
+                      fullWidth
+                      label="End Date"
+                      type="date"
+                      value={projectForm.end_date}
+                      onChange={(e) =>
+                        handleInputChange("end_date", e.target.value)
+                      }
+                      InputLabelProps={{ shrink: true }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          "& fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.3)",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.5)",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "white",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "rgba(255, 255, 255, 0.8)",
+                        },
+                        "& .MuiInputBase-input": {
+                          color: "white",
+                        },
+                      }}
+                    />
+                    <FormControl
+                      fullWidth
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          "& fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.3)",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.5)",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "white",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "rgba(255, 255, 255, 0.8)",
+                        },
+                        "& .MuiSelect-select": {
+                          color: "white",
+                        },
+                      }}
+                    >
+                      <InputLabel>Status</InputLabel>
+                      <Select
+                        value={projectForm.status}
                         onChange={(e) =>
-                          handleInputChange("name", e.target.value)
+                          handleInputChange("status", e.target.value)
                         }
-                        required
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
-                            "& fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.3)",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.5)",
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "white",
-                            },
-                          },
-                          "& .MuiInputLabel-root": {
-                            color: "rgba(255, 255, 255, 0.8)",
-                          },
-                          "& .MuiInputBase-input": {
-                            color: "white",
-                          },
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Location"
-                        value={projectForm.location_name}
-                        onChange={(e) =>
-                          handleInputChange("location_name", e.target.value)
-                        }
-                        required
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
-                            "& fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.3)",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.5)",
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "white",
-                            },
-                          },
-                          "& .MuiInputLabel-root": {
-                            color: "rgba(255, 255, 255, 0.8)",
-                          },
-                          "& .MuiInputBase-input": {
-                            color: "white",
-                          },
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Start Date"
-                        type="date"
-                        value={projectForm.start_date}
-                        onChange={(e) =>
-                          handleInputChange("start_date", e.target.value)
-                        }
-                        required
-                        InputLabelProps={{ shrink: true }}
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
-                            "& fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.3)",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.5)",
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "white",
-                            },
-                          },
-                          "& .MuiInputLabel-root": {
-                            color: "rgba(255, 255, 255, 0.8)",
-                          },
-                          "& .MuiInputBase-input": {
-                            color: "white",
-                          },
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="End Date"
-                        type="date"
-                        value={projectForm.end_date}
-                        onChange={(e) =>
-                          handleInputChange("end_date", e.target.value)
-                        }
-                        InputLabelProps={{ shrink: true }}
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
-                            "& fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.3)",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.5)",
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "white",
-                            },
-                          },
-                          "& .MuiInputLabel-root": {
-                            color: "rgba(255, 255, 255, 0.8)",
-                          },
-                          "& .MuiInputBase-input": {
-                            color: "white",
-                          },
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <FormControl
-                        fullWidth
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
-                            "& fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.3)",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.5)",
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "white",
-                            },
-                          },
-                          "& .MuiInputLabel-root": {
-                            color: "rgba(255, 255, 255, 0.8)",
-                          },
-                          "& .MuiSelect-select": {
-                            color: "white",
-                          },
-                        }}
+                        label="Status"
                       >
-                        <InputLabel>Status</InputLabel>
-                        <Select
-                          value={projectForm.status}
-                          onChange={(e) =>
-                            handleInputChange("status", e.target.value)
-                          }
-                          label="Status"
-                        >
-                          <MenuItem value="planning">Planning</MenuItem>
-                          <MenuItem value="in_progress">In Progress</MenuItem>
-                          <MenuItem value="completed">Completed</MenuItem>
-                          <MenuItem value="on_hold">On Hold</MenuItem>
-                          <MenuItem value="cancelled">Cancelled</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Progress (%)"
-                        type="number"
-                        value={projectForm.progress_percent}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "progress_percent",
-                            parseInt(e.target.value) || 0
-                          )
-                        }
-                        inputProps={{ min: 0, max: 100 }}
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
-                            "& fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.3)",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.5)",
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "white",
-                            },
+                        <MenuItem value="planning">Planning</MenuItem>
+                        <MenuItem value="in_progress">In Progress</MenuItem>
+                        <MenuItem value="completed">Completed</MenuItem>
+                        <MenuItem value="on_hold">On Hold</MenuItem>
+                        <MenuItem value="cancelled">Cancelled</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <TextField
+                      fullWidth
+                      label="Progress (%)"
+                      type="number"
+                      value={projectForm.progress_percent}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "progress_percent",
+                          parseInt(e.target.value) || 0
+                        )
+                      }
+                      inputProps={{ min: 0, max: 100 }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          "& fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.3)",
                           },
-                          "& .MuiInputLabel-root": {
-                            color: "rgba(255, 255, 255, 0.8)",
+                          "&:hover fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.5)",
                           },
-                          "& .MuiInputBase-input": {
-                            color: "white",
+                          "&.Mui-focused fieldset": {
+                            borderColor: "white",
                           },
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        multiline
-                        rows={3}
-                        label="Description"
-                        value={projectForm.description}
-                        onChange={(e) =>
-                          handleInputChange("description", e.target.value)
-                        }
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
-                            "& fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.3)",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.5)",
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "white",
-                            },
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "rgba(255, 255, 255, 0.8)",
+                        },
+                        "& .MuiInputBase-input": {
+                          color: "white",
+                        },
+                      }}
+                    />
+                    <TextField
+                      fullWidth
+                      multiline
+                      rows={3}
+                      label="Description"
+                      value={projectForm.description}
+                      onChange={(e) =>
+                        handleInputChange("description", e.target.value)
+                      }
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          "& fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.3)",
                           },
-                          "& .MuiInputLabel-root": {
-                            color: "rgba(255, 255, 255, 0.8)",
+                          "&:hover fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.5)",
                           },
-                          "& .MuiInputBase-input": {
-                            color: "white",
+                          "&.Mui-focused fieldset": {
+                            borderColor: "white",
                           },
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        multiline
-                        rows={2}
-                        label="Notes"
-                        value={projectForm.notes}
-                        onChange={(e) =>
-                          handleInputChange("notes", e.target.value)
-                        }
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
-                            "& fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.3)",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.5)",
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "white",
-                            },
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "rgba(255, 255, 255, 0.8)",
+                        },
+                        "& .MuiInputBase-input": {
+                          color: "white",
+                        },
+                      }}
+                    />
+                    <TextField
+                      fullWidth
+                      multiline
+                      rows={2}
+                      label="Notes"
+                      value={projectForm.notes}
+                      onChange={(e) =>
+                        handleInputChange("notes", e.target.value)
+                      }
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          "& fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.3)",
                           },
-                          "& .MuiInputLabel-root": {
-                            color: "rgba(255, 255, 255, 0.8)",
+                          "&:hover fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.5)",
                           },
-                          "& .MuiInputBase-input": {
-                            color: "white",
+                          "&.Mui-focused fieldset": {
+                            borderColor: "white",
                           },
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "rgba(255, 255, 255, 0.8)",
+                        },
+                        "& .MuiInputBase-input": {
+                          color: "white",
+                        },
+                      }}
+                    />
+                  </Stack>
                 </CardContent>
               </Card>
             </Grid>
@@ -797,109 +781,103 @@ const ProjectEdit = () => {
                     <MoneyIcon />
                     <Typography variant="h6">Financial Information</Typography>
                   </Box>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                      <TextField
-                        fullWidth
-                        label="Budget Estimate"
-                        type="number"
-                        value={projectForm.budget_estimate}
+                  <Stack spacing={3}>
+                    <TextField
+                      fullWidth
+                      label="Budget Estimate"
+                      type="number"
+                      value={projectForm.budget_estimate}
+                      onChange={(e) =>
+                        handleInputChange("budget_estimate", e.target.value)
+                      }
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          "& fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.3)",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.5)",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "white",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "rgba(255, 255, 255, 0.8)",
+                        },
+                        "& .MuiInputBase-input": {
+                          color: "white",
+                        },
+                      }}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Actual Cost"
+                      type="number"
+                      value={projectForm.actual_cost}
+                      onChange={(e) =>
+                        handleInputChange("actual_cost", e.target.value)
+                      }
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          "& fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.3)",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.5)",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "white",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "rgba(255, 255, 255, 0.8)",
+                        },
+                        "& .MuiInputBase-input": {
+                          color: "white",
+                        },
+                      }}
+                    />
+                    <FormControl
+                      fullWidth
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          "& fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.3)",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.5)",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "white",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "rgba(255, 255, 255, 0.8)",
+                        },
+                        "& .MuiSelect-select": {
+                          color: "white",
+                        },
+                      }}
+                    >
+                      <InputLabel>Currency</InputLabel>
+                      <Select
+                        value={projectForm.currency}
                         onChange={(e) =>
-                          handleInputChange("budget_estimate", e.target.value)
+                          handleInputChange("currency", e.target.value)
                         }
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
-                            "& fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.3)",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.5)",
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "white",
-                            },
-                          },
-                          "& .MuiInputLabel-root": {
-                            color: "rgba(255, 255, 255, 0.8)",
-                          },
-                          "& .MuiInputBase-input": {
-                            color: "white",
-                          },
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <TextField
-                        fullWidth
-                        label="Actual Cost"
-                        type="number"
-                        value={projectForm.actual_cost}
-                        onChange={(e) =>
-                          handleInputChange("actual_cost", e.target.value)
-                        }
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
-                            "& fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.3)",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.5)",
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "white",
-                            },
-                          },
-                          "& .MuiInputLabel-root": {
-                            color: "rgba(255, 255, 255, 0.8)",
-                          },
-                          "& .MuiInputBase-input": {
-                            color: "white",
-                          },
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <FormControl
-                        fullWidth
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
-                            "& fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.3)",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.5)",
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "white",
-                            },
-                          },
-                          "& .MuiInputLabel-root": {
-                            color: "rgba(255, 255, 255, 0.8)",
-                          },
-                          "& .MuiSelect-select": {
-                            color: "white",
-                          },
-                        }}
+                        label="Currency"
                       >
-                        <InputLabel>Currency</InputLabel>
-                        <Select
-                          value={projectForm.currency}
-                          onChange={(e) =>
-                            handleInputChange("currency", e.target.value)
-                          }
-                          label="Currency"
-                        >
-                          <MenuItem value="KES">KES (Kenyan Shilling)</MenuItem>
-                          <MenuItem value="USD">USD (US Dollar)</MenuItem>
-                          <MenuItem value="EUR">EUR (Euro)</MenuItem>
-                          <MenuItem value="GBP">GBP (British Pound)</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                  </Grid>
+                        <MenuItem value="KES">KES (Kenyan Shilling)</MenuItem>
+                        <MenuItem value="USD">USD (US Dollar)</MenuItem>
+                        <MenuItem value="EUR">EUR (Euro)</MenuItem>
+                        <MenuItem value="GBP">GBP (British Pound)</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Stack>
                 </CardContent>
               </Card>
             </Grid>
@@ -918,98 +896,92 @@ const ProjectEdit = () => {
                     <ProjectIcon />
                     <Typography variant="h6">Project Stakeholders</Typography>
                   </Box>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Contractor Name"
-                        value={projectForm.contractor_name}
-                        onChange={(e) =>
-                          handleInputChange("contractor_name", e.target.value)
-                        }
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
-                            "& fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.3)",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.5)",
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "white",
-                            },
+                  <Stack spacing={3}>
+                    <TextField
+                      fullWidth
+                      label="Contractor Name"
+                      value={projectForm.contractor_name}
+                      onChange={(e) =>
+                        handleInputChange("contractor_name", e.target.value)
+                      }
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          "& fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.3)",
                           },
-                          "& .MuiInputLabel-root": {
-                            color: "rgba(255, 255, 255, 0.8)",
+                          "&:hover fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.5)",
                           },
-                          "& .MuiInputBase-input": {
-                            color: "white",
+                          "&.Mui-focused fieldset": {
+                            borderColor: "white",
                           },
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Client Name"
-                        value={projectForm.client_name}
-                        onChange={(e) =>
-                          handleInputChange("client_name", e.target.value)
-                        }
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
-                            "& fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.3)",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.5)",
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "white",
-                            },
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "rgba(255, 255, 255, 0.8)",
+                        },
+                        "& .MuiInputBase-input": {
+                          color: "white",
+                        },
+                      }}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Client Name"
+                      value={projectForm.client_name}
+                      onChange={(e) =>
+                        handleInputChange("client_name", e.target.value)
+                      }
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          "& fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.3)",
                           },
-                          "& .MuiInputLabel-root": {
-                            color: "rgba(255, 255, 255, 0.8)",
+                          "&:hover fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.5)",
                           },
-                          "& .MuiInputBase-input": {
-                            color: "white",
+                          "&.Mui-focused fieldset": {
+                            borderColor: "white",
                           },
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="Funding Source"
-                        value={projectForm.funding_source}
-                        onChange={(e) =>
-                          handleInputChange("funding_source", e.target.value)
-                        }
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
-                            "& fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.3)",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "rgba(255, 255, 255, 0.5)",
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "white",
-                            },
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "rgba(255, 255, 255, 0.8)",
+                        },
+                        "& .MuiInputBase-input": {
+                          color: "white",
+                        },
+                      }}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Funding Source"
+                      value={projectForm.funding_source}
+                      onChange={(e) =>
+                        handleInputChange("funding_source", e.target.value)
+                      }
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          "& fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.3)",
                           },
-                          "& .MuiInputLabel-root": {
-                            color: "rgba(255, 255, 255, 0.8)",
+                          "&:hover fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.5)",
                           },
-                          "& .MuiInputBase-input": {
-                            color: "white",
+                          "&.Mui-focused fieldset": {
+                            borderColor: "white",
                           },
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "rgba(255, 255, 255, 0.8)",
+                        },
+                        "& .MuiInputBase-input": {
+                          color: "white",
+                        },
+                      }}
+                    />
+                  </Stack>
                 </CardContent>
               </Card>
             </Grid>
@@ -1192,6 +1164,8 @@ const ProjectEdit = () => {
                           const fullDocumentUrl =
                             fileUrl && fileUrl.startsWith("http")
                               ? fileUrl
+                              : fileUrl && fileUrl.startsWith("/uploads")
+                              ? `http://84.247.176.143:1133${fileUrl}`
                               : `${window.location.origin}${fileUrl}`;
 
                           return (
@@ -1320,6 +1294,8 @@ const ProjectEdit = () => {
                           // Construct full URL for the image
                           const fullImageUrl = url.startsWith("http")
                             ? url
+                            : url.startsWith("/uploads")
+                            ? `http://84.247.176.143:1133${url}`
                             : `${window.location.origin}${url}`;
 
                           return (
