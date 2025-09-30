@@ -59,6 +59,8 @@ const ProjectEdit = () => {
     if (imageUrl.startsWith("http")) return imageUrl;
     if (imageUrl.startsWith("uploads/"))
       return `${getBackendBaseUrl()}/${imageUrl}`;
+    if (imageUrl.startsWith("/uploads/"))
+      return `${getBackendBaseUrl()}${imageUrl}`;
     return imageUrl;
   };
   const [projectForm, setProjectForm] = useState({

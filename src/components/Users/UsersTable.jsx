@@ -59,6 +59,25 @@ import Swal from "sweetalert2";
 
 const UsersTable = () => {
   const theme = useTheme();
+
+  // Helper to build absolute URL for uploaded assets
+  const VITE_API_URL = import.meta.env.VITE_API_URL;
+  const getBackendBaseUrl = () => {
+    if (!VITE_API_URL) return window.location.origin;
+    return VITE_API_URL.endsWith("/api")
+      ? VITE_API_URL.slice(0, -4)
+      : VITE_API_URL;
+  };
+  const buildImageUrl = (imageUrl) => {
+    if (!imageUrl) return "";
+    if (imageUrl.startsWith("http")) return imageUrl;
+    if (imageUrl.startsWith("uploads/"))
+      return `${getBackendBaseUrl()}/${imageUrl}`;
+    if (imageUrl.startsWith("/uploads/"))
+      return `${getBackendBaseUrl()}${imageUrl}`;
+    return imageUrl;
+  };
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -210,7 +229,7 @@ const UsersTable = () => {
       const filename =
         user.profile_picture.split("\\").pop() ||
         user.profile_picture.split("/").pop();
-      profilePictureUrl = `/uploads/documents/${filename}`;
+      profilePictureUrl = buildImageUrl(`uploads/documents/${filename}`);
     }
 
     setUserForm({
@@ -1003,7 +1022,7 @@ const UsersTable = () => {
                         const filename =
                           selectedUser.profile_picture.split("\\").pop() ||
                           selectedUser.profile_picture.split("/").pop();
-                        return `/uploads/documents/${filename}`;
+                        return buildImageUrl(`uploads/documents/${filename}`);
                       })()}
                       alt="Profile Picture"
                       sx={{
