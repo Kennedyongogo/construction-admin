@@ -285,13 +285,14 @@ const ProjectView = () => {
         <Box sx={{ p: 3 }}>
           <Grid container spacing={3}>
             {/* Basic Information */}
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} sx={{ width: "100%" }}>
               <Card
                 sx={{
                   background:
                     "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                   color: "white",
-                  height: "100%",
+                  width: "100%",
+                  maxWidth: "none",
                 }}
               >
                 <CardContent>
@@ -365,13 +366,14 @@ const ProjectView = () => {
             </Grid>
 
             {/* Financial & Progress */}
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} sx={{ width: "100%" }}>
               <Card
                 sx={{
                   background:
                     "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
                   color: "white",
-                  height: "100%",
+                  width: "100%",
+                  maxWidth: "none",
                 }}
               >
                 <CardContent>
@@ -458,12 +460,14 @@ const ProjectView = () => {
             )}
 
             {/* Project Stakeholders */}
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{ width: "100%" }}>
               <Card
                 sx={{
                   background:
                     "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
                   color: "white",
+                  width: "100%",
+                  maxWidth: "none",
                 }}
               >
                 <CardContent>
@@ -517,12 +521,14 @@ const ProjectView = () => {
 
             {/* Project Blueprints */}
             {project.blueprint_url && project.blueprint_url.length > 0 && (
-              <Grid item xs={12}>
+              <Grid item xs={12} sx={{ width: "100%" }}>
                 <Card
                   sx={{
                     background:
                       "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
                     color: "white",
+                    width: "100%",
+                    maxWidth: "none",
                   }}
                 >
                   <CardContent>
@@ -808,12 +814,14 @@ const ProjectView = () => {
 
             {/* Engineer Info */}
             {project.engineer && (
-              <Grid item xs={12}>
+              <Grid item xs={12} sx={{ width: "100%" }}>
                 <Card
                   sx={{
                     background:
                       "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
                     color: "white",
+                    width: "100%",
+                    maxWidth: "none",
                   }}
                 >
                   <CardContent>
