@@ -295,12 +295,15 @@ const ProjectEdit = () => {
       });
 
       // Add existing blueprint URLs
+      console.log("📸 Existing blueprint URLs to send:", blueprintUrls);
       blueprintUrls.forEach((url) => {
         formData.append("blueprint_url", url);
       });
 
       // Add new blueprint files
+      console.log("📸 New blueprint files to upload:", blueprintFiles.length);
       blueprintFiles.forEach((file) => {
+        console.log("📸 Adding file:", file.name);
         formData.append("blueprints", file);
       });
 
@@ -321,6 +324,8 @@ const ProjectEdit = () => {
         // Clear selected files and previews after successful save
         setSelectedFiles([]);
         setFilePreviews([]);
+        setBlueprintFiles([]);
+        setBlueprintPreviews([]);
 
         await Swal.fire({
           title: "Success!",
