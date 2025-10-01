@@ -132,13 +132,13 @@ const ProjectEdit = () => {
           notes: result.data.notes || "",
         });
         setProjectFiles(result.data.documents || []);
-        setBlueprintUrls(
-          Array.isArray(result.data.blueprint_url)
-            ? result.data.blueprint_url
-            : result.data.blueprint_url
-            ? [result.data.blueprint_url]
-            : []
-        );
+        const blueprints = Array.isArray(result.data.blueprint_url)
+          ? result.data.blueprint_url
+          : result.data.blueprint_url
+          ? [result.data.blueprint_url]
+          : [];
+        console.log("📥 Loaded blueprints from API:", blueprints);
+        setBlueprintUrls(blueprints);
       } else {
         setError(result.message || "Failed to fetch project details");
       }
@@ -264,6 +264,10 @@ const ProjectEdit = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
+
+      console.log("💾 Starting save...");
+      console.log("💾 Current blueprintUrls state:", blueprintUrls);
+      console.log("💾 Current blueprintFiles state:", blueprintFiles);
 
       // Upload new files first
       const uploadedFiles = await uploadFiles();
