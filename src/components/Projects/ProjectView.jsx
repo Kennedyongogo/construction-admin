@@ -45,27 +45,14 @@ const ProjectView = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Helper to build absolute URL for uploaded assets
-  const VITE_API_URL = import.meta.env.VITE_API_URL;
-  const getBackendBaseUrl = () => {
-    // For production/hosted environment, use the correct API server URL
-    if (window.location.hostname === "84.247.176.143") {
-      return "http://84.247.176.143:1133";
-    }
-
-    if (!VITE_API_URL) return window.location.origin;
-    return VITE_API_URL.endsWith("/api")
-      ? VITE_API_URL.slice(0, -4)
-      : VITE_API_URL;
-  };
-
+  // Helper to build URL for uploaded assets using Vite proxy
   const buildImageUrl = (imageUrl) => {
     if (!imageUrl) return "";
     if (imageUrl.startsWith("http")) return imageUrl;
 
-    const baseUrl = getBackendBaseUrl();
-    if (imageUrl.startsWith("uploads/")) return `${baseUrl}/${imageUrl}`;
-    if (imageUrl.startsWith("/uploads/")) return `${baseUrl}${imageUrl}`;
+    // Use relative URLs - Vite proxy will handle routing to backend
+    if (imageUrl.startsWith("uploads/")) return `/${imageUrl}`;
+    if (imageUrl.startsWith("/uploads/")) return imageUrl;
     return imageUrl;
   };
 
