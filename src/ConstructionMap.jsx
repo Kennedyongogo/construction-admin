@@ -55,7 +55,7 @@ import LocationSearchingIcon from "@mui/icons-material/LocationSearching";
 
 // Removed hospital-related constants as we're focusing only on applications
 
-const CampaignMap = () => {
+const ConstructionMap = () => {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const navigate = useNavigate();
@@ -69,9 +69,8 @@ const CampaignMap = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [tileLoadError, setTileLoadError] = useState(false);
   const [mapInitialized, setMapInitialized] = useState(false);
-  const [pollingStations, setPollingStations] = useState([]);
-  const [selectedPollingStationDetails, setSelectedPollingStationDetails] =
-    useState(null);
+  const [constructionProjects, setConstructionProjects] = useState([]);
+  const [selectedProjectDetails, setSelectedProjectDetails] = useState(null);
   const [tooltip, setTooltip] = useState({
     visible: false,
     content: "",
@@ -79,8 +78,19 @@ const CampaignMap = () => {
     y: 0,
   });
   const [visibleStatuses, setVisibleStatuses] = useState({
-    Active: true,
-    Inactive: true,
+    planning: true,
+    active: true,
+    completed: true,
+    on_hold: true,
+    cancelled: true,
+  });
+
+  const [visibleConstructionTypes, setVisibleConstructionTypes] = useState({
+    building: true,
+    infrastructure: true,
+    industrial: true,
+    specialized: true,
+    other: true,
   });
 
   // Search and filter states
@@ -117,7 +127,7 @@ const CampaignMap = () => {
   };
 
   // Get user's current location
-  const getUserLocation = () => {
+  const getUserLocation = (callback) => {
     if (!navigator.geolocation) {
       setLocationError("Geolocation is not supported by this browser.");
       return;
@@ -132,6 +142,10 @@ const CampaignMap = () => {
         setUserLocation({ latitude, longitude });
         setIsGettingLocation(false);
         setLocationError(null);
+        // Call callback if provided (for near me functionality)
+        if (callback) {
+          callback();
+        }
       },
       (error) => {
         let errorMessage = "Unable to retrieve your location.";
@@ -157,33 +171,59 @@ const CampaignMap = () => {
     );
   };
 
-  // Find polling stations near user location
-  const findNearMePollingStations = () => {
+  // Find construction projects near user location
+  const findNearMeProjects = () => {
     if (!userLocation) {
-      getUserLocation();
+      getUserLocation(() => {
+        // This callback will be called after location is obtained
+        performNearMeSearch();
+      });
       return;
     }
 
+    performNearMeSearch();
+  };
+
+  // Helper function to perform the actual near me search
+  const performNearMeSearch = () => {
+    if (!userLocation) return;
+
     const dataToSearch =
-      searchResults.length > 0 ? searchResults : pollingStations;
-    const nearbyStations = dataToSearch
-      .filter(
-        (station) =>
-          station.xCoordinate !== null && station.yCoordinate !== null
-      )
-      .map((station) => {
+      searchResults.length > 0 ? searchResults : constructionProjects;
+
+    console.log("Performing near me search with:", {
+      userLocation,
+      dataToSearchLength: dataToSearch.length,
+      nearMeRadius,
+    });
+
+    const nearbyProjects = dataToSearch
+      .filter((project) => {
+        const hasValidCoords =
+          project.longitude !== null && project.latitude !== null;
+        if (!hasValidCoords) {
+          console.log("Project missing coordinates:", project.name, {
+            longitude: project.longitude,
+            latitude: project.latitude,
+          });
+        }
+        return hasValidCoords;
+      })
+      .map((project) => {
         const distance = calculateDistance(
           userLocation.latitude,
           userLocation.longitude,
-          parseFloat(station.yCoordinate),
-          parseFloat(station.xCoordinate)
+          parseFloat(project.latitude),
+          parseFloat(project.longitude)
         );
-        return { ...station, distance };
+        return { ...project, distance };
       })
-      .filter((station) => station.distance <= nearMeRadius)
+      .filter((project) => project.distance <= nearMeRadius)
       .sort((a, b) => a.distance - b.distance);
 
-    setNearMeResults(nearbyStations);
+    console.log("Near me results:", nearbyProjects);
+
+    setNearMeResults(nearbyProjects);
     setNearMeMode(true);
   };
 
@@ -252,8 +292,8 @@ const CampaignMap = () => {
         target: mapRef.current,
         layers: [osmLayer, satelliteLayer, terrainLayer, vectorLayer],
         view: new View({
-          center: fromLonLat([34.4, -0.5]), // Center near Homa Bay where the polling station is
-          zoom: 10, // Closer view to see the polling station
+          center: fromLonLat([36.7758, -1.2921]), // Center near Nairobi, Kenya where the construction project is
+          zoom: 10, // Closer view to see the construction project
         }),
         controls: defaultControls().extend([new ScaleLine(), new ZoomSlider()]),
       });
@@ -284,8 +324,8 @@ const CampaignMap = () => {
     }
   }, [showMarker, mapInitialized]);
 
-  // Search polling stations function
-  const searchPollingStations = async (query, column) => {
+  // Search construction projects function
+  const searchConstructionProjects = async (query, column) => {
     setIsSearching(true);
     setSearchError(null);
 
@@ -304,15 +344,12 @@ const CampaignMap = () => {
       }
 
       const token = localStorage.getItem("token");
-      const response = await fetch(
-        `${API_BASE_URL}/campaign/polling-stations?${params}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/projects?${params}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -322,7 +359,7 @@ const CampaignMap = () => {
       setSearchResults(data?.data || []);
       return data?.data || [];
     } catch (error) {
-      console.error("Error searching polling stations:", error);
+      console.error("Error searching construction projects:", error);
       setSearchError(error.message);
       setSearchResults([]);
       return [];
@@ -331,14 +368,14 @@ const CampaignMap = () => {
     }
   };
 
-  // Fetch polling stations
+  // Fetch construction projects
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
         const token = localStorage.getItem("token");
-        const pollingStationsResponse = await fetch(
-          `${API_BASE_URL}/campaign/polling-stations?limit=5000`,
+        const projectsResponse = await fetch(
+          `${API_BASE_URL}/projects?limit=5000`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -347,17 +384,15 @@ const CampaignMap = () => {
           }
         );
 
-        if (!pollingStationsResponse.ok) {
-          throw new Error(
-            `HTTP error! status: ${pollingStationsResponse.status}`
-          );
+        if (!projectsResponse.ok) {
+          throw new Error(`HTTP error! status: ${projectsResponse.status}`);
         }
 
-        const pollingStationsData = await pollingStationsResponse.json();
-        setPollingStations(pollingStationsData?.data || []);
+        const projectsData = await projectsResponse.json();
+        setConstructionProjects(projectsData?.data || []);
       } catch (error) {
-        console.error("Error fetching polling stations:", error);
-        setPollingStations([]);
+        console.error("Error fetching construction projects:", error);
+        setConstructionProjects([]);
       } finally {
         setIsLoading(false);
       }
@@ -369,7 +404,7 @@ const CampaignMap = () => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (searchQuery.trim()) {
-        searchPollingStations(searchQuery, searchColumn);
+        searchConstructionProjects(searchQuery, searchColumn);
       } else {
         setSearchResults([]);
       }
@@ -386,10 +421,10 @@ const CampaignMap = () => {
 
       // Calculate bounds for all search results
       const coordinates = searchResults
-        .filter((station) => station.xCoordinate && station.yCoordinate)
-        .map((station) => [
-          parseFloat(station.xCoordinate),
-          parseFloat(station.yCoordinate),
+        .filter((project) => project.longitude && project.latitude)
+        .map((project) => [
+          parseFloat(project.longitude),
+          parseFloat(project.latitude),
         ]);
 
       if (coordinates.length > 0) {
@@ -433,17 +468,17 @@ const CampaignMap = () => {
   // Auto-update near me results when radius changes
   useEffect(() => {
     if (nearMeMode && userLocation) {
-      findNearMePollingStations();
+      performNearMeSearch();
     }
   }, [nearMeRadius]);
 
-  // Handle navigation from PollingStationView
+  // Handle navigation from ProjectView to center on specific project
   useEffect(() => {
     if (location.state?.centerCoordinates && mapInstance.current) {
       const [longitude, latitude] = location.state.centerCoordinates;
       const view = mapInstance.current.getView();
       view.setCenter(fromLonLat([longitude, latitude]));
-      view.setZoom(15); // Zoom in closer for specific station
+      view.setZoom(15); // Zoom in closer for specific project
 
       // Clear the state to prevent re-centering on subsequent renders
       navigate(location.pathname, { replace: true, state: {} });
@@ -465,8 +500,8 @@ const CampaignMap = () => {
         const properties = feature.get("properties");
         const featureType = properties?.type;
 
-        if (featureType === "pollingStation") {
-          // Show tooltip for polling stations
+        if (featureType === "constructionProject") {
+          // Show tooltip for construction projects
           const coordinate = event.coordinate;
           const pixel = map.getPixelFromCoordinate(coordinate);
           setTooltip({
@@ -517,9 +552,9 @@ const CampaignMap = () => {
         const properties = feature.get("properties");
         const featureType = properties?.type;
 
-        if (featureType === "pollingStation") {
-          // Show polling station details in drawer
-          setSelectedPollingStationDetails(properties);
+        if (featureType === "constructionProject") {
+          // Show project details in drawer
+          setSelectedProjectDetails(properties);
           setDrawerOpen(true);
         }
       }
@@ -532,21 +567,19 @@ const CampaignMap = () => {
     };
   }, [mapInitialized, navigate]);
 
-  // Create polling station markers
-  const createPollingStationMarkers = (
-    pollingStations,
-    isSearchResult = false
-  ) => {
-    return pollingStations
+  // Create construction project markers
+  const createProjectMarkers = (projects, isSearchResult = false) => {
+    return projects
       .filter(
-        (station) =>
-          station.xCoordinate !== null &&
-          station.yCoordinate !== null &&
-          visibleStatuses[station.isActive ? "Active" : "Inactive"]
+        (project) =>
+          project.longitude !== null &&
+          project.latitude !== null &&
+          visibleStatuses[project.status] &&
+          visibleConstructionTypes[project.construction_type]
       )
-      .map((station) => {
-        const lon = parseFloat(station.xCoordinate); // longitude
-        const lat = parseFloat(station.yCoordinate); // latitude
+      .map((project) => {
+        const lon = parseFloat(project.longitude); // longitude
+        const lat = parseFloat(project.latitude); // latitude
 
         if (isNaN(lon) || isNaN(lat)) {
           return null;
@@ -555,37 +588,26 @@ const CampaignMap = () => {
         const feature = new Feature({
           geometry: new Point(fromLonLat([lon, lat])),
           properties: {
-            ...station,
-            type: "pollingStation",
+            ...project,
+            type: "constructionProject",
             isSearchResult: isSearchResult,
           },
         });
 
-        // Status-based color coding
-        const markerColor = getStatusColor(
-          station.isActive ? "Active" : "Inactive"
+        // Get construction type specific marker
+        const markerSvg = getConstructionTypeMarker(
+          project.construction_type,
+          project.status,
+          isSearchResult
         );
-
-        // Different styling for search results
-        const scale = isSearchResult ? 1.5 : 1.2;
-        const strokeWidth = isSearchResult ? 3 : 2;
-        const outerRadius = isSearchResult ? 12 : 10;
 
         feature.setStyle(
           new Style({
             image: new Icon({
-              src: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="12" r="${outerRadius}" fill="${markerColor}" stroke="white" stroke-width="${strokeWidth}"/>
-                  ${
-                    isSearchResult
-                      ? '<circle cx="12" cy="12" r="14" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.8"/>'
-                      : ""
-                  }
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="white"/>
-                </svg>
-              `)}`,
-              scale: scale,
+              src: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+                markerSvg
+              )}`,
+              scale: 1,
               anchor: [0.5, 0.5],
             }),
           })
@@ -633,13 +655,13 @@ const CampaignMap = () => {
 
     // Clear existing markers
     const existingFeatures = vectorSource.getFeatures();
-    const pollingStationFeatures = existingFeatures.filter(
-      (f) => f.get("properties")?.type === "pollingStation"
+    const projectFeatures = existingFeatures.filter(
+      (f) => f.get("properties")?.type === "constructionProject"
     );
     const userLocationFeatures = existingFeatures.filter(
       (f) => f.get("properties")?.type === "userLocation"
     );
-    pollingStationFeatures.forEach((f) => vectorSource.removeFeature(f));
+    projectFeatures.forEach((f) => vectorSource.removeFeature(f));
     userLocationFeatures.forEach((f) => vectorSource.removeFeature(f));
 
     // Determine which data to show
@@ -649,17 +671,14 @@ const CampaignMap = () => {
     } else if (searchResults.length > 0) {
       dataToShow = searchResults;
     } else {
-      dataToShow = pollingStations;
+      dataToShow = constructionProjects;
     }
 
-    // Add polling station markers
+    // Add project markers
     const isSearchResult =
       searchResults.length > 0 && dataToShow === searchResults;
-    const pollingStationMarkers = createPollingStationMarkers(
-      dataToShow,
-      isSearchResult
-    );
-    vectorSource.addFeatures(pollingStationMarkers);
+    const projectMarkers = createProjectMarkers(dataToShow, isSearchResult);
+    vectorSource.addFeatures(projectMarkers);
 
     // Add user location marker if available
     const userLocationMarker = createUserLocationMarker();
@@ -667,10 +686,11 @@ const CampaignMap = () => {
       vectorSource.addFeature(userLocationMarker);
     }
   }, [
-    pollingStations,
+    constructionProjects,
     searchResults,
     mapInitialized,
     visibleStatuses,
+    visibleConstructionTypes,
     nearMeMode,
     nearMeResults,
     userLocation,
@@ -705,13 +725,104 @@ const CampaignMap = () => {
   // Helper function to get status color
   const getStatusColor = (status) => {
     switch (status) {
-      case "Active":
-        return "#4caf50";
-      case "Inactive":
-        return "#f44336";
+      case "planning":
+        return "#ff9800"; // Orange
+      case "active":
+        return "#4caf50"; // Green
+      case "completed":
+        return "#2196f3"; // Blue
+      case "on_hold":
+        return "#ff5722"; // Deep Orange
+      case "cancelled":
+        return "#f44336"; // Red
       default:
-        return "#666";
+        return "#666"; // Gray
     }
+  };
+
+  // Helper function to get construction type marker
+  const getConstructionTypeMarker = (
+    constructionType,
+    status,
+    isSearchResult = false
+  ) => {
+    const statusColor = getStatusColor(status);
+    const scale = isSearchResult ? 1.5 : 1.2;
+    const strokeWidth = isSearchResult ? 3 : 2;
+    const outerRadius = isSearchResult ? 12 : 10;
+
+    let svgIcon = "";
+
+    switch (constructionType) {
+      case "building":
+        svgIcon = `
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="${outerRadius}" fill="${statusColor}" stroke="white" stroke-width="${strokeWidth}"/>
+            ${
+              isSearchResult
+                ? `<circle cx="12" cy="12" r="14" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.8"/>`
+                : ""
+            }
+            <path d="M3 21h18v-2H3v2zm1-3h16l-8-7-8 7zM12 2l8 6v11H4V8l8-6zm0 3.5L7 10v8h10v-8l-5-4.5z" fill="white"/>
+          </svg>
+        `;
+        break;
+      case "infrastructure":
+        svgIcon = `
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="${outerRadius}" fill="${statusColor}" stroke="white" stroke-width="${strokeWidth}"/>
+            ${
+              isSearchResult
+                ? `<circle cx="12" cy="12" r="14" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.8"/>`
+                : ""
+            }
+            <path d="M2 20h20v-2H2v2zm2-3h16l-2-4H6l-2 4zM12 2L2 8v7h20V8l-10-6zm0 2.5L18 9v5H6V9l6-4.5z" fill="white"/>
+          </svg>
+        `;
+        break;
+      case "industrial":
+        svgIcon = `
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="${outerRadius}" fill="${statusColor}" stroke="white" stroke-width="${strokeWidth}"/>
+            ${
+              isSearchResult
+                ? `<circle cx="12" cy="12" r="14" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.8"/>`
+                : ""
+            }
+            <path d="M2 20h20v-2H2v2zm2-3h16v-4H4v4zm0-6h16V7H4v4zm0-6h16V1H4v4z" fill="white"/>
+          </svg>
+        `;
+        break;
+      case "specialized":
+        svgIcon = `
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="${outerRadius}" fill="${statusColor}" stroke="white" stroke-width="${strokeWidth}"/>
+            ${
+              isSearchResult
+                ? `<circle cx="12" cy="12" r="14" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.8"/>`
+                : ""
+            }
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2zm0 3.8L10.5 9l2.5 1.5L15.5 9 12 5.8z" fill="white"/>
+          </svg>
+        `;
+        break;
+      case "other":
+      default:
+        svgIcon = `
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="${outerRadius}" fill="${statusColor}" stroke="white" stroke-width="${strokeWidth}"/>
+            ${
+              isSearchResult
+                ? `<circle cx="12" cy="12" r="14" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.8"/>`
+                : ""
+            }
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="white"/>
+          </svg>
+        `;
+        break;
+    }
+
+    return svgIcon;
   };
 
   // Handle status toggle
@@ -722,18 +833,46 @@ const CampaignMap = () => {
     }));
   };
 
+  // Handle construction type toggle
+  const handleConstructionTypeToggle = (constructionType) => {
+    setVisibleConstructionTypes((prev) => ({
+      ...prev,
+      [constructionType]: !prev[constructionType],
+    }));
+  };
+
   // Handle select all/deselect all
   const handleSelectAll = () => {
     setVisibleStatuses({
-      Active: true,
-      Inactive: true,
+      planning: true,
+      active: true,
+      completed: true,
+      on_hold: true,
+      cancelled: true,
+    });
+    setVisibleConstructionTypes({
+      building: true,
+      infrastructure: true,
+      industrial: true,
+      specialized: true,
+      other: true,
     });
   };
 
   const handleDeselectAll = () => {
     setVisibleStatuses({
-      Active: false,
-      Inactive: false,
+      planning: false,
+      active: false,
+      completed: false,
+      on_hold: false,
+      cancelled: false,
+    });
+    setVisibleConstructionTypes({
+      building: false,
+      infrastructure: false,
+      industrial: false,
+      specialized: false,
+      other: false,
     });
   };
 
@@ -762,7 +901,7 @@ const CampaignMap = () => {
     // Reset map view to default
     if (mapInstance.current) {
       const view = mapInstance.current.getView();
-      view.setCenter(fromLonLat([34.4, -0.5])); // Default center near Homa Bay
+      view.setCenter(fromLonLat([36.7758, -1.2921])); // Default center near Nairobi, Kenya
       view.setZoom(10); // Default zoom level
     }
   };
@@ -770,7 +909,20 @@ const CampaignMap = () => {
   // Get status counts
   const getStatusCounts = () => {
     const counts = {};
-    const statuses = ["Active", "Inactive"];
+    const statuses = [
+      "planning",
+      "active",
+      "completed",
+      "on_hold",
+      "cancelled",
+    ];
+    const constructionTypes = [
+      "building",
+      "infrastructure",
+      "industrial",
+      "specialized",
+      "other",
+    ];
     let dataToCount;
 
     if (nearMeMode && nearMeResults.length > 0) {
@@ -778,15 +930,24 @@ const CampaignMap = () => {
     } else if (searchResults.length > 0) {
       dataToCount = searchResults;
     } else {
-      dataToCount = pollingStations;
+      dataToCount = constructionProjects;
     }
 
     statuses.forEach((status) => {
       counts[status] = dataToCount.filter(
-        (station) =>
-          (station.isActive ? "Active" : "Inactive") === status &&
-          station.xCoordinate !== null &&
-          station.yCoordinate !== null
+        (project) =>
+          project.status === status &&
+          project.longitude !== null &&
+          project.latitude !== null
+      ).length;
+    });
+
+    constructionTypes.forEach((type) => {
+      counts[type] = dataToCount.filter(
+        (project) =>
+          project.construction_type === type &&
+          project.longitude !== null &&
+          project.latitude !== null
       ).length;
     });
 
@@ -824,7 +985,7 @@ const CampaignMap = () => {
               fontSize: "1.1rem",
             }}
           >
-            Campaign Map
+            Construction Map
           </Typography>
 
           {/* Near Me Controls */}
@@ -833,7 +994,7 @@ const CampaignMap = () => {
             <Button
               variant={nearMeMode ? "contained" : "outlined"}
               size="small"
-              onClick={findNearMePollingStations}
+              onClick={findNearMeProjects}
               disabled={isGettingLocation}
               startIcon={
                 isGettingLocation ? (
@@ -954,7 +1115,7 @@ const CampaignMap = () => {
             {/* Search Input */}
             <TextField
               size="small"
-              placeholder="Search by name, address, ward, constituency, county, voters, or coordinates..."
+              placeholder="Search by project name, location, status, contractor, client, or coordinates..."
               value={searchQuery}
               onChange={handleSearchChange}
               sx={{
@@ -992,13 +1153,13 @@ const CampaignMap = () => {
                 label="Search in"
               >
                 <MenuItem value="all">All Fields</MenuItem>
-                <MenuItem value="name">Station Name</MenuItem>
-                <MenuItem value="address">Address</MenuItem>
-                <MenuItem value="ward">Ward</MenuItem>
-                <MenuItem value="constituency">Constituency</MenuItem>
-                <MenuItem value="county">County</MenuItem>
-                <MenuItem value="isActive">Status</MenuItem>
-                <MenuItem value="registeredVoters">Registered Voters</MenuItem>
+                <MenuItem value="name">Project Name</MenuItem>
+                <MenuItem value="location_name">Location</MenuItem>
+                <MenuItem value="status">Status</MenuItem>
+                <MenuItem value="contractor_name">Contractor</MenuItem>
+                <MenuItem value="client_name">Client</MenuItem>
+                <MenuItem value="engineer">Engineer</MenuItem>
+                <MenuItem value="description">Description</MenuItem>
                 <MenuItem value="coordinates">Coordinates</MenuItem>
               </Select>
             </FormControl>
@@ -1089,7 +1250,7 @@ const CampaignMap = () => {
 
             {nearMeMode && nearMeResults.length > 0 && (
               <Chip
-                label={`${nearMeResults.length} within ${nearMeRadius}km`}
+                label={`${nearMeResults.length} projects within ${nearMeRadius}km`}
                 color="info"
                 size="small"
                 variant="outlined"
@@ -1249,7 +1410,7 @@ const CampaignMap = () => {
           >
             <CircularProgress size={20} />
             <Typography variant="caption" sx={{ color: "text.secondary" }}>
-              Loading polling stations...
+              Loading construction projects...
             </Typography>
           </Box>
         )}
@@ -1321,33 +1482,37 @@ const CampaignMap = () => {
             zIndex: 1000,
             backgroundColor: "white",
             borderRadius: 1,
-            padding: "8px 12px",
-            minWidth: "220px",
+            padding: "6px 10px",
+            minWidth: "200px",
+            maxWidth: "220px",
             boxShadow: "0px 2px 4px rgba(0,0,0,0.1)",
             opacity: 0.9,
+            maxHeight: "60vh",
+            overflowY: "auto",
           }}
         >
           <Typography
             variant="subtitle2"
-            sx={{ fontWeight: "bold", mb: 1, fontSize: "14px" }}
+            sx={{ fontWeight: "bold", mb: 0.5, fontSize: "13px" }}
           >
             Legend
           </Typography>
 
           {/* Select All / Deselect All Buttons */}
-          <Box sx={{ display: "flex", gap: 0.5, mb: 1 }}>
+          <Box sx={{ display: "flex", gap: 0.25, mb: 0.5 }}>
             <Button
               size="small"
               variant="outlined"
               onClick={handleSelectAll}
               sx={{
-                fontSize: "10px",
-                py: 0.25,
-                px: 1,
+                fontSize: "9px",
+                py: 0.1,
+                px: 0.75,
                 textTransform: "none",
                 borderColor: "#4caf50",
                 color: "#4caf50",
                 minWidth: "auto",
+                height: "20px",
                 "&:hover": {
                   backgroundColor: "#e8f5e8",
                   borderColor: "#388e3c",
@@ -1361,13 +1526,14 @@ const CampaignMap = () => {
               variant="outlined"
               onClick={handleDeselectAll}
               sx={{
-                fontSize: "10px",
-                py: 0.25,
-                px: 1,
+                fontSize: "9px",
+                py: 0.1,
+                px: 0.75,
                 textTransform: "none",
                 borderColor: "#f44336",
                 color: "#f44336",
                 minWidth: "auto",
+                height: "20px",
                 "&:hover": {
                   backgroundColor: "#ffebee",
                   borderColor: "#d32f2f",
@@ -1384,11 +1550,11 @@ const CampaignMap = () => {
               sx={{
                 display: "flex",
                 alignItems: "center",
-                gap: 0.5,
-                mb: 1,
-                p: 0.5,
+                gap: 0.25,
+                mb: 0.5,
+                p: 0.25,
                 backgroundColor: "#e3f2fd",
-                borderRadius: 1,
+                borderRadius: 0.5,
               }}
             >
               <Box
@@ -1403,7 +1569,7 @@ const CampaignMap = () => {
               <Typography
                 variant="body2"
                 sx={{
-                  fontSize: "11px",
+                  fontSize: "10px",
                   fontWeight: 600,
                   color: "#1976d2",
                 }}
@@ -1413,26 +1579,119 @@ const CampaignMap = () => {
             </Box>
           )}
 
-          {/* Application Status Colors with Checkboxes */}
+          {/* Construction Types with Checkboxes */}
           <Typography
             variant="body2"
             sx={{
-              fontSize: "12px",
+              fontSize: "11px",
               fontWeight: "bold",
-              mb: 0.5,
+              mb: 0.25,
               color: "text.secondary",
             }}
           >
-            {nearMeMode ? "Polling Stations Near You" : "Polling Stations"}
+            Construction Types
           </Typography>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+          <Box
+            sx={{ display: "flex", flexDirection: "column", gap: 0.25, mb: 1 }}
+          >
+            {Object.entries(visibleConstructionTypes).map(
+              ([type, isVisible]) => (
+                <Box
+                  key={type}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.25,
+                    transition: "all 0.2s ease-in-out",
+                  }}
+                >
+                  <Checkbox
+                    checked={isVisible}
+                    onChange={() => handleConstructionTypeToggle(type)}
+                    size="small"
+                    sx={{
+                      padding: 0.1,
+                      "&.Mui-checked": {
+                        color: "#2196f3",
+                      },
+                      "&:hover": {
+                        backgroundColor: "#2196f320",
+                      },
+                    }}
+                  />
+                  <Box
+                    sx={{
+                      width: 10,
+                      height: 10,
+                      borderRadius: "50%",
+                      backgroundColor: "#2196f3",
+                      mr: 0.25,
+                      transition: "all 0.2s ease-in-out",
+                      opacity: isVisible ? 1 : 0.5,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "7px",
+                      color: "white",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {type.charAt(0).toUpperCase()}
+                  </Box>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontSize: "10px",
+                      fontWeight: isVisible ? 600 : 400,
+                      color: isVisible ? "text.primary" : "text.secondary",
+                      transition: "all 0.2s ease-in-out",
+                      flexGrow: 1,
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    {type.replace("_", " ")}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontSize: "8px",
+                      color: "text.secondary",
+                      backgroundColor: isVisible ? "#2196f320" : "#f5f5f5",
+                      px: 0.25,
+                      py: 0.05,
+                      borderRadius: 0.25,
+                      fontWeight: 600,
+                      minWidth: "14px",
+                      textAlign: "center",
+                    }}
+                  >
+                    {statusCounts[type]}
+                  </Typography>
+                </Box>
+              )
+            )}
+          </Box>
+
+          {/* Project Status Colors with Checkboxes */}
+          <Typography
+            variant="body2"
+            sx={{
+              fontSize: "11px",
+              fontWeight: "bold",
+              mb: 0.25,
+              color: "text.secondary",
+            }}
+          >
+            Project Status
+          </Typography>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.25 }}>
             {Object.entries(visibleStatuses).map(([status, isVisible]) => (
               <Box
                 key={status}
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 0.5,
+                  gap: 0.25,
                   transition: "all 0.2s ease-in-out",
                 }}
               >
@@ -1441,7 +1700,7 @@ const CampaignMap = () => {
                   onChange={() => handleStatusToggle(status)}
                   size="small"
                   sx={{
-                    padding: 0.25,
+                    padding: 0.1,
                     "&.Mui-checked": {
                       color: getStatusColor(status),
                     },
@@ -1452,11 +1711,11 @@ const CampaignMap = () => {
                 />
                 <Box
                   sx={{
-                    width: 12,
-                    height: 12,
+                    width: 10,
+                    height: 10,
                     borderRadius: "50%",
                     backgroundColor: getStatusColor(status),
-                    mr: 0.5,
+                    mr: 0.25,
                     transition: "all 0.2s ease-in-out",
                     opacity: isVisible ? 1 : 0.5,
                   }}
@@ -1464,28 +1723,29 @@ const CampaignMap = () => {
                 <Typography
                   variant="body2"
                   sx={{
-                    fontSize: "11px",
+                    fontSize: "10px",
                     fontWeight: isVisible ? 600 : 400,
                     color: isVisible ? "text.primary" : "text.secondary",
                     transition: "all 0.2s ease-in-out",
                     flexGrow: 1,
+                    textTransform: "capitalize",
                   }}
                 >
-                  {status}
+                  {status.replace("_", " ")}
                 </Typography>
                 <Typography
                   variant="caption"
                   sx={{
-                    fontSize: "9px",
+                    fontSize: "8px",
                     color: "text.secondary",
                     backgroundColor: isVisible
                       ? `${getStatusColor(status)}20`
                       : "#f5f5f5",
-                    px: 0.5,
-                    py: 0.1,
-                    borderRadius: 0.5,
+                    px: 0.25,
+                    py: 0.05,
+                    borderRadius: 0.25,
                     fontWeight: 600,
-                    minWidth: "16px",
+                    minWidth: "14px",
                     textAlign: "center",
                   }}
                 >
@@ -1498,8 +1758,8 @@ const CampaignMap = () => {
           {/* Summary */}
           <Box
             sx={{
-              mt: 1,
-              pt: 1,
+              mt: 0.5,
+              pt: 0.5,
               borderTop: "1px solid #e0e0e0",
               display: "flex",
               justifyContent: "space-between",
@@ -1511,7 +1771,7 @@ const CampaignMap = () => {
               sx={{
                 color: "text.secondary",
                 fontWeight: 500,
-                fontSize: "10px",
+                fontSize: "9px",
               }}
             >
               Visible:
@@ -1521,7 +1781,7 @@ const CampaignMap = () => {
               sx={{
                 fontWeight: "bold",
                 color: "primary.main",
-                fontSize: "10px",
+                fontSize: "9px",
               }}
             >
               {Object.entries(visibleStatuses)
@@ -1610,7 +1870,7 @@ const CampaignMap = () => {
                   variant="h6"
                   sx={{ fontWeight: 600, fontSize: "1.1rem" }}
                 >
-                  Polling Station Details
+                  Project Details
                 </Typography>
                 <IconButton
                   onClick={() => setDrawerOpen(false)}
@@ -1624,7 +1884,7 @@ const CampaignMap = () => {
                   <CloseIcon />
                 </IconButton>
               </Box>
-              {selectedPollingStationDetails && (
+              {selectedProjectDetails && (
                 <Typography
                   variant="body2"
                   sx={{
@@ -1633,7 +1893,7 @@ const CampaignMap = () => {
                     fontSize: "0.9rem",
                   }}
                 >
-                  {selectedPollingStationDetails?.name}
+                  {selectedProjectDetails?.name}
                 </Typography>
               )}
             </Box>
@@ -1685,7 +1945,7 @@ const CampaignMap = () => {
                 backgroundColor: "#fafafa",
               }}
             >
-              {selectedPollingStationDetails ? (
+              {selectedProjectDetails ? (
                 <>
                   {tabValue === 0 && (
                     <Box
@@ -1710,13 +1970,13 @@ const CampaignMap = () => {
                             letterSpacing: 0.5,
                           }}
                         >
-                          Station Name
+                          Project Name
                         </Typography>
                         <Typography
                           variant="body1"
                           sx={{ fontWeight: 500, color: "text.primary" }}
                         >
-                          {selectedPollingStationDetails.name}
+                          {selectedProjectDetails.name}
                         </Typography>
                       </Box>
 
@@ -1748,20 +2008,22 @@ const CampaignMap = () => {
                             px: 2,
                             py: 0.5,
                             borderRadius: 3,
-                            backgroundColor:
-                              selectedPollingStationDetails.isActive
-                                ? "#e8f5e8"
-                                : "#ffebee",
-                            color: selectedPollingStationDetails.isActive
-                              ? "#4caf50"
-                              : "#f44336",
+                            backgroundColor: `${getStatusColor(
+                              selectedProjectDetails.status
+                            )}20`,
+                            color: getStatusColor(
+                              selectedProjectDetails.status
+                            ),
                             fontWeight: 600,
                             fontSize: "0.85rem",
                           }}
                         >
-                          {selectedPollingStationDetails.isActive
-                            ? "Active"
-                            : "Inactive"}
+                          {selectedProjectDetails.status
+                            .charAt(0)
+                            .toUpperCase() +
+                            selectedProjectDetails.status
+                              .slice(1)
+                              .replace("_", " ")}
                         </Box>
                       </Box>
 
@@ -1784,13 +2046,14 @@ const CampaignMap = () => {
                             letterSpacing: 0.5,
                           }}
                         >
-                          Registered Voters
+                          Budget Estimate
                         </Typography>
                         <Typography
                           variant="body1"
                           sx={{ fontWeight: 500, color: "text.primary" }}
                         >
-                          {selectedPollingStationDetails.registeredVoters?.toLocaleString() ||
+                          {selectedProjectDetails.currency}{" "}
+                          {selectedProjectDetails.budget_estimate?.toLocaleString() ||
                             "-"}
                         </Typography>
                       </Box>
@@ -1814,13 +2077,13 @@ const CampaignMap = () => {
                             letterSpacing: 0.5,
                           }}
                         >
-                          Assigned To
+                          Contractor
                         </Typography>
                         <Typography
                           variant="body1"
                           sx={{ fontWeight: 500, color: "text.primary" }}
                         >
-                          {selectedPollingStationDetails.assignedTo ||
+                          {selectedProjectDetails.contractor_name ||
                             "Not Assigned"}
                         </Typography>
                       </Box>
@@ -1844,21 +2107,20 @@ const CampaignMap = () => {
                             letterSpacing: 0.5,
                           }}
                         >
-                          Assigned Admin
+                          Engineer in Charge
                         </Typography>
                         <Typography
                           variant="body1"
                           sx={{ fontWeight: 500, color: "text.primary" }}
                         >
-                          {selectedPollingStationDetails.assignedAdmin ||
+                          {selectedProjectDetails.engineer?.name ||
                             "Not Assigned"}
                         </Typography>
                       </Box>
 
                       {/* Distance from user location */}
                       {userLocation &&
-                        selectedPollingStationDetails.distance !==
-                          undefined && (
+                        selectedProjectDetails.distance !== undefined && (
                           <Box
                             sx={{
                               p: 2,
@@ -1894,10 +2156,7 @@ const CampaignMap = () => {
                               }}
                             >
                               <LocationOnIcon sx={{ fontSize: 16, mr: 0.5 }} />
-                              {selectedPollingStationDetails.distance.toFixed(
-                                1
-                              )}{" "}
-                              km
+                              {selectedProjectDetails.distance.toFixed(1)} km
                             </Box>
                           </Box>
                         )}
@@ -1926,13 +2185,13 @@ const CampaignMap = () => {
                             letterSpacing: 0.5,
                           }}
                         >
-                          Address
+                          Location
                         </Typography>
                         <Typography
                           variant="body1"
                           sx={{ fontWeight: 500, color: "text.primary" }}
                         >
-                          {selectedPollingStationDetails.address || "-"}
+                          {selectedProjectDetails.location_name || "-"}
                         </Typography>
                       </Box>
 
@@ -1955,13 +2214,13 @@ const CampaignMap = () => {
                             letterSpacing: 0.5,
                           }}
                         >
-                          County
+                          Client
                         </Typography>
                         <Typography
                           variant="body1"
                           sx={{ fontWeight: 500, color: "text.primary" }}
                         >
-                          {selectedPollingStationDetails.county || "-"}
+                          {selectedProjectDetails.client_name || "-"}
                         </Typography>
                       </Box>
 
@@ -1984,13 +2243,13 @@ const CampaignMap = () => {
                             letterSpacing: 0.5,
                           }}
                         >
-                          Constituency
+                          Progress
                         </Typography>
                         <Typography
                           variant="body1"
                           sx={{ fontWeight: 500, color: "text.primary" }}
                         >
-                          {selectedPollingStationDetails.constituency || "-"}
+                          {selectedProjectDetails.progress_percent || 0}%
                         </Typography>
                       </Box>
 
@@ -2013,13 +2272,18 @@ const CampaignMap = () => {
                             letterSpacing: 0.5,
                           }}
                         >
-                          Ward
+                          Construction Type
                         </Typography>
                         <Typography
                           variant="body1"
                           sx={{ fontWeight: 500, color: "text.primary" }}
                         >
-                          {selectedPollingStationDetails.ward || "-"}
+                          {selectedProjectDetails.construction_type
+                            ?.charAt(0)
+                            .toUpperCase() +
+                            selectedProjectDetails.construction_type?.slice(
+                              1
+                            ) || "-"}
                         </Typography>
                       </Box>
 
@@ -2060,7 +2324,7 @@ const CampaignMap = () => {
                                 fontFamily: "monospace",
                               }}
                             >
-                              {selectedPollingStationDetails.yCoordinate || "-"}
+                              {selectedProjectDetails.latitude || "-"}
                             </Typography>
                           </Box>
                           <Box>
@@ -2078,7 +2342,7 @@ const CampaignMap = () => {
                                 fontFamily: "monospace",
                               }}
                             >
-                              {selectedPollingStationDetails.xCoordinate || "-"}
+                              {selectedProjectDetails.longitude || "-"}
                             </Typography>
                           </Box>
                         </Box>
@@ -2139,10 +2403,8 @@ const CampaignMap = () => {
                 fullWidth
                 variant="contained"
                 onClick={() => {
-                  if (selectedPollingStationDetails?.id) {
-                    navigate(
-                      `/polling-stations/${selectedPollingStationDetails.id}`
-                    );
+                  if (selectedProjectDetails?.id) {
+                    navigate(`/projects/${selectedProjectDetails.id}`);
                   }
                 }}
                 sx={{
@@ -2172,4 +2434,4 @@ const CampaignMap = () => {
   );
 };
 
-export default CampaignMap;
+export default ConstructionMap;

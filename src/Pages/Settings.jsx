@@ -101,7 +101,7 @@ export default function Settings({ user }) {
           return;
         }
 
-        const response = await fetch(`/api/campaign/admins/${user?.id}`, {
+        const response = await fetch(`/api/admins/${user?.id}`, {
           method: "GET",
           credentials: "include",
           headers: {
@@ -165,33 +165,43 @@ export default function Settings({ user }) {
         return;
       }
 
-      const response = await fetch(
-        `/api/campaign/admins/${user?.id}/change-password`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ password: newPassword }),
-        }
-      );
+      const response = await fetch(`/api/admins/${user?.id}/change-password`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          currentPassword: oldPassword,
+          newPassword: newPassword,
+        }),
+      });
       const data = await response.json();
 
       if (data.success) {
         setMessage("Password updated successfully.");
         setSeverity("success");
-        // Redirect to home page after a short delay
+        // Clear message and redirect to home page after a short delay
         setTimeout(() => {
+          setMessage(null);
           navigate("/");
         }, 2000); // 2 second delay to show the success message
       } else {
+        setMessage(data.message || "Failed to update password.");
         setSeverity("error");
+        // Clear error message after 3 seconds
+        setTimeout(() => {
+          setMessage(null);
+        }, 3000);
       }
     } catch (error) {
       setMessage("Failed to update password.");
       setSeverity("error");
+      // Clear error message after 3 seconds
+      setTimeout(() => {
+        setMessage(null);
+      }, 3000);
     }
     setPLoading(false);
   };
@@ -217,7 +227,7 @@ export default function Settings({ user }) {
         role: userData.Role,
       };
 
-      const response = await fetch(`/api/campaign/admins/${user?.id}`, {
+      const response = await fetch(`/api/admins/${user?.id}`, {
         method: "PUT",
         credentials: "include",
         headers: {
@@ -233,14 +243,26 @@ export default function Settings({ user }) {
         setCurrentUser(data.data);
         setMessage(data.message || "User details updated successfully.");
         setSeverity("success");
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+          setMessage(null);
+        }, 3000);
       } else {
         setMessage(data.message || "Failed to update user details.");
         setSeverity("error");
+        // Clear error message after 3 seconds
+        setTimeout(() => {
+          setMessage(null);
+        }, 3000);
       }
     } catch (error) {
       console.error("Error updating user:", error);
       setMessage("Failed to update user details.");
       setSeverity("error");
+      // Clear error message after 3 seconds
+      setTimeout(() => {
+        setMessage(null);
+      }, 3000);
     }
     setDLoading(false);
   };

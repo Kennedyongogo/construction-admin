@@ -74,6 +74,8 @@ const ProjectEdit = () => {
     engineer_in_charge: "",
     progress_percent: 0,
     notes: "",
+    floor_size: "",
+    construction_type: "building",
   });
   const [blueprintUrls, setBlueprintUrls] = useState([]);
   const [blueprintFiles, setBlueprintFiles] = useState([]);
@@ -130,6 +132,8 @@ const ProjectEdit = () => {
           engineer_in_charge: result.data.engineer_in_charge || "",
           progress_percent: result.data.progress_percent || 0,
           notes: result.data.notes || "",
+          floor_size: result.data.floor_size || "",
+          construction_type: result.data.construction_type || "building",
         });
         setProjectFiles(result.data.documents || []);
         const blueprints = Array.isArray(result.data.blueprint_url)
@@ -783,6 +787,75 @@ const ProjectEdit = () => {
                         },
                       }}
                     />
+                    <TextField
+                      fullWidth
+                      label="Floor Size (m²)"
+                      type="number"
+                      value={projectForm.floor_size}
+                      onChange={(e) =>
+                        handleInputChange("floor_size", e.target.value)
+                      }
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          "& fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.3)",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.5)",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "white",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "rgba(255, 255, 255, 0.8)",
+                        },
+                        "& .MuiInputBase-input": {
+                          color: "white",
+                        },
+                      }}
+                    />
+                    <FormControl
+                      fullWidth
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          "& fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.3)",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "rgba(255, 255, 255, 0.5)",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "white",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "rgba(255, 255, 255, 0.8)",
+                        },
+                        "& .MuiSelect-select": {
+                          color: "white",
+                        },
+                      }}
+                    >
+                      <InputLabel>Construction Type</InputLabel>
+                      <Select
+                        value={projectForm.construction_type}
+                        onChange={(e) =>
+                          handleInputChange("construction_type", e.target.value)
+                        }
+                        label="Construction Type"
+                      >
+                        <MenuItem value="building">Building</MenuItem>
+                        <MenuItem value="infrastructure">
+                          Infrastructure
+                        </MenuItem>
+                        <MenuItem value="industrial">Industrial</MenuItem>
+                        <MenuItem value="specialized">Specialized</MenuItem>
+                        <MenuItem value="other">Other</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Stack>
                 </CardContent>
               </Card>

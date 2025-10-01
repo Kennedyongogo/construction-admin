@@ -6,6 +6,7 @@ import {
   MenuItem,
   Typography,
   CircularProgress,
+  Avatar,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -38,6 +39,25 @@ const LoadingScreen = () => (
     <CircularProgress />
   </Box>
 );
+
+// Helper to build URL for uploaded assets using Vite proxy
+const buildImageUrl = (imageUrl) => {
+  if (!imageUrl) return "";
+  if (imageUrl.startsWith("http")) return imageUrl;
+
+  // Use relative URLs - Vite proxy will handle routing to backend
+  if (imageUrl.startsWith("uploads/")) return `/${imageUrl}`;
+  if (imageUrl.startsWith("/uploads/")) return imageUrl;
+  return imageUrl;
+};
+
+// Helper to get user initials
+const getInitials = (name) => {
+  if (!name) return "U";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+};
 
 export default function Header(props) {
   const [currentUser, setCurrentUser] = useState("");
@@ -114,9 +134,44 @@ export default function Header(props) {
           <Typography variant="body1" sx={{ mr: 1 }}>
             {currentUser?.name}
           </Typography>
+
+          {/* Profile Picture or Avatar */}
+          <Box sx={{ mr: 1 }}>
+            {currentUser?.profile_picture ? (
+              <Avatar
+                src={(() => {
+                  const filename =
+                    currentUser.profile_picture.split("\\").pop() ||
+                    currentUser.profile_picture.split("/").pop();
+                  return buildImageUrl(`uploads/documents/${filename}`);
+                })()}
+                alt={currentUser?.name}
+                sx={{
+                  width: 32,
+                  height: 32,
+                  border: "2px solid rgba(255, 255, 255, 0.3)",
+                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+                }}
+              />
+            ) : (
+              <Avatar
+                sx={{
+                  width: 32,
+                  height: 32,
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  border: "2px solid rgba(255, 255, 255, 0.3)",
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: "0.875rem",
+                }}
+              >
+                {getInitials(currentUser?.name)}
+              </Avatar>
+            )}
+          </Box>
+
           <IconButton color="inherit" onClick={handleClick}>
             <ArrowDropDownIcon />
-            <AccountCircleIcon />
           </IconButton>
         </Box>
 

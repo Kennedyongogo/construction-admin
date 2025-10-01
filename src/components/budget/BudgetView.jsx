@@ -303,13 +303,14 @@ const BudgetView = () => {
           {activeTab === 0 && (
             <Grid container spacing={3}>
               {/* Budget Information */}
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} sx={{ width: "100%" }}>
                 <Card
                   sx={{
                     background:
                       "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                     color: "white",
-                    height: "100%",
+                    width: "100%",
+                    maxWidth: "none",
                   }}
                 >
                   <CardContent>
@@ -390,13 +391,14 @@ const BudgetView = () => {
               </Grid>
 
               {/* Resource Information */}
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} sx={{ width: "100%" }}>
                 <Card
                   sx={{
                     background:
                       "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
                     color: "white",
-                    height: "100%",
+                    width: "100%",
+                    maxWidth: "none",
                   }}
                 >
                   <CardContent>
@@ -464,12 +466,14 @@ const BudgetView = () => {
               </Grid>
 
               {/* Budget Summary */}
-              <Grid item xs={12}>
+              <Grid item xs={12} sx={{ width: "100%" }}>
                 <Card
                   sx={{
                     background:
                       "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
                     color: "white",
+                    width: "100%",
+                    maxWidth: "none",
                   }}
                 >
                   <CardContent>
@@ -531,13 +535,14 @@ const BudgetView = () => {
           {activeTab === 1 && (
             <Grid container spacing={3}>
               {/* Task Basic Information */}
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} sx={{ width: "100%" }}>
                 <Card
                   sx={{
                     background:
                       "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                     color: "white",
-                    height: "100%",
+                    width: "100%",
+                    maxWidth: "none",
                   }}
                 >
                   <CardContent>
@@ -588,13 +593,14 @@ const BudgetView = () => {
               </Grid>
 
               {/* Project Information */}
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} sx={{ width: "100%" }}>
                 <Card
                   sx={{
                     background:
                       "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
                     color: "white",
-                    height: "100%",
+                    width: "100%",
+                    maxWidth: "none",
                   }}
                 >
                   <CardContent>

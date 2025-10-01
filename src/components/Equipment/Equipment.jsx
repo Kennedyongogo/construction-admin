@@ -58,7 +58,7 @@ const Equipment = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const [equipment, setEquipment] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openViewDialog, setOpenViewDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -416,20 +416,7 @@ const Equipment = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="50vh"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
+  if (error && equipment.length === 0) {
     return (
       <Box p={3}>
         <Alert severity="error">{error}</Alert>
@@ -605,9 +592,19 @@ const Equipment = () => {
                 ) : error ? (
                   <TableRow>
                     <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
-                      <Typography color="error" variant="h6">
+                      <Alert severity="error" sx={{ mb: 2 }}>
                         {error}
-                      </Typography>
+                      </Alert>
+                      <Button
+                        variant="contained"
+                        onClick={fetchEquipment}
+                        sx={{
+                          background:
+                            "linear-gradient(45deg, #667eea, #764ba2)",
+                        }}
+                      >
+                        Retry
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ) : equipment.length === 0 ? (

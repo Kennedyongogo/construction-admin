@@ -28,6 +28,8 @@ import {
   Inventory,
   Work,
   AttachMoney,
+  Business,
+  Engineering,
 } from "@mui/icons-material";
 import { Money } from "@phosphor-icons/react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
@@ -159,12 +161,12 @@ const Navbar = (props) => {
     { text: "Dashboard", icon: <Dashboard />, path: "/analytics" },
     {
       text: "Projects",
-      icon: <Construction />,
+      icon: <Business />,
       path: "/projects",
     },
     {
       text: "Construction Management",
-      icon: <Construction />,
+      icon: <Engineering />,
       subItems: [
         {
           text: "Tasks",
@@ -194,7 +196,7 @@ const Navbar = (props) => {
       ],
     },
     {
-      text: "Map",
+      text: "Construction Map",
       icon: <Map />,
       path: "/map",
     },

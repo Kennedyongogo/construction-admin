@@ -58,7 +58,7 @@ const Labor = () => {
   const theme = useTheme();
   const [labor, setLabor] = useState([]);
   const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openViewDialog, setOpenViewDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -80,7 +80,6 @@ const Labor = () => {
     status: "active",
     phone: "",
     skills: "",
-    is_requirement: false,
     required_quantity: 1,
   });
   const [isEditMode, setIsEditMode] = useState(false);
@@ -216,7 +215,6 @@ const Labor = () => {
       skills: Array.isArray(worker.skills)
         ? worker.skills.join(", ")
         : worker.skills || "",
-      is_requirement: worker.is_requirement || false,
       required_quantity: worker.required_quantity || 1,
     });
     setOpenEditDialog(true);
@@ -309,7 +307,6 @@ const Labor = () => {
         status: laborForm.status,
         phone: laborForm.phone,
         skills: skillsArray,
-        is_requirement: laborForm.is_requirement,
         required_quantity: laborForm.required_quantity,
       };
 
@@ -340,7 +337,6 @@ const Labor = () => {
         status: "active",
         phone: "",
         skills: "",
-        is_requirement: false,
         required_quantity: 1,
       });
       setOpenEditDialog(false);
@@ -398,7 +394,6 @@ const Labor = () => {
         status: laborForm.status,
         phone: laborForm.phone,
         skills: skillsArray,
-        is_requirement: laborForm.is_requirement,
         required_quantity: laborForm.required_quantity,
       };
 
@@ -429,7 +424,6 @@ const Labor = () => {
         status: "active",
         phone: "",
         skills: "",
-        is_requirement: false,
         required_quantity: 1,
       });
       setOpenCreateDialog(false);
@@ -458,20 +452,7 @@ const Labor = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="50vh"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
+  if (error && labor.length === 0) {
     return (
       <Box p={3}>
         <Alert severity="error">{error}</Alert>
@@ -572,7 +553,6 @@ const Labor = () => {
                   status: "active",
                   phone: "",
                   skills: "",
-                  is_requirement: false,
                   required_quantity: 1,
                 });
                 setOpenCreateDialog(true);
@@ -706,9 +686,19 @@ const Labor = () => {
                 ) : error ? (
                   <TableRow>
                     <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
-                      <Typography color="error" variant="h6">
+                      <Alert severity="error" sx={{ mb: 2 }}>
                         {error}
-                      </Typography>
+                      </Alert>
+                      <Button
+                        variant="contained"
+                        onClick={fetchLabor}
+                        sx={{
+                          background:
+                            "linear-gradient(45deg, #667eea, #764ba2)",
+                        }}
+                      >
+                        Retry
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ) : labor.length === 0 ? (
@@ -906,7 +896,6 @@ const Labor = () => {
               status: "active",
               phone: "",
               skills: "",
-              is_requirement: false,
               required_quantity: 1,
             });
           }}
@@ -1124,6 +1113,21 @@ const Labor = () => {
                     </Grid>
                   )}
 
+                  {selectedLabor.required_quantity && (
+                    <Grid item xs={12} sm={6}>
+                      <Typography
+                        variant="subtitle2"
+                        color="text.secondary"
+                        gutterBottom
+                      >
+                        Required Quantity
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                        {selectedLabor.required_quantity}
+                      </Typography>
+                    </Grid>
+                  )}
+
                   {selectedLabor.skills && selectedLabor.skills.length > 0 && (
                     <Grid item xs={12}>
                       <Typography
@@ -1335,6 +1339,24 @@ const Labor = () => {
                     </FormControl>
                   </Box>
 
+                  {/* Required Quantity */}
+                  <TextField
+                    fullWidth
+                    label="Required Quantity"
+                    type="number"
+                    value={laborForm.required_quantity}
+                    onChange={(e) =>
+                      setLaborForm({
+                        ...laborForm,
+                        required_quantity: parseInt(e.target.value) || 1,
+                      })
+                    }
+                    required
+                    variant="outlined"
+                    size="small"
+                    inputProps={{ min: 1 }}
+                  />
+
                   {/* Skills */}
                   <TextField
                     fullWidth
@@ -1356,23 +1378,6 @@ const Labor = () => {
                         alignItems: "flex-start",
                       },
                     }}
-                  />
-
-                  {/* Is Requirement */}
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={laborForm.is_requirement}
-                        onChange={(e) =>
-                          setLaborForm({
-                            ...laborForm,
-                            is_requirement: e.target.checked,
-                          })
-                        }
-                        size="small"
-                      />
-                    }
-                    label="Is Requirement (for budgeting)"
                   />
                 </Stack>
               </Box>
@@ -1397,7 +1402,6 @@ const Labor = () => {
                   status: "active",
                   phone: "",
                   skills: "",
-                  is_requirement: false,
                   required_quantity: 1,
                 });
               }}
@@ -1449,7 +1453,8 @@ const Labor = () => {
                   !laborForm.task_id ||
                   !laborForm.worker_name ||
                   !laborForm.hourly_rate ||
-                  !laborForm.hours_worked
+                  !laborForm.hours_worked ||
+                  !laborForm.required_quantity
                 }
               >
                 {openEditDialog ? "Update Worker" : "Add Worker"}

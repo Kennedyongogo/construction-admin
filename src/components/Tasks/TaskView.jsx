@@ -517,13 +517,14 @@ const TaskView = () => {
           {activeTab === 0 && (
             <Grid container spacing={3}>
               {/* Basic Information */}
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} sx={{ width: "100%" }}>
                 <Card
                   sx={{
                     background:
                       "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                     color: "white",
-                    height: "100%",
+                    width: "100%",
+                    maxWidth: "none",
                   }}
                 >
                   <CardContent>
@@ -595,13 +596,14 @@ const TaskView = () => {
               </Grid>
 
               {/* Assigned Admin */}
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} sx={{ width: "100%" }}>
                 <Card
                   sx={{
                     background:
-                      "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                      "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
                     color: "white",
-                    height: "100%",
+                    width: "100%",
+                    maxWidth: "none",
                   }}
                 >
                   <CardContent>
@@ -651,12 +653,14 @@ const TaskView = () => {
               </Grid>
 
               {/* Task Summary */}
-              <Grid item xs={12}>
+              <Grid item xs={12} sx={{ width: "100%" }}>
                 <Card
                   sx={{
                     background:
                       "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
                     color: "white",
+                    width: "100%",
+                    maxWidth: "none",
                   }}
                 >
                   <CardContent>
@@ -702,12 +706,14 @@ const TaskView = () => {
 
               {/* Description */}
               {task.description && (
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{ width: "100%" }}>
                   <Card
                     sx={{
                       background:
                         "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
                       color: "white",
+                      width: "100%",
+                      maxWidth: "none",
                     }}
                   >
                     <CardContent>
@@ -725,12 +731,14 @@ const TaskView = () => {
 
               {/* Task Materials */}
               {task.materials && task.materials.length > 0 && (
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{ width: "100%" }}>
                   <Card
                     sx={{
                       background:
                         "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
                       color: "white",
+                      width: "100%",
+                      maxWidth: "none",
                     }}
                   >
                     <CardContent>
@@ -841,31 +849,6 @@ const TaskView = () => {
                                     </Typography>
                                   </Box>
                                 )}
-
-                                <Box
-                                  sx={{
-                                    mt: 1,
-                                    p: 1,
-                                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                                    borderRadius: 1,
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  <Typography
-                                    variant="caption"
-                                    sx={{ opacity: 0.9, fontWeight: 600 }}
-                                  >
-                                    Progress:{" "}
-                                    {(
-                                      (parseFloat(material.quantity_used || 0) /
-                                        parseFloat(
-                                          material.quantity_required || 1
-                                        )) *
-                                      100
-                                    ).toFixed(1)}
-                                    %
-                                  </Typography>
-                                </Box>
                               </Box>
                             </Grid>
                           );
@@ -878,12 +861,14 @@ const TaskView = () => {
 
               {/* Task Equipment */}
               {task.equipment && task.equipment.length > 0 && (
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{ width: "100%" }}>
                   <Card
                     sx={{
                       background:
                         "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
                       color: "white",
+                      width: "100%",
+                      maxWidth: "none",
                     }}
                   >
                     <CardContent>
@@ -1000,12 +985,14 @@ const TaskView = () => {
 
               {/* Task Labor */}
               {task.labor && task.labor.length > 0 && (
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{ width: "100%" }}>
                   <Card
                     sx={{
                       background:
                         "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
                       color: "white",
+                      width: "100%",
+                      maxWidth: "none",
                     }}
                   >
                     <CardContent>
@@ -1212,12 +1199,14 @@ const TaskView = () => {
 
               {/* Task Budgets */}
               {task.budgets && task.budgets.length > 0 && (
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{ width: "100%" }}>
                   <Card
                     sx={{
                       background:
                         "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
                       color: "white",
+                      width: "100%",
+                      maxWidth: "none",
                     }}
                   >
                     <CardContent>
@@ -1296,6 +1285,8 @@ const TaskView = () => {
                         "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                       color: "white",
                       mb: 3,
+                      width: "100%",
+                      maxWidth: "none",
                     }}
                   >
                     <CardContent>
@@ -1348,6 +1339,8 @@ const TaskView = () => {
                           "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                         color: "white",
                         mb: 3,
+                        width: "100%",
+                        maxWidth: "none",
                       }}
                     >
                       <CardContent>
@@ -1468,6 +1461,8 @@ const TaskView = () => {
                           background:
                             "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
                           color: "white",
+                          width: "100%",
+                          maxWidth: "none",
                         }}
                       >
                         <CardContent>
@@ -1624,6 +1619,8 @@ const TaskView = () => {
                           background:
                             "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
                           color: "white",
+                          width: "100%",
+                          maxWidth: "none",
                         }}
                       >
                         <CardContent>
@@ -1772,6 +1769,8 @@ const TaskView = () => {
                           background:
                             "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
                           color: "white",
+                          width: "100%",
+                          maxWidth: "none",
                         }}
                       >
                         <CardContent>
@@ -1947,19 +1946,89 @@ const TaskView = () => {
         <Dialog
           open={openBudgetDialog}
           onClose={() => setOpenBudgetDialog(false)}
-          maxWidth="md"
+          maxWidth="xs"
           fullWidth
+          sx={{
+            "& .MuiDialog-paper": {
+              borderRadius: 4,
+              boxShadow: "0 20px 40px rgba(0, 0, 0, 0.15)",
+              maxHeight: "85vh",
+              background: "rgba(255, 255, 255, 0.95)",
+              backdropFilter: "blur(10px)",
+              border: "1px solid rgba(102, 126, 234, 0.2)",
+              overflow: "hidden",
+            },
+            "& .MuiBackdrop-root": {
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            },
+          }}
         >
-          <DialogTitle>
-            <Box display="flex" alignItems="center" gap={1}>
-              <BudgetIcon />
-              <Typography variant="h6">Create Budget Entry</Typography>
+          <DialogTitle
+            sx={{
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              color: "white",
+              fontWeight: "bold",
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              p: 3,
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            <Box
+              sx={{
+                position: "absolute",
+                top: -20,
+                right: -20,
+                width: 100,
+                height: 100,
+                background: "rgba(255, 255, 255, 0.1)",
+                borderRadius: "50%",
+                zIndex: 0,
+              }}
+            />
+            <Box
+              sx={{
+                position: "absolute",
+                bottom: -15,
+                left: -15,
+                width: 80,
+                height: 80,
+                background: "rgba(255, 255, 255, 0.05)",
+                borderRadius: "50%",
+                zIndex: 0,
+              }}
+            />
+            <BudgetIcon
+              sx={{ position: "relative", zIndex: 1, fontSize: 28 }}
+            />
+            <Box sx={{ position: "relative", zIndex: 1 }}>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 800,
+                  textShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                }}
+              >
+                Create Budget Entry
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.9, mt: 0.5 }}>
+                Add a new budget entry for this task
+              </Typography>
             </Box>
           </DialogTitle>
-          <DialogContent>
-            <Grid container spacing={3} sx={{ mt: 1 }}>
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
+          <DialogContent
+            sx={{ p: 3, pt: 3, maxHeight: "70vh", overflowY: "auto" }}
+          >
+            <Box
+              component="form"
+              noValidate
+              sx={{ maxHeight: "55vh", overflowY: "auto" }}
+            >
+              <Stack spacing={1.5} sx={{ mt: 1 }}>
+                {/* Resource Type */}
+                <FormControl fullWidth variant="outlined" size="small" required>
                   <InputLabel>Resource Type</InputLabel>
                   <Select
                     value={budgetForm.resource_type}
@@ -1972,9 +2041,8 @@ const TaskView = () => {
                     <MenuItem value="manual">Manual Entry</MenuItem>
                   </Select>
                 </FormControl>
-              </Grid>
 
-              <Grid item xs={12} sm={6}>
+                {/* Category */}
                 <TextField
                   fullWidth
                   label="Category"
@@ -1983,297 +2051,290 @@ const TaskView = () => {
                     setBudgetForm({ ...budgetForm, category: e.target.value })
                   }
                   placeholder="e.g., Materials, Labor, Equipment"
+                  required
+                  variant="outlined"
+                  size="small"
                 />
-              </Grid>
 
-              {budgetForm.resource_type &&
-                budgetForm.resource_type !== "manual" &&
-                budgetForm.resource_id && (
-                  <Grid item xs={12}>
-                    <Typography variant="subtitle1" gutterBottom>
-                      Selected{" "}
-                      {budgetForm.resource_type.charAt(0).toUpperCase() +
-                        budgetForm.resource_type.slice(1)}
-                      :
-                    </Typography>
-                    <Card
-                      sx={{
-                        p: 2,
-                        bgcolor: "#f5f5f5",
-                        border: "2px solid #667eea",
-                      }}
-                    >
-                      <Typography variant="h6" color="primary">
-                        {budgetForm.resource_type === "material" &&
-                          budgetResources?.materials?.find(
-                            (m) => m.id === budgetForm.resource_id
-                          )?.name}
-                        {budgetForm.resource_type === "equipment" &&
-                          budgetResources?.equipment?.find(
-                            (e) => e.id === budgetForm.resource_id
-                          )?.name}
-                        {budgetForm.resource_type === "labor" &&
-                          budgetResources?.labor?.find(
-                            (l) => l.id === budgetForm.resource_id
-                          )?.worker_name}
+                {/* Selected Resource Info */}
+                {budgetForm.resource_type &&
+                  budgetForm.resource_type !== "manual" &&
+                  budgetForm.resource_id && (
+                    <Box>
+                      <Typography
+                        variant="subtitle2"
+                        color="text.secondary"
+                        gutterBottom
+                        sx={{ mb: 1 }}
+                      >
+                        Selected{" "}
+                        {budgetForm.resource_type.charAt(0).toUpperCase() +
+                          budgetForm.resource_type.slice(1)}
+                        :
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {budgetForm.resource_type === "material" &&
-                          `${
+                      <Card
+                        sx={{
+                          p: 2,
+                          bgcolor: "rgba(102, 126, 234, 0.05)",
+                          border: "2px solid rgba(102, 126, 234, 0.2)",
+                          borderRadius: 2,
+                        }}
+                      >
+                        <Typography
+                          variant="body1"
+                          fontWeight={600}
+                          color="primary"
+                        >
+                          {budgetForm.resource_type === "material" &&
                             budgetResources?.materials?.find(
                               (m) => m.id === budgetForm.resource_id
-                            )?.unit_cost
-                          } per ${
-                            budgetResources?.materials?.find(
-                              (m) => m.id === budgetForm.resource_id
-                            )?.unit
-                          }`}
-                        {budgetForm.resource_type === "equipment" &&
-                          `${
+                            )?.name}
+                          {budgetForm.resource_type === "equipment" &&
                             budgetResources?.equipment?.find(
                               (e) => e.id === budgetForm.resource_id
-                            )?.daily_rate
-                          } per day`}
-                        {budgetForm.resource_type === "labor" &&
-                          `${budgetResources?.labor
-                            ?.find((l) => l.id === budgetForm.resource_id)
-                            ?.worker_type.replace("_", " ")
-                            .toUpperCase()}`}
+                            )?.name}
+                          {budgetForm.resource_type === "labor" &&
+                            budgetResources?.labor?.find(
+                              (l) => l.id === budgetForm.resource_id
+                            )?.worker_name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {budgetForm.resource_type === "material" &&
+                            `${
+                              budgetResources?.materials?.find(
+                                (m) => m.id === budgetForm.resource_id
+                              )?.unit_cost
+                            } per ${
+                              budgetResources?.materials?.find(
+                                (m) => m.id === budgetForm.resource_id
+                              )?.unit
+                            }`}
+                          {budgetForm.resource_type === "equipment" &&
+                            `${
+                              budgetResources?.equipment?.find(
+                                (e) => e.id === budgetForm.resource_id
+                              )?.daily_rate
+                            } per day`}
+                          {budgetForm.resource_type === "labor" &&
+                            `${budgetResources?.labor
+                              ?.find((l) => l.id === budgetForm.resource_id)
+                              ?.worker_type.replace("_", " ")
+                              .toUpperCase()}`}
+                        </Typography>
+                      </Card>
+                    </Box>
+                  )}
+
+                {/* Resource Selection Dropdown */}
+                {budgetForm.resource_type &&
+                  budgetForm.resource_type !== "manual" &&
+                  !budgetForm.resource_id && (
+                    <Box>
+                      <Typography
+                        variant="subtitle2"
+                        color="text.secondary"
+                        gutterBottom
+                        sx={{ mb: 1 }}
+                      >
+                        Select{" "}
+                        {budgetForm.resource_type.charAt(0).toUpperCase() +
+                          budgetForm.resource_type.slice(1)}
+                        :
                       </Typography>
-                    </Card>
-                  </Grid>
-                )}
+                      <FormControl fullWidth variant="outlined" size="small">
+                        <InputLabel>
+                          Select{" "}
+                          {budgetForm.resource_type.charAt(0).toUpperCase() +
+                            budgetForm.resource_type.slice(1)}
+                        </InputLabel>
+                        <Select
+                          value={budgetForm.resource_id}
+                          onChange={(e) => {
+                            const resourceId = e.target.value;
+                            let amount = 0;
 
-              {budgetForm.resource_type &&
-                budgetForm.resource_type !== "manual" &&
-                !budgetForm.resource_id && (
-                  <Grid item xs={12}>
-                    <Typography variant="subtitle1" gutterBottom>
-                      Select{" "}
-                      {budgetForm.resource_type.charAt(0).toUpperCase() +
-                        budgetForm.resource_type.slice(1)}
-                      :
-                    </Typography>
-                    <Grid container spacing={2}>
-                      {budgetForm.resource_type === "material" &&
-                        budgetResources?.materials?.map((material) => (
-                          <Grid item xs={12} sm={6} md={4} key={material.id}>
-                            <Card
-                              sx={{
-                                cursor: "pointer",
-                                border:
-                                  budgetForm.resource_id === material.id
-                                    ? "2px solid #667eea"
-                                    : "1px solid #e0e0e0",
-                                "&:hover": { border: "2px solid #667eea" },
-                              }}
-                              onClick={() =>
-                                handleResourceSelect(
-                                  material.id,
-                                  material.estimated_cost
-                                )
-                              }
-                            >
-                              <CardContent sx={{ p: 2 }}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                  {material.name}
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                >
-                                  {formatCurrency(material.unit_cost)} per{" "}
-                                  {material.unit}
-                                </Typography>
-                                <Typography variant="h6" color="primary">
-                                  {formatCurrency(material.estimated_cost)}
-                                </Typography>
-                              </CardContent>
-                            </Card>
-                          </Grid>
-                        ))}
+                            if (budgetForm.resource_type === "material") {
+                              const material = budgetResources?.materials?.find(
+                                (m) => m.id === resourceId
+                              );
+                              amount = material?.estimated_cost || 0;
+                            } else if (
+                              budgetForm.resource_type === "equipment"
+                            ) {
+                              const equipment =
+                                budgetResources?.equipment?.find(
+                                  (eq) => eq.id === resourceId
+                                );
+                              amount = equipment?.daily_rate || 0;
+                            } else if (budgetForm.resource_type === "labor") {
+                              const worker = budgetResources?.labor?.find(
+                                (l) => l.id === resourceId
+                              );
+                              amount = worker?.estimated_cost || 0;
+                            }
 
-                      {budgetForm.resource_type === "equipment" &&
-                        budgetResources?.equipment?.map((equipment) => (
-                          <Grid item xs={12} sm={6} md={4} key={equipment.id}>
-                            <Card
-                              sx={{
-                                cursor: "pointer",
-                                border:
-                                  budgetForm.resource_id === equipment.id
-                                    ? "2px solid #667eea"
-                                    : "1px solid #e0e0e0",
-                                "&:hover": { border: "2px solid #667eea" },
-                              }}
-                              onClick={() =>
-                                handleResourceSelect(
-                                  equipment.id,
-                                  parseFloat(equipment.daily_rate || 0) * 5
-                                )
-                              }
-                            >
-                              <CardContent sx={{ p: 2 }}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                  {equipment.name}
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                >
-                                  {equipment.type}
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                >
-                                  {formatCurrency(equipment.daily_rate)} per day
-                                </Typography>
-                                <Typography variant="h6" color="primary">
-                                  {formatCurrency(equipment.daily_rate || 0)}{" "}
-                                  per day
-                                </Typography>
-                              </CardContent>
-                            </Card>
-                          </Grid>
-                        ))}
+                            handleResourceSelect(resourceId, amount);
+                          }}
+                          label={
+                            "Select " +
+                            budgetForm.resource_type.charAt(0).toUpperCase() +
+                            budgetForm.resource_type.slice(1)
+                          }
+                        >
+                          {budgetForm.resource_type === "material" &&
+                            budgetResources?.materials?.map((material) => (
+                              <MenuItem key={material.id} value={material.id}>
+                                {material.name} -{" "}
+                                {formatCurrency(material.unit_cost)} per{" "}
+                                {material.unit}
+                              </MenuItem>
+                            ))}
+                          {budgetForm.resource_type === "equipment" &&
+                            budgetResources?.equipment?.map((equipment) => (
+                              <MenuItem key={equipment.id} value={equipment.id}>
+                                {equipment.name} -{" "}
+                                {formatCurrency(equipment.daily_rate)} per day
+                              </MenuItem>
+                            ))}
+                          {budgetForm.resource_type === "labor" &&
+                            budgetResources?.labor?.map((worker) => (
+                              <MenuItem key={worker.id} value={worker.id}>
+                                {worker.worker_name} -{" "}
+                                {worker.worker_type
+                                  .replace("_", " ")
+                                  .toUpperCase()}
+                              </MenuItem>
+                            ))}
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  )}
 
-                      {budgetForm.resource_type === "labor" &&
-                        budgetResources?.labor?.map((worker) => (
-                          <Grid item xs={12} sm={6} md={4} key={worker.id}>
-                            <Card
-                              sx={{
-                                cursor: "pointer",
-                                border:
-                                  budgetForm.resource_id === worker.id
-                                    ? "2px solid #667eea"
-                                    : "1px solid #e0e0e0",
-                                "&:hover": { border: "2px solid #667eea" },
-                              }}
-                              onClick={() =>
-                                handleResourceSelect(
-                                  worker.id,
-                                  worker.estimated_cost
-                                )
-                              }
-                            >
-                              <CardContent sx={{ p: 2 }}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                  {worker.worker_name}
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                >
-                                  {worker.worker_type
-                                    .replace("_", " ")
-                                    .toUpperCase()}
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                >
-                                  {formatCurrency(worker.hourly_rate)}/hr ×{" "}
-                                  {worker.hours_worked}hrs
-                                </Typography>
-                                <Typography variant="h6" color="primary">
-                                  {formatCurrency(worker.estimated_cost)}
-                                </Typography>
-                              </CardContent>
-                            </Card>
-                          </Grid>
-                        ))}
-                    </Grid>
-                  </Grid>
-                )}
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Amount"
-                  type="number"
-                  value={budgetForm.amount}
-                  onChange={(e) =>
-                    setBudgetForm({ ...budgetForm, amount: e.target.value })
-                  }
-                  placeholder="Enter amount"
-                  InputProps={{
-                    startAdornment: <Typography sx={{ mr: 1 }}>KES</Typography>,
-                  }}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label={
-                    budgetForm.resource_type === "equipment"
-                      ? "Quantity (Days)"
-                      : "Quantity"
-                  }
-                  type="number"
-                  value={budgetForm.quantity}
-                  onChange={(e) => {
-                    const newQuantity = parseInt(e.target.value) || 1;
-                    setBudgetForm({
-                      ...budgetForm,
-                      quantity: newQuantity,
-                      // Auto-update amount for equipment based on daily rate
-                      amount:
-                        budgetForm.resource_type === "equipment" &&
-                        budgetResources?.equipment?.find(
-                          (eq) => eq.id === budgetForm.resource_id
-                        )
-                          ? (
-                              parseFloat(
-                                budgetResources.equipment.find(
-                                  (eq) => eq.id === budgetForm.resource_id
-                                ).daily_rate || 0
-                              ) * newQuantity
-                            ).toString()
-                          : budgetForm.amount,
-                    });
-                  }}
-                  placeholder={
-                    budgetForm.resource_type === "equipment"
-                      ? "Enter number of days"
-                      : "Enter quantity"
-                  }
-                  inputProps={{ min: 1 }}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Budget Type</InputLabel>
-                  <Select
-                    value={budgetForm.type}
+                {/* Amount and Quantity Row */}
+                <Box
+                  display="flex"
+                  flexDirection={{ xs: "column", sm: "row" }}
+                  gap={1.5}
+                >
+                  <TextField
+                    fullWidth
+                    label="Amount"
+                    type="number"
+                    value={budgetForm.amount}
                     onChange={(e) =>
-                      setBudgetForm({ ...budgetForm, type: e.target.value })
+                      setBudgetForm({ ...budgetForm, amount: e.target.value })
                     }
-                    label="Budget Type"
-                  >
-                    <MenuItem value="budgeted">Budgeted</MenuItem>
-                    <MenuItem value="actual">Actual</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
+                    placeholder="Enter amount"
+                    required
+                    variant="outlined"
+                    size="small"
+                    InputProps={{
+                      startAdornment: (
+                        <Typography sx={{ mr: 1, fontSize: "0.875rem" }}>
+                          KES
+                        </Typography>
+                      ),
+                    }}
+                  />
+                  <TextField
+                    fullWidth
+                    label={
+                      budgetForm.resource_type === "equipment"
+                        ? "Quantity (Days)"
+                        : "Quantity"
+                    }
+                    type="number"
+                    value={budgetForm.quantity}
+                    onChange={(e) => {
+                      const newQuantity = parseInt(e.target.value) || 1;
+                      setBudgetForm({
+                        ...budgetForm,
+                        quantity: newQuantity,
+                        // Auto-update amount for equipment based on daily rate
+                        amount:
+                          budgetForm.resource_type === "equipment" &&
+                          budgetResources?.equipment?.find(
+                            (eq) => eq.id === budgetForm.resource_id
+                          )
+                            ? (
+                                parseFloat(
+                                  budgetResources.equipment.find(
+                                    (eq) => eq.id === budgetForm.resource_id
+                                  ).daily_rate || 0
+                                ) * newQuantity
+                              ).toString()
+                            : budgetForm.amount,
+                      });
+                    }}
+                    placeholder={
+                      budgetForm.resource_type === "equipment"
+                        ? "Enter number of days"
+                        : "Enter quantity"
+                    }
+                    required
+                    variant="outlined"
+                    size="small"
+                    inputProps={{ min: 1 }}
+                  />
+                </Box>
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Date"
-                  type="date"
-                  value={budgetForm.date}
-                  onChange={(e) =>
-                    setBudgetForm({ ...budgetForm, date: e.target.value })
-                  }
-                  InputLabelProps={{ shrink: true }}
-                />
-              </Grid>
-            </Grid>
+                {/* Budget Type and Date Row */}
+                <Box
+                  display="flex"
+                  flexDirection={{ xs: "column", sm: "row" }}
+                  gap={1.5}
+                >
+                  <FormControl fullWidth variant="outlined" size="small">
+                    <InputLabel>Budget Type</InputLabel>
+                    <Select
+                      value={budgetForm.type}
+                      onChange={(e) =>
+                        setBudgetForm({ ...budgetForm, type: e.target.value })
+                      }
+                      label="Budget Type"
+                    >
+                      <MenuItem value="budgeted">Budgeted</MenuItem>
+                      <MenuItem value="actual">Actual</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <TextField
+                    fullWidth
+                    label="Date"
+                    type="date"
+                    value={budgetForm.date}
+                    onChange={(e) =>
+                      setBudgetForm({ ...budgetForm, date: e.target.value })
+                    }
+                    required
+                    variant="outlined"
+                    size="small"
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Box>
+              </Stack>
+            </Box>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setOpenBudgetDialog(false)}>Cancel</Button>
+          <DialogActions
+            sx={{ p: 3, gap: 2, backgroundColor: "rgba(102, 126, 234, 0.05)" }}
+          >
+            <Button
+              onClick={() => setOpenBudgetDialog(false)}
+              variant="outlined"
+              sx={{
+                borderColor: "#667eea",
+                color: "#667eea",
+                fontWeight: 600,
+                borderRadius: 2,
+                px: 3,
+                py: 1,
+                "&:hover": {
+                  borderColor: "#5a6fd8",
+                  backgroundColor: "rgba(102, 126, 234, 0.1)",
+                },
+              }}
+            >
+              Cancel
+            </Button>
             <Button
               onClick={handleCreateBudget}
               variant="contained"
@@ -2281,11 +2342,24 @@ const TaskView = () => {
                 creatingBudget || !budgetForm.category || !budgetForm.amount
               }
               sx={{
-                background: "linear-gradient(45deg, #667eea 0%, #764ba2 100%)",
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                borderRadius: 2,
+                px: 4,
+                py: 1,
+                fontWeight: 600,
+                textTransform: "none",
+                boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
                 "&:hover": {
                   background:
-                    "linear-gradient(45deg, #5a6fd8 0%, #6a4190 100%)",
+                    "linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)",
+                  transform: "translateY(-1px)",
+                  boxShadow: "0 6px 20px rgba(102, 126, 234, 0.4)",
                 },
+                "&:disabled": {
+                  background: "rgba(102, 126, 234, 0.3)",
+                  color: "rgba(255, 255, 255, 0.6)",
+                },
+                transition: "all 0.3s ease",
               }}
             >
               {creatingBudget ? "Creating..." : "Create Budget"}

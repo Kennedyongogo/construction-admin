@@ -492,6 +492,7 @@ const Projects = () => {
 
         // Refresh projects list
         fetchProjects();
+        fetchAllProjectsForCounts(); // Refresh tab counts
 
         // Show success message with SweetAlert
         Swal.fire({

@@ -314,16 +314,65 @@ const ProjectView = () => {
                         />
                       </Box>
                     </Box>
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <LocationIcon />
-                      <Box>
-                        <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                          Location
-                        </Typography>
-                        <Typography variant="body1">
-                          {project.location_name || "Not specified"}
-                        </Typography>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      gap={1}
+                    >
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <LocationIcon />
+                        <Box>
+                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                            Location
+                          </Typography>
+                          <Typography variant="body1">
+                            {project.location_name || "Not specified"}
+                          </Typography>
+                          {project.latitude && project.longitude && (
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                opacity: 0.7,
+                                fontFamily: "monospace",
+                                display: "block",
+                                mt: 0.5,
+                              }}
+                            >
+                              Coordinates:{" "}
+                              {parseFloat(project.latitude).toFixed(6)},{" "}
+                              {parseFloat(project.longitude).toFixed(6)}
+                            </Typography>
+                          )}
+                        </Box>
                       </Box>
+                      {project.latitude && project.longitude && (
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          startIcon={<LocationIcon />}
+                          onClick={() => {
+                            navigate(`/map`, {
+                              state: {
+                                centerCoordinates: [
+                                  parseFloat(project.longitude),
+                                  parseFloat(project.latitude),
+                                ],
+                              },
+                            });
+                          }}
+                          sx={{
+                            color: "white",
+                            borderColor: "rgba(255, 255, 255, 0.5)",
+                            "&:hover": {
+                              borderColor: "rgba(255, 255, 255, 0.8)",
+                              backgroundColor: "rgba(255, 255, 255, 0.1)",
+                            },
+                          }}
+                        >
+                          View Location
+                        </Button>
+                      )}
                     </Box>
                     <Box display="flex" alignItems="center" gap={1}>
                       <CalendarIcon />
@@ -347,6 +396,34 @@ const ProjectView = () => {
                         </Typography>
                       </Box>
                     </Box>
+                    {project.floor_size && (
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <ProjectIcon />
+                        <Box>
+                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                            Floor Size
+                          </Typography>
+                          <Typography variant="body1">
+                            {project.floor_size} m²
+                          </Typography>
+                        </Box>
+                      </Box>
+                    )}
+                    {project.construction_type && (
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <ProjectIcon />
+                        <Box>
+                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                            Construction Type
+                          </Typography>
+                          <Typography variant="body1">
+                            {project.construction_type
+                              .replace("_", " ")
+                              .toUpperCase()}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    )}
                     {project.notes && (
                       <Box display="flex" alignItems="flex-start" gap={1}>
                         <NotesIcon />

@@ -61,6 +61,7 @@ import {
   Speed as GaugeIcon2,
   Assessment as AssessmentIcon,
   Insights as InsightsIcon,
+  Refresh as RefreshIcon,
 } from "@mui/icons-material";
 
 // Color palette for charts
@@ -79,30 +80,39 @@ const COLORS = [
 
 const Analytics = () => {
   const [activeTab, setActiveTab] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [dataLoaded, setDataLoaded] = useState(false);
   const [analyticsData, setAnalyticsData] = useState({
-    heatMap: [],
-    barChart: [],
-    pieChart: [],
-    trendLine: [],
-    gauge: {},
     overview: {},
+    projects: {},
+    tasks: {},
+    budget: {},
+    issues: {},
+    equipment: {},
+    labor: {},
+    materials: {},
+    equipmentSummary: {},
+    performance: {},
+    recentActivity: {},
+    documents: {},
+    engineers: {},
   });
-  const [helpDialogOpen, setHelpDialogOpen] = useState(false);
-  const [heatMapHelpOpen, setHeatMapHelpOpen] = useState(false);
-  const [barChartHelpOpen, setBarChartHelpOpen] = useState(false);
-  const [pieChartHelpOpen, setPieChartHelpOpen] = useState(false);
-  const [trendLineHelpOpen, setTrendLineHelpOpen] = useState(false);
-  const [gaugeHelpOpen, setGaugeHelpOpen] = useState(false);
+  const [overviewHelpOpen, setOverviewHelpOpen] = useState(false);
+  const [projectsHelpOpen, setProjectsHelpOpen] = useState(false);
+  const [tasksLaborHelpOpen, setTasksLaborHelpOpen] = useState(false);
+  const [budgetResourcesHelpOpen, setBudgetResourcesHelpOpen] = useState(false);
+  const [performanceHelpOpen, setPerformanceHelpOpen] = useState(false);
+  const [equipmentMaterialsHelpOpen, setEquipmentMaterialsHelpOpen] =
+    useState(false);
 
   const tabs = [
     { label: "Overview", icon: <AnalyticsIcon />, value: 0 },
-    { label: "Heat Map", icon: <MapIcon />, value: 1 },
-    { label: "Bar Charts", icon: <BarChartIcon />, value: 2 },
-    { label: "Pie Charts", icon: <PieChartIcon />, value: 3 },
-    { label: "Trend Lines", icon: <Timeline />, value: 4 },
-    { label: "Gauges", icon: <GaugeIcon />, value: 5 },
+    { label: "Projects", icon: <MapIcon />, value: 1 },
+    { label: "Tasks", icon: <BarChartIcon />, value: 2 },
+    { label: "Budget", icon: <PieChartIcon />, value: 3 },
+    { label: "Performance", icon: <Timeline />, value: 4 },
+    { label: "Equipment & Materials", icon: <GaugeIcon />, value: 5 },
   ];
 
   useEffect(() => {
@@ -112,13 +122,14 @@ const Analytics = () => {
   const fetchAnalyticsData = async () => {
     try {
       setLoading(true);
+      setError(null);
       const token = localStorage.getItem("token");
 
       if (!token) {
         throw new Error("No authentication token found");
       }
 
-      const response = await fetch("/api/analytics/dashboard", {
+      const response = await fetch("/api/admins/dashboard/stats", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -131,9 +142,12 @@ const Analytics = () => {
       }
 
       const data = await response.json();
+      console.log("Dashboard API Response:", data); // Debug log
 
       if (data.success) {
         setAnalyticsData(data.data);
+        setDataLoaded(true);
+        console.log("Analytics data set:", data.data); // Debug log
       } else {
         throw new Error(data.message || "Failed to fetch analytics data");
       }
@@ -145,11 +159,11 @@ const Analytics = () => {
     }
   };
 
-  // Help Dialog Component
-  const HelpDialog = () => (
+  // Overview Help Dialog Component
+  const OverviewHelpDialog = () => (
     <Dialog
-      open={helpDialogOpen}
-      onClose={() => setHelpDialogOpen(false)}
+      open={overviewHelpOpen}
+      onClose={() => setOverviewHelpOpen(false)}
       maxWidth="md"
       fullWidth
     >
@@ -157,14 +171,14 @@ const Analytics = () => {
         <Box display="flex" alignItems="center" gap={1}>
           <InfoIcon color="primary" />
           <Typography variant="h6" fontWeight="bold">
-            Overview Tab - Data Explanation
+            Construction Overview - Data Explanation
           </Typography>
         </Box>
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          This overview provides key metrics and insights about your campaign's
-          performance. Here's what each section means:
+          This overview provides key metrics and insights about your
+          construction projects. Here's what each section means:
         </Typography>
 
         {/* Key Metrics Cards */}
@@ -174,45 +188,45 @@ const Analytics = () => {
         <List dense>
           <ListItem>
             <ListItemIcon>
-              <PeopleIcon color="primary" />
+              <MapIcon color="primary" />
             </ListItemIcon>
             <ListItemText
-              primary="Total Voters"
-              secondary="The total number of voters currently registered in your system"
+              primary="Total Projects"
+              secondary="The total number of construction projects in your system"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <TrendingUp color="secondary" />
+              <BarChartIcon color="secondary" />
             </ListItemIcon>
             <ListItemText
-              primary="Total Supporters"
-              secondary="The total number of campaign supporters across all polling stations"
+              primary="Total Tasks"
+              secondary="The total number of tasks across all projects"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <LocationIcon color="success" />
+              <PeopleIcon color="success" />
             </ListItemIcon>
             <ListItemText
-              primary="Polling Stations"
-              secondary="The total number of polling stations in your campaign area"
+              primary="Total Labor"
+              secondary="The total number of workers assigned to projects"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <GaugeIcon2 color="warning" />
+              <GaugeIcon color="warning" />
             </ListItemIcon>
             <ListItemText
-              primary="Supporter Ratio"
-              secondary="Percentage of supporters relative to total voters (Supporters ÷ Voters × 100)"
+              primary="Total Equipment"
+              secondary="The total number of equipment items available"
             />
           </ListItem>
         </List>
 
-        {/* Performance Metrics */}
+        {/* Project Metrics */}
         <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          📈 Performance Metrics
+          📈 Project Metrics
         </Typography>
         <List dense>
           <ListItem>
@@ -220,42 +234,42 @@ const Analytics = () => {
               <AssessmentIcon color="primary" />
             </ListItemIcon>
             <ListItemText
-              primary="Average Voter Density"
-              secondary="Percentage of registered voters who have actually been registered in the system"
+              primary="Average Progress"
+              secondary="The average completion percentage across all projects"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <AssessmentIcon color="secondary" />
+              <PieChartIcon color="secondary" />
             </ListItemIcon>
             <ListItemText
-              primary="Average Supporter Density"
-              secondary="Percentage of supporters relative to actual voters in the system"
+              primary="Budget Utilization"
+              secondary="Percentage of budget that has been spent (Actual ÷ Budgeted × 100)"
             />
           </ListItem>
         </List>
 
-        {/* Capacity Analysis */}
+        {/* Resource Analysis */}
         <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          🏢 Capacity Analysis
+          🏗️ Resource Analysis
         </Typography>
         <List dense>
           <ListItem>
             <ListItemIcon>
-              <GaugeIcon2 color="success" />
+              <GaugeIcon color="success" />
             </ListItemIcon>
             <ListItemText
-              primary="Capacity Utilization"
-              secondary="How effectively polling stations are being used (Actual Voters ÷ Registered Voters × 100)"
+              primary="Material Utilization"
+              secondary="Percentage of materials that have been used (Used ÷ Required × 100)"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <LocationIcon color="info" />
+              <GaugeIcon color="info" />
             </ListItemIcon>
             <ListItemText
-              primary="Total Capacity"
-              secondary="Total number of registered voters across all polling stations"
+              primary="Total Equipment"
+              secondary="Total number of equipment items in your inventory"
             />
           </ListItem>
         </List>
@@ -267,11 +281,11 @@ const Analytics = () => {
         <List dense>
           <ListItem>
             <ListItemIcon>
-              <InsightsIcon color="primary" />
+              <PeopleIcon color="primary" />
             </ListItemIcon>
             <ListItemText
-              primary="Best Performing Area"
-              secondary="The ward or area with the highest voter registration and supporter engagement"
+              primary="Top Engineer"
+              secondary="The engineer managing the most projects"
             />
           </ListItem>
           <ListItem>
@@ -279,34 +293,34 @@ const Analytics = () => {
               <AssessmentIcon color="warning" />
             </ListItemIcon>
             <ListItemText
-              primary="Utilized Capacity"
-              secondary="Total number of voters actually registered in the system (not just registered at polling stations)"
+              primary="Projects at Risk"
+              secondary="Number of projects that may be behind schedule or over budget"
             />
           </ListItem>
         </List>
 
         <Alert severity="info" sx={{ mt: 3 }}>
           <Typography variant="body2">
-            <strong>💡 Tip:</strong> These metrics help you understand campaign
+            <strong>💡 Tip:</strong> These metrics help you understand project
             performance, identify areas needing attention, and track progress
-            over time. Higher percentages generally indicate better engagement
-            and coverage.
+            over time. Higher percentages generally indicate better performance
+            and resource utilization.
           </Typography>
         </Alert>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setHelpDialogOpen(false)} color="primary">
+        <Button onClick={() => setOverviewHelpOpen(false)} color="primary">
           Got it!
         </Button>
       </DialogActions>
     </Dialog>
   );
 
-  // Heat Map Help Dialog Component
-  const HeatMapHelpDialog = () => (
+  // Projects Help Dialog Component
+  const ProjectsHelpDialog = () => (
     <Dialog
-      open={heatMapHelpOpen}
-      onClose={() => setHeatMapHelpOpen(false)}
+      open={projectsHelpOpen}
+      onClose={() => setProjectsHelpOpen(false)}
       maxWidth="md"
       fullWidth
     >
@@ -314,72 +328,81 @@ const Analytics = () => {
         <Box display="flex" alignItems="center" gap={1}>
           <MapIcon color="primary" />
           <Typography variant="h6" fontWeight="bold">
-            Heat Map Tab - Data Explanation
+            Projects Tab - Data Explanation
           </Typography>
         </Box>
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          The Heat Map shows the geographic distribution of voter and supporter
-          density across all polling stations. Here's how to understand what
+          The Projects tab shows project status distribution, construction
+          types, and recent project information. Here's how to understand what
           you're seeing:
         </Typography>
 
-        {/* Chart Elements */}
+        {/* Project Status Chart */}
         <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          🗺️ Chart Elements
+          📊 Project Status Distribution
         </Typography>
         <List dense>
           <ListItem>
             <ListItemIcon>
-              <LocationIcon color="primary" />
+              <Chip label="Planning" color="info" size="small" />
             </ListItemIcon>
             <ListItemText
-              primary="Data Points (Blue Circles)"
-              secondary="Each circle represents a polling station. Larger circles indicate higher voter/supporter density."
+              primary="Planning"
+              secondary="Projects in the initial planning phase - not yet started"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <AssessmentIcon color="secondary" />
+              <Chip label="In Progress" color="primary" size="small" />
             </ListItemIcon>
             <ListItemText
-              primary="X-Axis (Longitude)"
-              secondary="Horizontal position showing the east-west location of polling stations"
+              primary="In Progress"
+              secondary="Projects currently under construction"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <AssessmentIcon color="success" />
+              <Chip label="Completed" color="success" size="small" />
             </ListItemIcon>
             <ListItemText
-              primary="Y-Axis (Latitude)"
-              secondary="Vertical position showing the north-south location of polling stations"
+              primary="Completed"
+              secondary="Projects that have been finished"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <GaugeIcon2 color="warning" />
+              <Chip label="On Hold" color="warning" size="small" />
             </ListItemIcon>
             <ListItemText
-              primary="Circle Size (Z-Axis)"
-              secondary="The size of each circle represents the heat intensity or density at that location"
+              primary="On Hold"
+              secondary="Projects temporarily paused due to various reasons"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <Chip label="Cancelled" color="error" size="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Cancelled"
+              secondary="Projects that have been terminated"
             />
           </ListItem>
         </List>
 
-        {/* Tooltip Information */}
+        {/* Construction Type Chart */}
         <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          💡 Hover Information
+          🏗️ Construction Type Distribution
         </Typography>
         <List dense>
           <ListItem>
             <ListItemIcon>
-              <InfoIcon color="primary" />
+              <MapIcon color="primary" />
             </ListItemIcon>
             <ListItemText
-              primary="Station Name"
-              secondary="The name of the polling station (e.g., 'Wangapala Primary School')"
+              primary="Building"
+              secondary="Residential and commercial building construction projects"
             />
           </ListItem>
           <ListItem>
@@ -387,76 +410,51 @@ const Analytics = () => {
               <LocationIcon color="secondary" />
             </ListItemIcon>
             <ListItemText
-              primary="Location Details"
-              secondary="Ward and constituency information for geographic context"
+              primary="Infrastructure"
+              secondary="Roads, bridges, utilities, and public infrastructure projects"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <GaugeIcon2 color="success" />
+              <GaugeIcon color="success" />
             </ListItemIcon>
             <ListItemText
-              primary="Density Percentage"
-              secondary="Heat intensity as a percentage (0-100%) showing voter/supporter concentration"
+              primary="Industrial"
+              secondary="Factories, warehouses, and industrial facility construction"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <PeopleIcon color="warning" />
+              <AssessmentIcon color="warning" />
             </ListItemIcon>
             <ListItemText
-              primary="Voter Statistics"
-              secondary="Registered voters, actual voters, and supporter counts for each station"
-            />
-          </ListItem>
-        </List>
-
-        {/* Density Legend */}
-        <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          🎨 Density Legend
-        </Typography>
-        <List dense>
-          <ListItem>
-            <ListItemIcon>
-              <Chip label="High" color="error" size="small" />
-            </ListItemIcon>
-            <ListItemText
-              primary="High Density (80-100%)"
-              secondary="Areas with very high voter/supporter concentration - excellent coverage"
+              primary="Specialized"
+              secondary="Unique or specialized construction projects"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <Chip label="Medium" color="warning" size="small" />
+              <InfoIcon color="info" />
             </ListItemIcon>
             <ListItemText
-              primary="Medium Density (50-80%)"
-              secondary="Areas with moderate concentration - good coverage, may need attention"
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <Chip label="Low" color="success" size="small" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Low Density (0-50%)"
-              secondary="Areas with low concentration - may need more campaign focus"
+              primary="Other"
+              secondary="Projects that don't fit into the above categories"
             />
           </ListItem>
         </List>
 
-        {/* How to Use */}
+        {/* Recent Projects */}
         <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          🔍 How to Use This Map
+          📋 Recent Projects
         </Typography>
         <List dense>
           <ListItem>
             <ListItemIcon>
-              <InsightsIcon color="primary" />
+              <PeopleIcon color="primary" />
             </ListItemIcon>
             <ListItemText
-              primary="Identify Hotspots"
-              secondary="Look for clusters of large circles to find areas with high voter/supporter density"
+              primary="Project Name"
+              secondary="The name of the construction project"
             />
           </ListItem>
           <ListItem>
@@ -464,42 +462,33 @@ const Analytics = () => {
               <AssessmentIcon color="secondary" />
             </ListItemIcon>
             <ListItemText
-              primary="Find Gaps"
-              secondary="Small or missing circles indicate areas that may need more campaign attention"
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <TrendingUp color="success" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Plan Resources"
-              secondary="Use density patterns to allocate campaign resources and supporters effectively"
+              primary="Status & Engineer"
+              secondary="Current project status and the engineer in charge"
             />
           </ListItem>
         </List>
 
         <Alert severity="info" sx={{ mt: 3 }}>
           <Typography variant="body2">
-            <strong>💡 Tip:</strong> Hover over any data point to see detailed
-            information about that polling station. Use this map to identify
-            patterns and make data-driven campaign decisions.
+            <strong>💡 Tip:</strong> Use these charts to track project progress,
+            identify bottlenecks, and understand the distribution of your
+            project portfolio across different types and statuses.
           </Typography>
         </Alert>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setHeatMapHelpOpen(false)} color="primary">
+        <Button onClick={() => setProjectsHelpOpen(false)} color="primary">
           Got it!
         </Button>
       </DialogActions>
     </Dialog>
   );
 
-  // Bar Chart Help Dialog Component
-  const BarChartHelpDialog = () => (
+  // Tasks & Labor Help Dialog Component
+  const TasksLaborHelpDialog = () => (
     <Dialog
-      open={barChartHelpOpen}
-      onClose={() => setBarChartHelpOpen(false)}
+      open={tasksLaborHelpOpen}
+      onClose={() => setTasksLaborHelpOpen(false)}
       maxWidth="md"
       fullWidth
     >
@@ -507,62 +496,54 @@ const Analytics = () => {
         <Box display="flex" alignItems="center" gap={1}>
           <BarChartIcon color="primary" />
           <Typography variant="h6" fontWeight="bold">
-            Bar Charts Tab - Data Explanation
+            Tasks & Labor Tab - Data Explanation
           </Typography>
         </Box>
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          The Bar Charts show performance comparisons across different wards and
-          areas. Here's how to understand what you're seeing:
+          The Tasks & Labor tab shows task status distribution, labor workforce
+          analysis, and recent task information. Here's how to understand what
+          you're seeing:
         </Typography>
 
-        {/* Chart Elements */}
+        {/* Task Status Chart */}
         <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          📊 Chart Elements
+          📊 Task Status Distribution
         </Typography>
         <List dense>
           <ListItem>
             <ListItemIcon>
-              <BarChartIcon color="primary" />
+              <Chip label="Pending" color="warning" size="small" />
             </ListItemIcon>
             <ListItemText
-              primary="Bar Heights"
-              secondary="The height of each bar represents the performance metric value for that ward/area"
+              primary="Pending"
+              secondary="Tasks that are assigned but not yet started"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <AssessmentIcon color="secondary" />
+              <Chip label="In Progress" color="primary" size="small" />
             </ListItemIcon>
             <ListItemText
-              primary="X-Axis (Ward Names)"
-              secondary="Horizontal axis shows the names of different wards or areas being compared"
+              primary="In Progress"
+              secondary="Tasks currently being worked on"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <TrendingUp color="success" />
+              <Chip label="Completed" color="success" size="small" />
             </ListItemIcon>
             <ListItemText
-              primary="Y-Axis (Values)"
-              secondary="Vertical axis shows the scale of values for the performance metrics"
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <GaugeIcon2 color="warning" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Color Coding"
-              secondary="Different colors represent different performance levels or categories"
+              primary="Completed"
+              secondary="Tasks that have been finished"
             />
           </ListItem>
         </List>
 
-        {/* Data Metrics */}
+        {/* Labor Type Chart */}
         <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          📈 Performance Metrics
+          👷 Labor by Worker Type
         </Typography>
         <List dense>
           <ListItem>
@@ -570,51 +551,8 @@ const Analytics = () => {
               <PeopleIcon color="primary" />
             </ListItemIcon>
             <ListItemText
-              primary="Total Stations"
-              secondary="Number of polling stations in each ward/area"
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <LocationIcon color="secondary" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Registered Voters"
-              secondary="Total number of voters registered in each area"
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <AssessmentIcon color="success" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Actual Voters"
-              secondary="Number of voters actually registered in the system for each area"
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <TrendingUp color="warning" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Supporter Density"
-              secondary="Concentration of campaign supporters in each ward/area"
-            />
-          </ListItem>
-        </List>
-
-        {/* How to Read */}
-        <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          🔍 How to Read the Charts
-        </Typography>
-        <List dense>
-          <ListItem>
-            <ListItemIcon>
-              <InsightsIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Compare Heights"
-              secondary="Taller bars indicate better performance or higher values in that area"
+              primary="Foreman"
+              secondary="Supervisory workers who oversee construction activities"
             />
           </ListItem>
           <ListItem>
@@ -622,33 +560,76 @@ const Analytics = () => {
               <AssessmentIcon color="secondary" />
             </ListItemIcon>
             <ListItemText
-              primary="Identify Patterns"
-              secondary="Look for consistent high or low performers across different metrics"
+              primary="Skilled Worker"
+              secondary="Workers with specialized skills and training"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <TrendingUp color="success" />
+              <GaugeIcon color="success" />
             </ListItemIcon>
             <ListItemText
-              primary="Spot Gaps"
-              secondary="Areas with consistently low bars may need more attention or resources"
+              primary="Unskilled Worker"
+              secondary="General laborers without specialized training"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <GaugeIcon2 color="warning" />
+              <InfoIcon color="warning" />
             </ListItemIcon>
             <ListItemText
-              primary="Track Progress"
-              secondary="Use these charts to monitor improvements over time and allocate resources"
+              primary="Engineer"
+              secondary="Technical professionals with engineering qualifications"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <TrendingUp color="info" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Supervisor"
+              secondary="Management-level workers who coordinate teams"
             />
           </ListItem>
         </List>
 
-        {/* Chart Types */}
+        {/* Labor Summary */}
         <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          📊 Chart Types
+          💰 Labor Summary
+        </Typography>
+        <List dense>
+          <ListItem>
+            <ListItemIcon>
+              <AssessmentIcon color="primary" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Total Hours"
+              secondary="Total number of hours worked across all labor"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <PieChartIcon color="secondary" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Total Cost"
+              secondary="Total cost of all labor (hours × hourly rates)"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <GaugeIcon color="success" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Average Hourly Rate"
+              secondary="Average hourly wage across all workers"
+            />
+          </ListItem>
+        </List>
+
+        {/* Recent Tasks */}
+        <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
+          📋 Recent Tasks
         </Typography>
         <List dense>
           <ListItem>
@@ -656,8 +637,8 @@ const Analytics = () => {
               <BarChartIcon color="primary" />
             </ListItemIcon>
             <ListItemText
-              primary="Performance Comparison"
-              secondary="Shows voter registration rates and supporter density across different areas"
+              primary="Task Name"
+              secondary="The name of the construction task"
             />
           </ListItem>
           <ListItem>
@@ -665,43 +646,33 @@ const Analytics = () => {
               <AssessmentIcon color="secondary" />
             </ListItemIcon>
             <ListItemText
-              primary="Capacity Analysis"
-              secondary="Compares total capacity vs actual utilization across wards"
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <TrendingUp color="success" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Resource Allocation"
-              secondary="Helps identify where to focus campaign efforts and resources"
+              primary="Project & Progress"
+              secondary="Which project the task belongs to and its completion percentage"
             />
           </ListItem>
         </List>
 
         <Alert severity="info" sx={{ mt: 3 }}>
           <Typography variant="body2">
-            <strong>💡 Tip:</strong> Use these bar charts to compare performance
-            across different areas and make data-driven decisions about where to
-            focus your campaign efforts. Higher bars generally indicate better
-            performance or higher engagement.
+            <strong>💡 Tip:</strong> Use these charts to track task progress,
+            manage labor resources, and identify workforce distribution patterns
+            across your construction projects.
           </Typography>
         </Alert>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setBarChartHelpOpen(false)} color="primary">
+        <Button onClick={() => setTasksLaborHelpOpen(false)} color="primary">
           Got it!
         </Button>
       </DialogActions>
     </Dialog>
   );
 
-  // Pie Chart Help Dialog Component
-  const PieChartHelpDialog = () => (
+  // Budget & Resources Help Dialog Component
+  const BudgetResourcesHelpDialog = () => (
     <Dialog
-      open={pieChartHelpOpen}
-      onClose={() => setPieChartHelpOpen(false)}
+      open={budgetResourcesHelpOpen}
+      onClose={() => setBudgetResourcesHelpOpen(false)}
       maxWidth="md"
       fullWidth
     >
@@ -709,19 +680,19 @@ const Analytics = () => {
         <Box display="flex" alignItems="center" gap={1}>
           <PieChartIcon color="primary" />
           <Typography variant="h6" fontWeight="bold">
-            Pie Charts Tab - Data Explanation
+            Budget & Resources Tab - Data Explanation
           </Typography>
         </Box>
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          The Pie Charts show distribution patterns and performance breakdowns.
-          Here's how to understand what you're seeing:
+          The Budget & Resources tab shows budget analysis, resource allocation,
+          and financial metrics. Here's how to understand what you're seeing:
         </Typography>
 
-        {/* Chart Elements */}
+        {/* Budget Overview */}
         <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          🥧 Chart Elements
+          💰 Budget Overview
         </Typography>
         <List dense>
           <ListItem>
@@ -729,8 +700,8 @@ const Analytics = () => {
               <PieChartIcon color="primary" />
             </ListItemIcon>
             <ListItemText
-              primary="Pie Slices"
-              secondary="Each slice represents a category or group. Larger slices indicate higher values or percentages."
+              primary="Total Budgeted"
+              secondary="Total amount allocated for all projects and resources"
             />
           </ListItem>
           <ListItem>
@@ -738,119 +709,8 @@ const Analytics = () => {
               <AssessmentIcon color="secondary" />
             </ListItemIcon>
             <ListItemText
-              primary="Colors"
-              secondary="Different colors distinguish between categories. Hover over slices to see detailed information."
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <GaugeIcon2 color="success" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Percentages"
-              secondary="Each slice shows the percentage of the total that category represents."
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <InfoIcon color="warning" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Center Text"
-              secondary="The center displays the name of the largest or selected category."
-            />
-          </ListItem>
-        </List>
-
-        {/* Chart Types */}
-        <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          📊 Chart Types
-        </Typography>
-        <List dense>
-          <ListItem>
-            <ListItemIcon>
-              <PeopleIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Voter Distribution by Polling Station"
-              secondary="Shows how voters are distributed across different polling stations. Each slice represents one station's voter count."
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <AssessmentIcon color="secondary" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Station Performance Overview"
-              secondary="Shows performance distribution across stations (Excellent, Good, Fair, Poor). Helps identify overall performance patterns."
-            />
-          </ListItem>
-        </List>
-
-        {/* How to Read */}
-        <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          🔍 How to Read the Charts
-        </Typography>
-        <List dense>
-          <ListItem>
-            <ListItemIcon>
-              <InsightsIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Compare Sizes"
-              secondary="Larger slices represent higher values. Compare slice sizes to identify the most significant categories."
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <TrendingUp color="secondary" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Hover for Details"
-              secondary="Hover over any slice to see exact values and percentages. Click to highlight specific categories."
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <AssessmentIcon color="success" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Identify Patterns"
-              secondary="Look for dominant categories (very large slices) or balanced distributions (similar slice sizes)."
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <GaugeIcon2 color="warning" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Track Changes"
-              secondary="Use these charts to monitor how distributions change over time and identify trends."
-            />
-          </ListItem>
-        </List>
-
-        {/* Data Interpretation */}
-        <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          📈 Data Interpretation
-        </Typography>
-        <List dense>
-          <ListItem>
-            <ListItemIcon>
-              <PeopleIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Voter Distribution"
-              secondary="Shows which polling stations have the most voters. Large slices indicate high voter concentration."
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <AssessmentIcon color="secondary" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Performance Levels"
-              secondary="Shows the breakdown of station performance. More 'Excellent' slices indicate better overall performance."
+              primary="Total Actual"
+              secondary="Total amount actually spent across all projects"
             />
           </ListItem>
           <ListItem>
@@ -858,184 +718,143 @@ const Analytics = () => {
               <TrendingUp color="success" />
             </ListItemIcon>
             <ListItemText
-              primary="Resource Allocation"
-              secondary="Use these insights to allocate resources where they're needed most or where performance is lacking."
+              primary="Variance"
+              secondary="Difference between budgeted and actual costs (Budgeted - Actual)"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <GaugeIcon color="warning" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Utilization"
+              secondary="Percentage of budget that has been used (Actual ÷ Budgeted × 100)"
+            />
+          </ListItem>
+        </List>
+
+        {/* Budget by Category */}
+        <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
+          📊 Budget by Category
+        </Typography>
+        <List dense>
+          <ListItem>
+            <ListItemIcon>
+              <Chip label="Materials" color="primary" size="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Materials"
+              secondary="Budget allocated for construction materials (cement, steel, etc.)"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <Chip label="Labor" color="secondary" size="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Labor"
+              secondary="Budget allocated for workforce costs and wages"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <Chip label="Equipment" color="success" size="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Equipment"
+              secondary="Budget allocated for equipment rental and maintenance"
+            />
+          </ListItem>
+        </List>
+
+        {/* Project Resource Allocation */}
+        <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
+          🏗️ Project Resource Allocation
+        </Typography>
+        <List dense>
+          <ListItem>
+            <ListItemIcon>
+              <MapIcon color="primary" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Project Name"
+              secondary="Name of the construction project"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <AssessmentIcon color="secondary" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Status & Progress"
+              secondary="Current project status and completion percentage"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <GaugeIcon color="success" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Resource Counts"
+              secondary="Number of materials, labor, and equipment assigned to each project"
             />
           </ListItem>
         </List>
 
         <Alert severity="info" sx={{ mt: 3 }}>
           <Typography variant="body2">
-            <strong>💡 Tip:</strong> These pie charts help you understand
-            distribution patterns at a glance. Use them to identify dominant
-            categories, spot imbalances, and make data-driven decisions about
-            resource allocation and focus areas.
+            <strong>💡 Tip:</strong> Use these metrics to track budget
+            performance, identify cost overruns, and ensure proper resource
+            allocation across your construction projects.
           </Typography>
         </Alert>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setPieChartHelpOpen(false)} color="primary">
+        <Button
+          onClick={() => setBudgetResourcesHelpOpen(false)}
+          color="primary"
+        >
           Got it!
         </Button>
       </DialogActions>
     </Dialog>
   );
 
-  // Trend Line Help Dialog Component
-  const TrendLineHelpDialog = () => (
+  // Performance Help Dialog Component
+  const PerformanceHelpDialog = () => (
     <Dialog
-      open={trendLineHelpOpen}
-      onClose={() => setTrendLineHelpOpen(false)}
+      open={performanceHelpOpen}
+      onClose={() => setPerformanceHelpOpen(false)}
       maxWidth="md"
       fullWidth
     >
       <DialogTitle>
         <Box display="flex" alignItems="center" gap={1}>
-          <TrendingUp color="primary" />
+          <Timeline color="primary" />
           <Typography variant="h6" fontWeight="bold">
-            Trend Lines Tab - Data Explanation
+            Performance Tab - Data Explanation
           </Typography>
         </Box>
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          The Trend Lines show voter registration progress over time with both
-          daily and cumulative data. Here's how to understand what you're
-          seeing:
+          The Performance tab shows task completion rates, material utilization,
+          and project performance indicators. Here's how to understand what
+          you're seeing:
         </Typography>
 
-        {/* Chart Elements */}
+        {/* Performance Overview */}
         <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          📈 Chart Elements
+          📊 Performance Overview
         </Typography>
         <List dense>
           <ListItem>
             <ListItemIcon>
-              <TrendingUp color="primary" />
+              <AssessmentIcon color="primary" />
             </ListItemIcon>
             <ListItemText
-              primary="Area Chart"
-              secondary="Two overlapping areas show daily registrations and cumulative totals. The filled areas make it easy to see patterns over time."
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <AssessmentIcon color="secondary" />
-            </ListItemIcon>
-            <ListItemText
-              primary="X-Axis (Time)"
-              secondary="Shows dates from the last 30 days. Each point represents one day's data."
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <GaugeIcon2 color="success" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Y-Axis (Count)"
-              secondary="Shows the number of registrations. The scale adjusts automatically based on your data range."
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <InfoIcon color="warning" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Legend"
-              secondary="Two data series: 'Daily Registrations' (blue) and 'Cumulative Total' (pink). Click legend items to toggle visibility."
-            />
-          </ListItem>
-        </List>
-
-        {/* Data Series */}
-        <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          📊 Data Series Explained
-        </Typography>
-        <List dense>
-          <ListItem>
-            <ListItemIcon>
-              <TrendingUp color="primary" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Daily Registrations (Blue Area)"
-              secondary="Shows how many voters registered each day. Peaks indicate high registration days, valleys show low activity."
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <AssessmentIcon color="secondary" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Cumulative Total (Pink Area)"
-              secondary="Shows the running total of all registrations from the start of the period. Always increases or stays flat."
-            />
-          </ListItem>
-        </List>
-
-        {/* How to Read */}
-        <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          🔍 How to Read the Chart
-        </Typography>
-        <List dense>
-          <ListItem>
-            <ListItemIcon>
-              <InsightsIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Track Daily Patterns"
-              secondary="Look for patterns in daily registrations - are there certain days with higher activity? Weekends vs weekdays?"
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <TrendingUp color="secondary" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Monitor Growth Rate"
-              secondary="The steepness of the cumulative line shows registration speed. Steeper = faster growth, flatter = slower growth."
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <AssessmentIcon color="success" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Identify Trends"
-              secondary="Is registration increasing, decreasing, or stable? Look for upward trends (good) or downward trends (concerning)."
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <GaugeIcon2 color="warning" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Hover for Details"
-              secondary="Hover over any point to see exact daily and cumulative numbers for that specific date."
-            />
-          </ListItem>
-        </List>
-
-        {/* Data Interpretation */}
-        <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          📈 Data Interpretation
-        </Typography>
-        <List dense>
-          <ListItem>
-            <ListItemIcon>
-              <PeopleIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Registration Momentum"
-              secondary="Consistent daily registrations indicate steady momentum. Sporadic patterns may suggest campaign timing issues."
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <AssessmentIcon color="secondary" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Campaign Effectiveness"
-              secondary="Sudden spikes in daily registrations often correlate with campaign events, outreach efforts, or media coverage."
+              primary="Task Completion Rate"
+              secondary="Percentage of tasks that have been completed across all projects"
             />
           </ListItem>
           <ListItem>
@@ -1043,33 +862,42 @@ const Analytics = () => {
               <TrendingUp color="success" />
             </ListItemIcon>
             <ListItemText
-              primary="Progress Tracking"
-              secondary="Use cumulative totals to track progress toward registration goals and identify if you're on track."
+              primary="Completed Tasks"
+              secondary="Total number of tasks that have been finished"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <GaugeIcon2 color="warning" />
+              <GaugeIcon color="warning" />
             </ListItemIcon>
             <ListItemText
-              primary="Resource Planning"
-              secondary="Identify peak registration days to allocate more resources and staff during high-activity periods."
+              primary="In Progress Tasks"
+              secondary="Total number of tasks currently being worked on"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <InfoIcon color="error" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Projects at Risk"
+              secondary="Number of projects that may be behind schedule or over budget"
             />
           </ListItem>
         </List>
 
-        {/* Key Metrics */}
+        {/* Material Utilization */}
         <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          🎯 Key Metrics to Watch
+          🏗️ Material Utilization
         </Typography>
         <List dense>
           <ListItem>
             <ListItemIcon>
-              <TrendingUp color="primary" />
+              <PieChartIcon color="primary" />
             </ListItemIcon>
             <ListItemText
-              primary="Peak Days"
-              secondary="Days with the highest daily registrations - indicates successful campaign activities or events."
+              primary="Total Required"
+              secondary="Total amount of materials needed across all projects"
             />
           </ListItem>
           <ListItem>
@@ -1077,73 +905,183 @@ const Analytics = () => {
               <AssessmentIcon color="secondary" />
             </ListItemIcon>
             <ListItemText
-              primary="Growth Rate"
-              secondary="How quickly the cumulative total is increasing - faster growth means better campaign performance."
+              primary="Total Used"
+              secondary="Total amount of materials actually consumed"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <GaugeIcon2 color="success" />
+              <GaugeIcon color="success" />
             </ListItemIcon>
             <ListItemText
-              primary="Consistency"
-              secondary="Regular daily registrations indicate sustained campaign effectiveness and voter engagement."
+              primary="Utilization Percentage"
+              secondary="Percentage of materials that have been used (Used ÷ Required × 100)"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <TrendingUp color="warning" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Total Cost"
+              secondary="Total cost of all materials budgeted for projects"
+            />
+          </ListItem>
+        </List>
+
+        {/* Equipment & Cost Summary */}
+        <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
+          🔧 Equipment & Cost Summary
+        </Typography>
+        <List dense>
+          <ListItem>
+            <ListItemIcon>
+              <GaugeIcon color="primary" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Total Equipment"
+              secondary="Total number of equipment items in your inventory"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <TrendingUp color="success" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Available Equipment"
+              secondary="Number of equipment items currently available for use"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <PieChartIcon color="warning" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Daily Rental Cost"
+              secondary="Total daily cost for all equipment rentals"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <AssessmentIcon color="error" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Overdue Tasks"
+              secondary="Number of tasks that are past their due date"
             />
           </ListItem>
         </List>
 
         <Alert severity="info" sx={{ mt: 3 }}>
           <Typography variant="body2">
-            <strong>💡 Tip:</strong> Use this trend analysis to optimize your
-            campaign strategy. Identify what drives peak registration days and
-            replicate those successful approaches. Monitor the cumulative line
-            to ensure you're meeting your registration targets.
+            <strong>💡 Tip:</strong> Use these metrics to track project
+            performance, identify bottlenecks, and ensure efficient resource
+            utilization across your construction projects.
           </Typography>
         </Alert>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setTrendLineHelpOpen(false)} color="primary">
+        <Button onClick={() => setPerformanceHelpOpen(false)} color="primary">
           Got it!
         </Button>
       </DialogActions>
     </Dialog>
   );
 
-  // Gauge Help Dialog Component
-  const GaugeHelpDialog = () => (
+  // Equipment & Materials Help Dialog Component
+  const EquipmentMaterialsHelpDialog = () => (
     <Dialog
-      open={gaugeHelpOpen}
-      onClose={() => setGaugeHelpOpen(false)}
+      open={equipmentMaterialsHelpOpen}
+      onClose={() => setEquipmentMaterialsHelpOpen(false)}
       maxWidth="md"
       fullWidth
     >
       <DialogTitle>
         <Box display="flex" alignItems="center" gap={1}>
-          <GaugeIcon2 color="primary" />
+          <GaugeIcon color="primary" />
           <Typography variant="h6" fontWeight="bold">
-            Gauges Tab - Data Explanation
+            Equipment & Materials Tab - Data Explanation
           </Typography>
         </Box>
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          The Gauges show key performance metrics and capacity utilization
-          across your polling stations. Here's how to understand what you're
-          seeing:
+          The Equipment & Materials tab shows equipment availability, material
+          utilization, and resource management. Here's how to understand what
+          you're seeing:
         </Typography>
 
-        {/* Chart Elements */}
+        {/* Equipment Availability */}
         <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          📊 Gauge Elements
+          🔧 Equipment Availability
         </Typography>
         <List dense>
           <ListItem>
             <ListItemIcon>
-              <GaugeIcon2 color="primary" />
+              <Chip label="Available" color="success" size="small" />
             </ListItemIcon>
             <ListItemText
-              primary="Overall Capacity Utilization"
-              secondary="Shows the percentage of registered voters who have actually registered. Higher percentages indicate better voter engagement."
+              primary="Available Equipment"
+              secondary="Equipment items that are currently free and ready for use"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <Chip label="Unavailable" color="error" size="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Unavailable Equipment"
+              secondary="Equipment items that are currently in use or under maintenance"
+            />
+          </ListItem>
+        </List>
+
+        {/* Labor Status Distribution */}
+        <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
+          👷 Labor Status Distribution
+        </Typography>
+        <List dense>
+          <ListItem>
+            <ListItemIcon>
+              <Chip label="Active" color="success" size="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Active Workers"
+              secondary="Workers currently assigned to projects and working"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <Chip label="Completed" color="info" size="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Completed Workers"
+              secondary="Workers who have finished their assigned tasks"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <Chip label="On Leave" color="warning" size="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary="On Leave Workers"
+              secondary="Workers who are temporarily unavailable (vacation, sick leave, etc.)"
+            />
+          </ListItem>
+        </List>
+
+        {/* Material Summary */}
+        <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
+          🏗️ Material Summary
+        </Typography>
+        <List dense>
+          <ListItem>
+            <ListItemIcon>
+              <PieChartIcon color="primary" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Total Required"
+              secondary="Total amount of materials needed across all projects"
             />
           </ListItem>
           <ListItem>
@@ -1151,152 +1089,129 @@ const Analytics = () => {
               <AssessmentIcon color="secondary" />
             </ListItemIcon>
             <ListItemText
-              primary="Supporter Density"
-              secondary="Shows the ratio of supporters to actual voters. Higher density indicates better campaign coverage and support."
+              primary="Total Used"
+              secondary="Total amount of materials actually consumed"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <PeopleIcon color="success" />
+              <GaugeIcon color="success" />
             </ListItemIcon>
             <ListItemText
-              primary="Performance Distribution"
-              secondary="Breaks down polling stations by performance levels: Excellent (90%+), Good (70-90%), Fair (50-70%), Poor (<50%)."
-            />
-          </ListItem>
-        </List>
-
-        {/* Key Metrics */}
-        <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          🎯 Key Metrics Explained
-        </Typography>
-        <List dense>
-          <ListItem>
-            <ListItemIcon>
-              <TrendingUp color="primary" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Voter Registration Rate"
-              secondary="Percentage of registered voters who have actually registered. Target: 80%+ for good performance."
+              primary="Utilization Percentage"
+              secondary="Percentage of materials that have been used (Used ÷ Required × 100)"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <AssessmentIcon color="secondary" />
+              <TrendingUp color="warning" />
             </ListItemIcon>
             <ListItemText
-              primary="Supporter Coverage"
-              secondary="Number of supporters per voter. Higher ratios indicate better campaign coverage and grassroots support."
+              primary="Total Cost"
+              secondary="Total cost of all materials budgeted for projects"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <GaugeIcon2 color="success" />
+              <InfoIcon color="error" />
             </ListItemIcon>
             <ListItemText
-              primary="Station Performance Levels"
-              secondary="Distribution of stations across performance categories. More 'Excellent' stations indicate better overall performance."
+              primary="Total Spent"
+              secondary="Total amount actually spent on materials"
             />
           </ListItem>
         </List>
 
-        {/* Performance Categories */}
+        {/* Equipment Summary */}
         <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          📈 Performance Categories
+          🔧 Equipment Summary
         </Typography>
         <List dense>
           <ListItem>
             <ListItemIcon>
-              <Box sx={{ color: "success.main", fontSize: 20 }}>●</Box>
+              <TrendingUp color="success" />
             </ListItemIcon>
             <ListItemText
-              primary="Excellent (90%+)"
-              secondary="Stations with very high voter registration rates. These are your best-performing locations."
+              primary="Available Equipment"
+              secondary="Number of equipment items currently available for use"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <Box sx={{ color: "info.main", fontSize: 20 }}>●</Box>
+              <GaugeIcon color="primary" />
             </ListItemIcon>
             <ListItemText
-              primary="Good (70-90%)"
-              secondary="Stations with good performance. Above average but with room for improvement."
+              primary="Total Equipment"
+              secondary="Total number of equipment items in your inventory"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <Box sx={{ color: "warning.main", fontSize: 20 }}>●</Box>
+              <PieChartIcon color="warning" />
             </ListItemIcon>
             <ListItemText
-              primary="Fair (50-70%)"
-              secondary="Stations with average performance. Need focused attention and improvement strategies."
+              primary="Daily Rental Cost"
+              secondary="Total daily cost for all equipment rentals"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <Box sx={{ color: "error.main", fontSize: 20 }}>●</Box>
+              <AssessmentIcon color="info" />
             </ListItemIcon>
             <ListItemText
-              primary="Poor (<50%)"
-              secondary="Stations requiring immediate attention. Low performance indicates significant issues to address."
+              primary="Equipment Utilization"
+              secondary="Percentage of equipment that is currently available (Available ÷ Total × 100)"
             />
           </ListItem>
         </List>
 
-        {/* How to Use */}
+        {/* Issues Summary */}
         <Typography variant="h6" fontWeight="600" sx={{ mb: 2, mt: 3 }}>
-          🔍 How to Use This Data
+          ⚠️ Issues Summary
         </Typography>
         <List dense>
           <ListItem>
             <ListItemIcon>
-              <InsightsIcon color="primary" />
+              <Chip label="Open" color="error" size="small" />
             </ListItemIcon>
             <ListItemText
-              primary="Identify Focus Areas"
-              secondary="Look for stations in 'Fair' or 'Poor' categories that need immediate attention and resource allocation."
+              primary="Open Issues"
+              secondary="Issues that have been reported but not yet resolved"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <TrendingUp color="secondary" />
+              <Chip label="Resolved" color="success" size="small" />
             </ListItemIcon>
             <ListItemText
-              primary="Track Progress"
-              secondary="Monitor how the distribution changes over time. More stations moving to 'Excellent' indicates improvement."
+              primary="Resolved Issues"
+              secondary="Issues that have been successfully resolved"
             />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <AssessmentIcon color="success" />
+              <Chip label="In Review" color="warning" size="small" />
             </ListItemIcon>
             <ListItemText
-              primary="Resource Planning"
-              secondary="Allocate more resources to underperforming stations and replicate successful strategies from excellent stations."
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <GaugeIcon2 color="warning" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Set Targets"
-              secondary="Use these metrics to set realistic targets for improving station performance and overall voter engagement."
+              primary="In Review Issues"
+              secondary="Issues that are currently being investigated or reviewed"
             />
           </ListItem>
         </List>
 
         <Alert severity="info" sx={{ mt: 3 }}>
           <Typography variant="body2">
-            <strong>💡 Tip:</strong> Focus on moving stations from 'Poor' to
-            'Fair' and 'Fair' to 'Good' categories. This will have the biggest
-            impact on your overall performance. Use the excellent stations as
-            models for what works well in your area.
+            <strong>💡 Tip:</strong> Use these metrics to track resource
+            utilization, identify equipment availability issues, and monitor
+            material consumption patterns across your construction projects.
           </Typography>
         </Alert>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setGaugeHelpOpen(false)} color="primary">
+        <Button
+          onClick={() => setEquipmentMaterialsHelpOpen(false)}
+          color="primary"
+        >
           Got it!
         </Button>
       </DialogActions>
@@ -1375,44 +1290,81 @@ const Analytics = () => {
     </Card>
   );
 
-  // CardItem component similar to Home.jsx
+  // CardItem component with improved UI and appropriate icons
   const CardItem = (props) => {
     const getCardStyle = (title) => {
       switch (title) {
-        case "Total Voters":
+        case "Total Projects":
           return {
-            icon: <AnalyticsIcon sx={{ fontSize: 45, color: "#1976d2" }} />,
+            icon: <MapIcon sx={{ fontSize: 40, color: "#1976d2" }} />,
             bgColor: "linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%)",
             borderColor: "#1976d2",
             textColor: "#1976d2",
+            iconBg: "rgba(25, 118, 210, 0.1)",
           };
-        case "Total Supporters":
+        case "Total Tasks":
           return {
-            icon: <TrendingUp sx={{ fontSize: 45, color: "#7b1fa2" }} />,
+            icon: <BarChartIcon sx={{ fontSize: 40, color: "#7b1fa2" }} />,
             bgColor: "linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%)",
             borderColor: "#7b1fa2",
             textColor: "#7b1fa2",
+            iconBg: "rgba(123, 31, 162, 0.1)",
           };
-        case "Polling Stations":
+        case "Total Labor":
           return {
-            icon: <MapIcon sx={{ fontSize: 45, color: "#388e3c" }} />,
+            icon: <PeopleIcon sx={{ fontSize: 40, color: "#388e3c" }} />,
             bgColor: "linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 100%)",
             borderColor: "#388e3c",
             textColor: "#388e3c",
+            iconBg: "rgba(56, 142, 60, 0.1)",
           };
-        case "Supporter Ratio":
+        case "Total Equipment":
           return {
-            icon: <GaugeIcon sx={{ fontSize: 45, color: "#f57c00" }} />,
+            icon: <GaugeIcon sx={{ fontSize: 40, color: "#f57c00" }} />,
             bgColor: "linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%)",
             borderColor: "#f57c00",
             textColor: "#f57c00",
+            iconBg: "rgba(245, 124, 0, 0.1)",
+          };
+        case "Total Materials":
+          return {
+            icon: <AssessmentIcon sx={{ fontSize: 40, color: "#d32f2f" }} />,
+            bgColor: "linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%)",
+            borderColor: "#d32f2f",
+            textColor: "#d32f2f",
+            iconBg: "rgba(211, 47, 47, 0.1)",
+          };
+        case "Total Issues":
+          return {
+            icon: <InfoIcon sx={{ fontSize: 40, color: "#9c27b0" }} />,
+            bgColor: "linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%)",
+            borderColor: "#9c27b0",
+            textColor: "#9c27b0",
+            iconBg: "rgba(156, 39, 176, 0.1)",
+          };
+        case "Task Completion":
+          return {
+            icon: <TrendingUp sx={{ fontSize: 40, color: "#2e7d32" }} />,
+            bgColor: "linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 100%)",
+            borderColor: "#2e7d32",
+            textColor: "#2e7d32",
+            iconBg: "rgba(46, 125, 50, 0.1)",
+          };
+        case "Overdue Tasks":
+          return {
+            icon: <Timeline sx={{ fontSize: 40, color: "#f44336" }} />,
+            bgColor: "linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%)",
+            borderColor: "#f44336",
+            textColor: "#f44336",
+            iconBg: "rgba(244, 67, 54, 0.1)",
           };
         default:
           return {
-            icon: <AnalyticsIcon sx={{ fontSize: 45, color: "#666" }} />,
+            icon: <AnalyticsIcon sx={{ fontSize: 40, color: "#666" }} />,
             bgColor: "linear-gradient(135deg, #F5F5F5 0%, #EEEEEE 100%)",
             borderColor: "#666",
             textColor: "#666",
+            iconBg: "rgba(102, 102, 102, 0.1)",
           };
       }
     };
@@ -1424,18 +1376,30 @@ const Analytics = () => {
       <Grid size={{ xs: 12, sm: 6, md: 3 }}>
         <Card
           sx={{
-            borderRadius: "12px",
-            boxShadow: "0px 10px 30px #60606040",
+            borderRadius: "16px",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
             background: style.bgColor,
-            border: `2px solid ${style.borderColor}`,
-            transition: "all 0.3s ease",
+            border: `1px solid ${style.borderColor}20`,
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
             "&:hover": {
-              transform: "translateY(-5px)",
-              boxShadow: "0px 15px 40px #60606060",
+              transform: "translateY(-8px)",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.15)",
+              borderColor: style.borderColor,
             },
             height: "100%",
             display: "flex",
             flexDirection: "column",
+            position: "relative",
+            overflow: "hidden",
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: "4px",
+              background: `linear-gradient(90deg, ${style.borderColor}, ${style.borderColor}80)`,
+            },
           }}
         >
           <CardContent
@@ -1446,6 +1410,7 @@ const Analytics = () => {
               alignItems: "center",
               textAlign: "center",
               flex: 1,
+              position: "relative",
             }}
           >
             <Box
@@ -1454,21 +1419,47 @@ const Analytics = () => {
                 alignItems: "center",
                 justifyContent: "center",
                 mb: 2,
+                width: 80,
+                height: 80,
+                borderRadius: "50%",
+                backgroundColor: style.iconBg,
+                border: `2px solid ${style.borderColor}30`,
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  transform: "scale(1.1)",
+                  backgroundColor: style.borderColor,
+                  "& .MuiSvgIcon-root": {
+                    color: "white",
+                  },
+                },
               }}
             >
               {style.icon}
             </Box>
             <Typography
-              variant="h4"
-              fontWeight="bold"
-              sx={{ color: style.textColor, mb: 1 }}
+              variant="h3"
+              fontWeight="800"
+              sx={{
+                color: style.textColor,
+                mb: 1,
+                background: `linear-gradient(135deg, ${style.textColor}, ${style.textColor}80)`,
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                textShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              }}
             >
               {value?.toLocaleString() || 0}
             </Typography>
             <Typography
               variant="h6"
               fontWeight="600"
-              sx={{ color: style.textColor }}
+              sx={{
+                color: style.textColor,
+                opacity: 0.8,
+                fontSize: "0.9rem",
+                lineHeight: 1.2,
+              }}
             >
               {title}
             </Typography>
@@ -1488,10 +1479,10 @@ const Analytics = () => {
         sx={{ mb: 3 }}
       >
         <Typography variant="h5" fontWeight="bold" color="text.primary">
-          Campaign Overview
+          Construction Overview
         </Typography>
         <IconButton
-          onClick={() => setHelpDialogOpen(true)}
+          onClick={() => setOverviewHelpOpen(true)}
           color="primary"
           sx={{
             backgroundColor: "rgba(25, 118, 210, 0.1)",
@@ -1505,239 +1496,308 @@ const Analytics = () => {
         </IconButton>
       </Box>
 
-      {/* Key Metrics Cards - Same as Home.jsx */}
-      <Grid container spacing={3}>
-        <CardItem
-          title="Total Voters"
-          value={analyticsData.overview?.totalVoters || 0}
-        />
-        <CardItem
-          title="Total Supporters"
-          value={analyticsData.overview?.totalSupporters || 0}
-        />
-        <CardItem
-          title="Polling Stations"
-          value={analyticsData.overview?.totalPollingStations || 0}
-        />
-        <CardItem
-          title="Supporter Ratio"
-          value={`${analyticsData.overview?.voterSupporterRatio || 0}%`}
-        />
-      </Grid>
+      {/* Loading State for Overview */}
+      {loading && !dataLoaded && (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="200px"
+          mb={3}
+        >
+          <Box textAlign="center">
+            <CircularProgress size={40} sx={{ mb: 2 }} />
+            <Typography variant="body2" color="text.secondary">
+              Loading overview data...
+            </Typography>
+          </Box>
+        </Box>
+      )}
 
-      {/* Quick Stats - 3 columns with 2 stacked vertically each */}
-      <Grid container spacing={3} sx={{ mt: 3 }}>
-        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-              transition: "all 0.3s ease",
-              "&:hover": {
-                boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
-                transform: "translateY(-2px)",
-              },
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <CardContent
-              sx={{ p: 3, flex: 1, display: "flex", flexDirection: "column" }}
-            >
-              <Typography variant="h6" gutterBottom fontWeight="600">
-                Performance Metrics
-              </Typography>
-              <Stack spacing={2} sx={{ flex: 1 }}>
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  p={2}
+      {/* Data Content */}
+      {dataLoaded && (
+        <>
+          {/* Key Metrics Cards - Same as Home.jsx */}
+          <Grid container spacing={3}>
+            <CardItem
+              title="Total Projects"
+              value={analyticsData.overview?.totalProjects || 0}
+            />
+            <CardItem
+              title="Total Tasks"
+              value={analyticsData.overview?.totalTasks || 0}
+            />
+            <CardItem
+              title="Total Labor"
+              value={analyticsData.overview?.totalLabor || 0}
+            />
+            <CardItem
+              title="Total Equipment"
+              value={analyticsData.overview?.totalEquipment || 0}
+            />
+            <CardItem
+              title="Total Materials"
+              value={analyticsData.overview?.totalMaterials || 0}
+            />
+            <CardItem
+              title="Total Issues"
+              value={analyticsData.overview?.totalIssues || 0}
+            />
+            <CardItem
+              title="Task Completion"
+              value={`${analyticsData.performance?.taskCompletionRate || 0}%`}
+            />
+            <CardItem
+              title="Overdue Tasks"
+              value={analyticsData.overview?.overdueTasks || 0}
+            />
+          </Grid>
+
+          {/* Quick Stats - 4 columns with 2 stacked vertically each */}
+          <Grid container spacing={3} sx={{ mt: 3 }}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+                    transform: "translateY(-2px)",
+                  },
+                  height: 280,
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <CardContent
                   sx={{
-                    backgroundColor: "rgba(25, 118, 210, 0.05)",
-                    borderRadius: 2,
-                    border: "1px solid rgba(25, 118, 210, 0.1)",
+                    p: 3,
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
                   }}
                 >
-                  <Typography fontWeight="500">
-                    Average Voter Density
+                  <Typography variant="h6" gutterBottom fontWeight="600">
+                    Project Metrics
                   </Typography>
-                  <Chip
-                    label={`${
-                      analyticsData.gauge?.overall?.voterRegistrationRate?.toFixed(
-                        1
-                      ) || 0
-                    }%`}
-                    color="primary"
-                  />
-                </Box>
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  p={2}
+                  <Stack spacing={2} sx={{ flex: 1 }}>
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      p={2}
+                      sx={{
+                        backgroundColor: "rgba(25, 118, 210, 0.05)",
+                        borderRadius: 2,
+                        border: "1px solid rgba(25, 118, 210, 0.1)",
+                      }}
+                    >
+                      <Typography fontWeight="500">Average Progress</Typography>
+                      <Chip
+                        label={`${parseFloat(
+                          analyticsData.projects?.progress?.avgProgress || 0
+                        ).toFixed(1)}%`}
+                        color="primary"
+                      />
+                    </Box>
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      p={2}
+                      sx={{
+                        backgroundColor: "rgba(156, 39, 176, 0.05)",
+                        borderRadius: 2,
+                        border: "1px solid rgba(156, 39, 176, 0.1)",
+                      }}
+                    >
+                      <Typography fontWeight="500">
+                        Budget Utilization
+                      </Typography>
+                      <Chip
+                        label={`${
+                          analyticsData.budget?.utilizationPercent || 0
+                        }%`}
+                        color="secondary"
+                      />
+                    </Box>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+                    transform: "translateY(-2px)",
+                  },
+                  height: 280,
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <CardContent
                   sx={{
-                    backgroundColor: "rgba(156, 39, 176, 0.05)",
-                    borderRadius: 2,
-                    border: "1px solid rgba(156, 39, 176, 0.1)",
+                    p: 3,
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
                   }}
                 >
-                  <Typography fontWeight="500">
-                    Average Supporter Density
+                  <Typography variant="h6" gutterBottom fontWeight="600">
+                    Resource Analysis
                   </Typography>
-                  <Chip
-                    label={`${
-                      analyticsData.gauge?.overall?.supporterDensity?.toFixed(
-                        1
-                      ) || 0
-                    }%`}
-                    color="secondary"
-                  />
-                </Box>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Grid>
+                  <Stack spacing={2} sx={{ flex: 1 }}>
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      p={2}
+                      sx={{
+                        backgroundColor: "rgba(76, 175, 80, 0.05)",
+                        borderRadius: 2,
+                        border: "1px solid rgba(76, 175, 80, 0.1)",
+                      }}
+                    >
+                      <Typography fontWeight="500">
+                        Material Utilization
+                      </Typography>
+                      <Chip
+                        label={`${
+                          analyticsData.materials?.summary
+                            ?.utilizationPercent || 0
+                        }%`}
+                        color="success"
+                      />
+                    </Box>
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      p={2}
+                      sx={{
+                        backgroundColor: "rgba(0, 188, 212, 0.05)",
+                        borderRadius: 2,
+                        border: "1px solid rgba(0, 188, 212, 0.1)",
+                      }}
+                    >
+                      <Typography fontWeight="500">Total Equipment</Typography>
+                      <Chip
+                        label={`${analyticsData.overview?.totalEquipment || 0}`}
+                        color="info"
+                      />
+                    </Box>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Grid>
 
-        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-              transition: "all 0.3s ease",
-              "&:hover": {
-                boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
-                transform: "translateY(-2px)",
-              },
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <CardContent
-              sx={{ p: 3, flex: 1, display: "flex", flexDirection: "column" }}
-            >
-              <Typography variant="h6" gutterBottom fontWeight="600">
-                Capacity Analysis
-              </Typography>
-              <Stack spacing={2} sx={{ flex: 1 }}>
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  p={2}
+            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+                    transform: "translateY(-2px)",
+                  },
+                  height: 280,
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <CardContent
                   sx={{
-                    backgroundColor: "rgba(76, 175, 80, 0.05)",
-                    borderRadius: 2,
-                    border: "1px solid rgba(76, 175, 80, 0.1)",
+                    p: 3,
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
                   }}
                 >
-                  <Typography fontWeight="500">Capacity Utilization</Typography>
-                  <Chip
-                    label={`${
-                      analyticsData.gauge?.overall?.voterRegistrationRate?.toFixed(
-                        1
-                      ) || 0
-                    }%`}
-                    color="success"
-                  />
-                </Box>
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  p={2}
-                  sx={{
-                    backgroundColor: "rgba(0, 188, 212, 0.05)",
-                    borderRadius: 2,
-                    border: "1px solid rgba(0, 188, 212, 0.1)",
-                  }}
-                >
-                  <Typography fontWeight="500">Total Capacity</Typography>
-                  <Chip
-                    label={`${
-                      analyticsData.gauge?.overall?.totalRegisteredVoters?.toLocaleString() ||
-                      0
-                    }`}
-                    color="info"
-                  />
-                </Box>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Grid>
+                  <Typography variant="h6" gutterBottom fontWeight="600">
+                    Performance Insights
+                  </Typography>
+                  <Stack spacing={2} sx={{ flex: 1 }}>
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      p={2}
+                      sx={{
+                        backgroundColor: "rgba(25, 118, 210, 0.05)",
+                        borderRadius: 2,
+                        border: "1px solid rgba(25, 118, 210, 0.1)",
+                      }}
+                    >
+                      <Typography fontWeight="500">Top Engineer</Typography>
+                      <Chip
+                        label={analyticsData.engineers?.top?.[0]?.name || "N/A"}
+                        color="primary"
+                      />
+                    </Box>
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      p={2}
+                      sx={{
+                        backgroundColor: "rgba(255, 152, 0, 0.05)",
+                        borderRadius: 2,
+                        border: "1px solid rgba(255, 152, 0, 0.1)",
+                      }}
+                    >
+                      <Typography fontWeight="500">Projects at Risk</Typography>
+                      <Chip
+                        label={`${
+                          analyticsData.performance?.projectsAtRisk || 0
+                        }`}
+                        color="warning"
+                      />
+                    </Box>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </>
+      )}
 
-        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-              transition: "all 0.3s ease",
-              "&:hover": {
-                boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
-                transform: "translateY(-2px)",
-              },
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <CardContent
-              sx={{ p: 3, flex: 1, display: "flex", flexDirection: "column" }}
+      {/* Fallback when data is not loaded */}
+      {!dataLoaded && !loading && (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="200px"
+          mb={3}
+        >
+          <Box textAlign="center">
+            <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
+              No data available
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={fetchAnalyticsData}
+              startIcon={<RefreshIcon />}
             >
-              <Typography variant="h6" gutterBottom fontWeight="600">
-                Performance Insights
-              </Typography>
-              <Stack spacing={2} sx={{ flex: 1 }}>
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  p={2}
-                  sx={{
-                    backgroundColor: "rgba(25, 118, 210, 0.05)",
-                    borderRadius: 2,
-                    border: "1px solid rgba(25, 118, 210, 0.1)",
-                  }}
-                >
-                  <Typography fontWeight="500">Best Performing Area</Typography>
-                  <Chip
-                    label={analyticsData.barChart?.[0]?.name || "N/A"}
-                    color="primary"
-                  />
-                </Box>
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  p={2}
-                  sx={{
-                    backgroundColor: "rgba(255, 152, 0, 0.05)",
-                    borderRadius: 2,
-                    border: "1px solid rgba(255, 152, 0, 0.1)",
-                  }}
-                >
-                  <Typography fontWeight="500">Utilized Capacity</Typography>
-                  <Chip
-                    label={`${
-                      analyticsData.gauge?.overall?.totalActualVoters?.toLocaleString() ||
-                      0
-                    }`}
-                    color="warning"
-                  />
-                </Box>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+              Load Data
+            </Button>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 
-  const renderHeatMap = () => (
+  const renderProjects = () => (
     <Box>
-      {/* Header with Help Button */}
+      {/* Header */}
       <Box
         sx={{
           display: "flex",
@@ -1748,15 +1808,14 @@ const Analytics = () => {
       >
         <Box>
           <Typography variant="h6" fontWeight="600" color="text.primary">
-            Voter/Supporter Density Heat Map
+            Project Status & Distribution
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Geographic distribution of voter and supporter density across
-            polling stations
+            Project status breakdown and construction type distribution
           </Typography>
         </Box>
         <IconButton
-          onClick={() => setHeatMapHelpOpen(true)}
+          onClick={() => setProjectsHelpOpen(true)}
           color="primary"
           sx={{
             backgroundColor: "rgba(25, 118, 210, 0.1)",
@@ -1764,126 +1823,168 @@ const Analytics = () => {
               backgroundColor: "rgba(25, 118, 210, 0.2)",
             },
           }}
-          title="Click to understand the heat map data"
+          title="Click to understand the data shown here"
         >
           <HelpIcon />
         </IconButton>
       </Box>
 
-      {/* Heat Map Visualization - Full Width */}
-      <Box
-        sx={{
-          height: 500,
-          border: "1px solid #e0e0e0",
-          borderRadius: 2,
-          p: 2,
-          backgroundColor: "#fafafa",
-          width: "100%",
-        }}
-      >
-        <ResponsiveContainer width="100%" height="100%">
-          <ScatterChart
-            data={analyticsData.heatMap}
-            margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-            <XAxis
-              type="number"
-              dataKey="coordinates[0]"
-              name="Longitude"
-              scale="linear"
-              tick={{ fontSize: 12 }}
-              stroke="#666"
-            />
-            <YAxis
-              type="number"
-              dataKey="coordinates[1]"
-              name="Latitude"
-              scale="linear"
-              tick={{ fontSize: 12 }}
-              stroke="#666"
-            />
-            <ZAxis type="number" dataKey="heatIntensity" range={[50, 400]} />
-            <Tooltip
-              cursor={{ strokeDasharray: "3 3" }}
-              contentStyle={{
-                backgroundColor: "rgba(255, 255, 255, 0.95)",
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                padding: "12px",
-              }}
-              content={({ active, payload }) => {
-                if (active && payload && payload.length > 0) {
-                  const data = payload[0].payload;
-                  return (
-                    <div>
-                      <div style={{ fontWeight: "bold", marginBottom: "4px" }}>
-                        {data.name || "Unknown Station"}
-                      </div>
-                      <div style={{ fontSize: "12px", color: "#666" }}>
-                        {data.ward || "Unknown Ward"},{" "}
-                        {data.constituency || "Unknown Constituency"}
-                      </div>
-                      <div style={{ marginTop: "4px" }}>
-                        <strong>Density:</strong>{" "}
-                        {((data.heatIntensity || 0) * 100).toFixed(1)}%
-                      </div>
-                      <div>
-                        <strong>Registered Voters:</strong>{" "}
-                        {data.registeredVoters?.toLocaleString() || 0}
-                      </div>
-                      <div>
-                        <strong>Actual Voters:</strong>{" "}
-                        {data.actualVoters?.toLocaleString() || 0}
-                      </div>
-                      <div>
-                        <strong>Supporters:</strong>{" "}
-                        {data.supporters?.toLocaleString() || 0}
-                      </div>
-                    </div>
-                  );
-                }
-                return null;
-              }}
-            />
-            <Scatter
-              dataKey="heatIntensity"
-              fill="#667eea"
-              fillOpacity={0.7}
-              stroke="#667eea"
-              strokeWidth={2}
-            />
-          </ScatterChart>
-        </ResponsiveContainer>
-      </Box>
-
-      {/* Heat Map Legend */}
-      <Box sx={{ mt: 3 }}>
-        <Typography variant="subtitle2" gutterBottom fontWeight="600">
-          Density Legend
-        </Typography>
-        <Box display="flex" gap={2} flexWrap="wrap">
-          <Chip
-            label="High Density (80-100%)"
-            color="error"
-            size="small"
-            sx={{ fontWeight: 500 }}
-          />
-          <Chip
-            label="Medium Density (50-80%)"
-            color="warning"
-            size="small"
-            sx={{ fontWeight: 500 }}
-          />
-          <Chip
-            label="Low Density (0-50%)"
-            color="success"
-            size="small"
-            sx={{ fontWeight: 500 }}
-          />
+      {/* Loading State for Projects */}
+      {loading && !dataLoaded && (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="200px"
+          mb={3}
+        >
+          <Box textAlign="center">
+            <CircularProgress size={40} sx={{ mb: 2 }} />
+            <Typography variant="body2" color="text.secondary">
+              Loading project data...
+            </Typography>
+          </Box>
         </Box>
-      </Box>
+      )}
+
+      {/* Data Content */}
+      {dataLoaded && (
+        <>
+          <Grid container spacing={3}>
+            {/* Project Status Chart */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Card sx={{ p: 3, height: 400 }}>
+                <Typography variant="h6" gutterBottom fontWeight="600">
+                  Project Status Distribution
+                </Typography>
+                <ResponsiveContainer width="100%" height={300}>
+                  {(analyticsData.projects?.byStatus || []).length > 0 ? (
+                    <PieChart>
+                      <Pie
+                        data={(analyticsData.projects?.byStatus || []).map(
+                          (item) => ({
+                            name: item.status,
+                            value: parseInt(item.count) || 0,
+                          })
+                        )}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius="90%"
+                        innerRadius="50%"
+                        fill="#8884d8"
+                      >
+                        {(analyticsData.projects?.byStatus || []).map(
+                          (entry, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={COLORS[index % COLORS.length]}
+                            />
+                          )
+                        )}
+                      </Pie>
+                      <Tooltip formatter={(value) => [value, "Projects"]} />
+                      <Legend />
+                    </PieChart>
+                  ) : (
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      height="100%"
+                    >
+                      <Typography variant="body2" color="text.secondary">
+                        No project data available
+                      </Typography>
+                    </Box>
+                  )}
+                </ResponsiveContainer>
+              </Card>
+            </Grid>
+
+            {/* Construction Type Chart */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Card sx={{ p: 3, height: 400 }}>
+                <Typography variant="h6" gutterBottom fontWeight="600">
+                  Construction Type Distribution
+                </Typography>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart
+                    data={(analyticsData.projects?.byType || []).map(
+                      (item) => ({
+                        ...item,
+                        count: parseInt(item.count) || 0,
+                      })
+                    )}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="construction_type" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => [value, "Projects"]} />
+                    <Bar dataKey="count" fill="#f093fb" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Card>
+            </Grid>
+
+            {/* Recent Projects */}
+            <Grid size={{ xs: 12 }}>
+              <Card sx={{ p: 3 }}>
+                <Typography variant="h6" gutterBottom fontWeight="600">
+                  Recent Projects
+                </Typography>
+                <List>
+                  {(analyticsData.projects?.recent || []).map((project) => (
+                    <ListItem key={project.id}>
+                      <ListItemIcon>
+                        <MapIcon color="primary" />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={project.name}
+                        secondary={`Status: ${project.status} | Engineer: ${
+                          project.engineer?.name || "N/A"
+                        }`}
+                      />
+                      <Chip
+                        label={project.status}
+                        color={
+                          project.status === "completed" ? "success" : "primary"
+                        }
+                        size="small"
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </Card>
+            </Grid>
+          </Grid>
+        </>
+      )}
+
+      {/* Fallback when data is not loaded */}
+      {!dataLoaded && !loading && (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="200px"
+          mb={3}
+        >
+          <Box textAlign="center">
+            <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
+              No project data available
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={fetchAnalyticsData}
+              startIcon={<RefreshIcon />}
+            >
+              Load Data
+            </Button>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 
@@ -1947,9 +2048,9 @@ const Analytics = () => {
     );
   };
 
-  const renderBarCharts = () => (
+  const renderTasksLabor = () => (
     <Box>
-      {/* Header with Help Button */}
+      {/* Header */}
       <Box
         sx={{
           display: "flex",
@@ -1960,15 +2061,14 @@ const Analytics = () => {
       >
         <Box>
           <Typography variant="h6" fontWeight="600" color="text.primary">
-            Performance Comparison by Ward
+            Tasks & Labor Management
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Voter registration rates and supporter density across different
-            areas
+            Task status distribution and labor workforce analysis
           </Typography>
         </Box>
         <IconButton
-          onClick={() => setBarChartHelpOpen(true)}
+          onClick={() => setTasksLaborHelpOpen(true)}
           color="primary"
           sx={{
             backgroundColor: "rgba(25, 118, 210, 0.1)",
@@ -1976,25 +2076,147 @@ const Analytics = () => {
               backgroundColor: "rgba(25, 118, 210, 0.2)",
             },
           }}
-          title="Click to understand the bar chart data"
+          title="Click to understand the data shown here"
         >
           <HelpIcon />
         </IconButton>
       </Box>
 
-      {/* Bar Chart Visualization - Full Width */}
-      <Box
-        sx={{
-          height: 500,
-          border: "1px solid #e0e0e0",
-          borderRadius: 2,
-          p: 2,
-          backgroundColor: "#fafafa",
-          width: "100%",
-        }}
-      >
-        <CustomBarChart data={analyticsData.barChart} height={450} />
-      </Box>
+      <Grid container spacing={3}>
+        {/* Task Status Chart */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card sx={{ p: 3, height: 400 }}>
+            <Typography variant="h6" gutterBottom fontWeight="600">
+              Task Status Distribution
+            </Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart
+                data={(analyticsData.tasks?.byStatus || []).map((item) => ({
+                  ...item,
+                  count: parseInt(item.count) || 0,
+                }))}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="status" />
+                <YAxis />
+                <Tooltip formatter={(value) => [value, "Tasks"]} />
+                <Bar dataKey="count" fill="#667eea" />
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+        </Grid>
+
+        {/* Labor Type Chart */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card sx={{ p: 3, height: 400 }}>
+            <Typography variant="h6" gutterBottom fontWeight="600">
+              Labor by Worker Type
+            </Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              {(analyticsData.labor?.byType || []).length > 0 ? (
+                <PieChart>
+                  <Pie
+                    data={(analyticsData.labor?.byType || []).map((item) => ({
+                      name: item.worker_type
+                        .replace("_", " ")
+                        .replace(/\b\w/g, (l) => l.toUpperCase()),
+                      value: parseInt(item.count) || 0,
+                    }))}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius="90%"
+                    innerRadius="50%"
+                    fill="#8884d8"
+                  >
+                    {(analyticsData.labor?.byType || []).map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => [value, "Workers"]} />
+                  <Legend />
+                </PieChart>
+              ) : (
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  height="100%"
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    No labor data available
+                  </Typography>
+                </Box>
+              )}
+            </ResponsiveContainer>
+          </Card>
+        </Grid>
+
+        {/* Labor Summary */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom fontWeight="600">
+              Labor Summary
+            </Typography>
+            <Stack spacing={2}>
+              <Box display="flex" justifyContent="space-between">
+                <Typography>Total Hours:</Typography>
+                <Typography fontWeight="bold">
+                  {analyticsData.labor?.summary?.totalHours || 0}
+                </Typography>
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Typography>Total Cost:</Typography>
+                <Typography fontWeight="bold">
+                  KSh{" "}
+                  {parseFloat(
+                    analyticsData.labor?.summary?.totalCost || 0
+                  ).toLocaleString()}
+                </Typography>
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Typography>Avg Hourly Rate:</Typography>
+                <Typography fontWeight="bold">
+                  KSh {analyticsData.labor?.summary?.avgHourlyRate || 0}
+                </Typography>
+              </Box>
+            </Stack>
+          </Card>
+        </Grid>
+
+        {/* Recent Tasks */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom fontWeight="600">
+              Recent Tasks
+            </Typography>
+            <List>
+              {(analyticsData.tasks?.recent || []).map((task) => (
+                <ListItem key={task.id}>
+                  <ListItemIcon>
+                    <BarChartIcon color="primary" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={task.name}
+                    secondary={`Project: ${
+                      task.project?.name || "N/A"
+                    } | Progress: ${task.progress_percent}%`}
+                  />
+                  <Chip
+                    label={task.status}
+                    color={task.status === "completed" ? "success" : "primary"}
+                    size="small"
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </Card>
+        </Grid>
+      </Grid>
     </Box>
   );
 
@@ -2123,9 +2345,9 @@ const Analytics = () => {
     );
   };
 
-  const renderPieCharts = () => (
+  const renderBudgetResources = () => (
     <Box>
-      {/* Header with Help Button */}
+      {/* Header */}
       <Box
         sx={{
           display: "flex",
@@ -2136,14 +2358,14 @@ const Analytics = () => {
       >
         <Box>
           <Typography variant="h6" fontWeight="600" color="text.primary">
-            Distribution Analysis
+            Budget & Resource Management
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Voter distribution and performance breakdown across polling stations
+            Budget analysis and resource allocation across projects
           </Typography>
         </Box>
         <IconButton
-          onClick={() => setPieChartHelpOpen(true)}
+          onClick={() => setBudgetResourcesHelpOpen(true)}
           color="primary"
           sx={{
             backgroundColor: "rgba(25, 118, 210, 0.1)",
@@ -2151,480 +2373,737 @@ const Analytics = () => {
               backgroundColor: "rgba(25, 118, 210, 0.2)",
             },
           }}
-          title="Click to understand the pie chart data"
+          title="Click to understand the data shown here"
         >
           <HelpIcon />
         </IconButton>
       </Box>
 
       <Grid container spacing={3}>
-        <Grid size={{ xs: 12, sm: 6, md: 6 }}>
-          <ModernCard
-            title="Voter Distribution by Polling Station"
-            subtitle="Distribution of voters across polling stations"
-            icon={<PieChartIcon />}
-          >
-            <CustomPieChart data={analyticsData.pieChart} height={250} />
-          </ModernCard>
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 6, md: 6 }}>
-          <ModernCard
-            title="Station Performance Overview"
-            subtitle="Performance distribution across stations"
-            icon={<PieChartIcon />}
-          >
-            <CustomPieChart
-              data={[
-                {
-                  name: "Excellent",
-                  value: analyticsData.gauge?.performance?.excellent || 0,
-                },
-                {
-                  name: "Good",
-                  value: analyticsData.gauge?.performance?.good || 0,
-                },
-                {
-                  name: "Fair",
-                  value: analyticsData.gauge?.performance?.fair || 0,
-                },
-                {
-                  name: "Poor",
-                  value: analyticsData.gauge?.performance?.poor || 0,
-                },
-              ].filter((item) => item.value > 0)}
-              height={250}
-            />
-          </ModernCard>
-        </Grid>
-      </Grid>
-    </Box>
-  );
-
-  const renderTrendLines = () => (
-    <Box>
-      {/* Header with Help Button */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          mb: 3,
-        }}
-      >
-        <Box>
-          <Typography variant="h6" fontWeight="600" color="text.primary">
-            Voter Registration Trends (Last 30 Days)
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Daily voter registration progress and cumulative totals
-          </Typography>
-        </Box>
-        <IconButton
-          onClick={() => setTrendLineHelpOpen(true)}
-          color="primary"
-          sx={{
-            backgroundColor: "rgba(25, 118, 210, 0.1)",
-            "&:hover": {
-              backgroundColor: "rgba(25, 118, 210, 0.2)",
-            },
-          }}
-          title="Click to understand the trend line data"
-        >
-          <HelpIcon />
-        </IconButton>
-      </Box>
-
-      {/* Trend Line Visualization - Full Width */}
-      <Box
-        sx={{
-          height: 500,
-          border: "1px solid #e0e0e0",
-          borderRadius: 2,
-          p: 2,
-          backgroundColor: "#fafafa",
-          width: "100%",
-        }}
-      >
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart
-            data={analyticsData.trendLine}
-            margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#666" />
-            <YAxis tick={{ fontSize: 12 }} stroke="#666" />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "rgba(255, 255, 255, 0.95)",
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-              }}
-            />
-            <Legend wrapperStyle={{ paddingTop: "20px" }} />
-            <Area
-              type="monotone"
-              dataKey="value"
-              stackId="1"
-              stroke="#667eea"
-              fill="#667eea"
-              fillOpacity={0.6}
-              name="Daily Registrations"
-              strokeWidth={3}
-            />
-            <Area
-              type="monotone"
-              dataKey="cumulative"
-              stackId="2"
-              stroke="#f093fb"
-              fill="#f093fb"
-              fillOpacity={0.3}
-              name="Cumulative Total"
-              strokeWidth={3}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </Box>
-    </Box>
-  );
-
-  const renderGauges = () => (
-    <Box>
-      {/* Header with Help Button */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          mb: 3,
-        }}
-      >
-        <Box>
-          <Typography variant="h6" fontWeight="600" color="text.primary">
-            Performance Gauges & Metrics
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Key performance indicators and capacity utilization across polling
-            stations
-          </Typography>
-        </Box>
-        <IconButton
-          onClick={() => setGaugeHelpOpen(true)}
-          color="primary"
-          sx={{
-            backgroundColor: "rgba(25, 118, 210, 0.1)",
-            "&:hover": {
-              backgroundColor: "rgba(25, 118, 210, 0.2)",
-            },
-          }}
-          title="Click to understand the gauge data"
-        >
-          <HelpIcon />
-        </IconButton>
-      </Box>
-
-      {/* First Row - Two Main Gauges */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid size={{ xs: 12, sm: 6, md: 6 }}>
-          <Card
-            sx={{
-              borderRadius: 3,
-              backgroundColor: "rgba(255, 255, 255, 0.8)",
-              border: "1px solid rgba(102, 126, 234, 0.1)",
-              boxShadow: "0 4px 20px rgba(102, 126, 234, 0.08)",
-              transition: "all 0.3s ease",
-              "&:hover": {
-                boxShadow: "0 8px 30px rgba(102, 126, 234, 0.15)",
-                transform: "translateY(-2px)",
-                borderColor: "rgba(102, 126, 234, 0.2)",
-              },
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              backdropFilter: "blur(10px)",
-            }}
-          >
-            <CardContent
-              sx={{ p: 3, flex: 1, display: "flex", flexDirection: "column" }}
-            >
+        {/* Budget Overview */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card sx={{ p: 3, height: 400 }}>
+            <Typography variant="h6" gutterBottom fontWeight="600">
+              Budget Overview
+            </Typography>
+            <Stack spacing={3} sx={{ mt: 2 }}>
               <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  mb: 3,
-                }}
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
               >
-                <Box>
-                  <Typography variant="h6" fontWeight="600" color="#2c3e50">
-                    Overall Capacity Utilization
-                  </Typography>
-                  <Typography variant="body2" color="#7f8c8d">
-                    Current voter registration rate
-                  </Typography>
-                </Box>
+                <Typography>Total Budgeted:</Typography>
+                <Typography variant="h6" color="primary">
+                  KSh{" "}
+                  {parseFloat(
+                    analyticsData.budget?.totalBudgeted || 0
+                  ).toLocaleString()}
+                </Typography>
               </Box>
               <Box
-                sx={{
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
               >
-                <Box textAlign="center">
-                  <Typography variant="h2" color="primary" fontWeight="bold">
-                    {analyticsData.gauge?.overall?.voterRegistrationRate || 0}%
-                  </Typography>
-                  <Typography variant="h6" color="#7f8c8d">
-                    Voter Registration Rate
-                  </Typography>
-                  <Typography variant="body2" color="#7f8c8d" sx={{ mt: 1 }}>
-                    {analyticsData.gauge?.overall?.totalActualVoters || 0} of{" "}
-                    {analyticsData.gauge?.overall?.totalRegisteredVoters || 0}{" "}
-                    registered
-                  </Typography>
-                </Box>
+                <Typography>Total Actual:</Typography>
+                <Typography variant="h6" color="secondary">
+                  KSh{" "}
+                  {parseFloat(
+                    analyticsData.budget?.totalActual || 0
+                  ).toLocaleString()}
+                </Typography>
               </Box>
-            </CardContent>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Variance:</Typography>
+                <Typography
+                  variant="h6"
+                  color={
+                    parseFloat(analyticsData.budget?.variance || 0) >= 0
+                      ? "success.main"
+                      : "error.main"
+                  }
+                >
+                  KSh{" "}
+                  {parseFloat(
+                    analyticsData.budget?.variance || 0
+                  ).toLocaleString()}
+                </Typography>
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Utilization:</Typography>
+                <Typography variant="h6" color="info.main">
+                  {analyticsData.budget?.utilizationPercent || 0}%
+                </Typography>
+              </Box>
+            </Stack>
           </Card>
         </Grid>
 
-        <Grid size={{ xs: 12, sm: 6, md: 6 }}>
-          <Card
-            sx={{
-              borderRadius: 3,
-              backgroundColor: "rgba(255, 255, 255, 0.8)",
-              border: "1px solid rgba(102, 126, 234, 0.1)",
-              boxShadow: "0 4px 20px rgba(102, 126, 234, 0.08)",
-              transition: "all 0.3s ease",
-              "&:hover": {
-                boxShadow: "0 8px 30px rgba(102, 126, 234, 0.15)",
-                transform: "translateY(-2px)",
-                borderColor: "rgba(102, 126, 234, 0.2)",
-              },
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              backdropFilter: "blur(10px)",
-            }}
-          >
-            <CardContent
-              sx={{ p: 3, flex: 1, display: "flex", flexDirection: "column" }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  mb: 3,
-                }}
-              >
-                <Box>
-                  <Typography variant="h6" fontWeight="600" color="#2c3e50">
-                    Supporter Density
-                  </Typography>
-                  <Typography variant="body2" color="#7f8c8d">
-                    Supporter coverage ratio
-                  </Typography>
-                </Box>
-              </Box>
-              <Box
-                sx={{
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Box textAlign="center">
-                  <Typography variant="h2" color="secondary" fontWeight="bold">
-                    {analyticsData.gauge?.overall?.supporterDensity || 0}%
-                  </Typography>
-                  <Typography variant="h6" color="#7f8c8d">
-                    Supporter Coverage
-                  </Typography>
-                  <Typography variant="body2" color="#7f8c8d" sx={{ mt: 1 }}>
-                    {analyticsData.gauge?.overall?.totalSupporters || 0}{" "}
-                    supporters for{" "}
-                    {analyticsData.gauge?.overall?.totalActualVoters || 0}{" "}
-                    voters
+        {/* Budget by Category */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card sx={{ p: 3, height: 400 }}>
+            <Typography variant="h6" gutterBottom fontWeight="600">
+              Budget by Category
+            </Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              {(analyticsData.budget?.byCategory || []).length > 0 ? (
+                <PieChart>
+                  <Pie
+                    data={(analyticsData.budget?.byCategory || []).map(
+                      (item) => ({
+                        name: item.category,
+                        value: parseFloat(item.totalAmount) || 0,
+                      })
+                    )}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius="90%"
+                    innerRadius="50%"
+                    fill="#8884d8"
+                  >
+                    {(analyticsData.budget?.byCategory || []).map(
+                      (entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      )
+                    )}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value) =>
+                      `KSh ${parseFloat(value).toLocaleString()}`
+                    }
+                  />
+                  <Legend />
+                </PieChart>
+              ) : (
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  height="100%"
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    No budget data available
                   </Typography>
                 </Box>
-              </Box>
-            </CardContent>
+              )}
+            </ResponsiveContainer>
           </Card>
         </Grid>
-      </Grid>
 
-      {/* Second Row - Performance Distribution */}
-      <Grid container spacing={3}>
+        {/* Project Resources */}
         <Grid size={{ xs: 12 }}>
-          <Card
-            sx={{
-              borderRadius: 3,
-              backgroundColor: "rgba(255, 255, 255, 0.8)",
-              border: "1px solid rgba(102, 126, 234, 0.1)",
-              boxShadow: "0 4px 20px rgba(102, 126, 234, 0.08)",
-              transition: "all 0.3s ease",
-              "&:hover": {
-                boxShadow: "0 8px 30px rgba(102, 126, 234, 0.15)",
-                transform: "translateY(-2px)",
-                borderColor: "rgba(102, 126, 234, 0.2)",
-              },
-              backdropFilter: "blur(10px)",
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
+          <Card sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom fontWeight="600">
+              Project Resource Allocation
+            </Typography>
+            <List>
+              {(analyticsData.projects?.resources || []).map((project) => (
+                <ListItem key={project.project_id}>
+                  <ListItemIcon>
+                    <MapIcon color="primary" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={project.project_name}
+                    secondary={`Status: ${project.status} | Progress: ${project.progress_percent}%`}
+                  />
+                  <Box display="flex" gap={1}>
+                    <Chip
+                      label={`Materials: ${project.materialCount}`}
+                      size="small"
+                      color="primary"
+                    />
+                    <Chip
+                      label={`Labor: ${project.laborCount}`}
+                      size="small"
+                      color="secondary"
+                    />
+                    <Chip
+                      label={`Equipment: ${project.equipmentCount}`}
+                      size="small"
+                      color="success"
+                    />
+                  </Box>
+                </ListItem>
+              ))}
+            </List>
+          </Card>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+
+  const renderPerformance = () => (
+    <Box>
+      {/* Header */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          mb: 3,
+        }}
+      >
+        <Box>
+          <Typography variant="h6" fontWeight="600" color="text.primary">
+            Performance Metrics
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Task completion rates and project performance indicators
+          </Typography>
+        </Box>
+        <IconButton
+          onClick={() => setPerformanceHelpOpen(true)}
+          color="primary"
+          sx={{
+            backgroundColor: "rgba(25, 118, 210, 0.1)",
+            "&:hover": {
+              backgroundColor: "rgba(25, 118, 210, 0.2)",
+            },
+          }}
+          title="Click to understand the data shown here"
+        >
+          <HelpIcon />
+        </IconButton>
+      </Box>
+
+      <Grid container spacing={3}>
+        {/* Performance Overview */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card sx={{ p: 3, height: 300 }}>
+            <Typography variant="h6" gutterBottom fontWeight="600">
+              Performance Overview
+            </Typography>
+            <Stack spacing={3} sx={{ mt: 2 }}>
               <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  mb: 3,
-                }}
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
               >
-                <Box>
-                  <Typography variant="h6" fontWeight="600" color="#2c3e50">
-                    Station Performance Distribution
+                <Typography>Task Completion Rate:</Typography>
+                <Typography variant="h5" color="primary">
+                  {analyticsData.performance?.taskCompletionRate || 0}%
+                </Typography>
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Completed Tasks:</Typography>
+                <Typography variant="h6" color="success.main">
+                  {analyticsData.performance?.completedTasks || 0}
+                </Typography>
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>In Progress Tasks:</Typography>
+                <Typography variant="h6" color="warning.main">
+                  {analyticsData.performance?.inProgressTasks || 0}
+                </Typography>
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Projects at Risk:</Typography>
+                <Typography
+                  variant="h6"
+                  color={
+                    analyticsData.performance?.projectsAtRisk > 0
+                      ? "error.main"
+                      : "success.main"
+                  }
+                >
+                  {analyticsData.performance?.projectsAtRisk || 0}
+                </Typography>
+              </Box>
+            </Stack>
+          </Card>
+        </Grid>
+
+        {/* Material Utilization */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card sx={{ p: 3, height: 300 }}>
+            <Typography variant="h6" gutterBottom fontWeight="600">
+              Material Utilization
+            </Typography>
+            <Stack spacing={3} sx={{ mt: 2 }}>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Total Required:</Typography>
+                <Typography variant="h6" color="primary">
+                  {parseFloat(
+                    analyticsData.materials?.summary?.totalRequired || 0
+                  ).toLocaleString()}
+                </Typography>
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Total Used:</Typography>
+                <Typography variant="h6" color="secondary">
+                  {parseFloat(
+                    analyticsData.materials?.summary?.totalUsed || 0
+                  ).toLocaleString()}
+                </Typography>
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Utilization:</Typography>
+                <Typography variant="h6" color="info.main">
+                  {analyticsData.materials?.summary?.utilizationPercent || 0}%
+                </Typography>
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Total Cost:</Typography>
+                <Typography variant="h6" color="success.main">
+                  KSh{" "}
+                  {parseFloat(
+                    analyticsData.materials?.summary?.totalCost || 0
+                  ).toLocaleString()}
+                </Typography>
+              </Box>
+            </Stack>
+          </Card>
+        </Grid>
+
+        {/* Equipment Summary */}
+        <Grid size={{ xs: 12 }}>
+          <Card sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom fontWeight="600">
+              Equipment & Cost Summary
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                <Box textAlign="center" p={2}>
+                  <Typography variant="h4" color="primary" fontWeight="bold">
+                    {analyticsData.overview?.totalEquipment || 0}
                   </Typography>
-                  <Typography variant="body2" color="#7f8c8d">
-                    Performance breakdown across all polling stations
+                  <Typography variant="body2" color="text.secondary">
+                    Total Equipment
                   </Typography>
                 </Box>
-              </Box>
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 6, sm: 3 }}>
-                  <Box
-                    textAlign="center"
-                    p={3}
-                    sx={{
-                      background:
-                        "linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0.05) 100%)",
-                      borderRadius: 3,
-                      border: "1px solid rgba(76, 175, 80, 0.2)",
-                      transition: "all 0.3s ease",
-                      "&:hover": {
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 4px 12px rgba(76, 175, 80, 0.2)",
-                      },
-                    }}
-                  >
-                    <Typography
-                      variant="h4"
-                      color="success.main"
-                      fontWeight="bold"
-                    >
-                      {analyticsData.gauge?.performance?.excellent || 0}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="#7f8c8d"
-                      fontWeight="500"
-                    >
-                      Excellent (90%+)
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid size={{ xs: 6, sm: 3 }}>
-                  <Box
-                    textAlign="center"
-                    p={3}
-                    sx={{
-                      background:
-                        "linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(33, 150, 243, 0.05) 100%)",
-                      borderRadius: 3,
-                      border: "1px solid rgba(33, 150, 243, 0.2)",
-                      transition: "all 0.3s ease",
-                      "&:hover": {
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 4px 12px rgba(33, 150, 243, 0.2)",
-                      },
-                    }}
-                  >
-                    <Typography
-                      variant="h4"
-                      color="info.main"
-                      fontWeight="bold"
-                    >
-                      {analyticsData.gauge?.performance?.good || 0}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="#7f8c8d"
-                      fontWeight="500"
-                    >
-                      Good (70-90%)
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid size={{ xs: 6, sm: 3 }}>
-                  <Box
-                    textAlign="center"
-                    p={3}
-                    sx={{
-                      background:
-                        "linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 152, 0, 0.05) 100%)",
-                      borderRadius: 3,
-                      border: "1px solid rgba(255, 152, 0, 0.2)",
-                      transition: "all 0.3s ease",
-                      "&:hover": {
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 4px 12px rgba(255, 152, 0, 0.2)",
-                      },
-                    }}
-                  >
-                    <Typography
-                      variant="h4"
-                      color="warning.main"
-                      fontWeight="bold"
-                    >
-                      {analyticsData.gauge?.performance?.fair || 0}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="#7f8c8d"
-                      fontWeight="500"
-                    >
-                      Fair (50-70%)
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid size={{ xs: 6, sm: 3 }}>
-                  <Box
-                    textAlign="center"
-                    p={3}
-                    sx={{
-                      background:
-                        "linear-gradient(135deg, rgba(244, 67, 54, 0.1) 0%, rgba(244, 67, 54, 0.05) 100%)",
-                      borderRadius: 3,
-                      border: "1px solid rgba(244, 67, 54, 0.2)",
-                      transition: "all 0.3s ease",
-                      "&:hover": {
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 4px 12px rgba(244, 67, 54, 0.2)",
-                      },
-                    }}
-                  >
-                    <Typography
-                      variant="h4"
-                      color="error.main"
-                      fontWeight="bold"
-                    >
-                      {analyticsData.gauge?.performance?.poor || 0}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="#7f8c8d"
-                      fontWeight="500"
-                    >
-                      Poor (&lt;50%)
-                    </Typography>
-                  </Box>
-                </Grid>
               </Grid>
-            </CardContent>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                <Box textAlign="center" p={2}>
+                  <Typography
+                    variant="h4"
+                    color="success.main"
+                    fontWeight="bold"
+                  >
+                    {analyticsData.equipmentSummary?.availableEquipment || 0}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Available Equipment
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                <Box textAlign="center" p={2}>
+                  <Typography
+                    variant="h4"
+                    color="warning.main"
+                    fontWeight="bold"
+                  >
+                    KSh{" "}
+                    {parseFloat(
+                      analyticsData.equipmentSummary?.totalDailyRentalCost || 0
+                    ).toLocaleString()}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Daily Rental Cost
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                <Box textAlign="center" p={2}>
+                  <Typography variant="h4" color="info.main" fontWeight="bold">
+                    {analyticsData.overview?.overdueTasks || 0}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Overdue Tasks
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Card>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+
+  const renderEquipmentMaterials = () => (
+    <Box>
+      {/* Header */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          mb: 3,
+        }}
+      >
+        <Box>
+          <Typography variant="h6" fontWeight="600" color="text.primary">
+            Equipment & Materials Management
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Equipment availability, material utilization, and resource
+            management
+          </Typography>
+        </Box>
+        <IconButton
+          onClick={() => setEquipmentMaterialsHelpOpen(true)}
+          color="primary"
+          sx={{
+            backgroundColor: "rgba(25, 118, 210, 0.1)",
+            "&:hover": {
+              backgroundColor: "rgba(25, 118, 210, 0.2)",
+            },
+          }}
+          title="Click to understand the data shown here"
+        >
+          <HelpIcon />
+        </IconButton>
+      </Box>
+
+      <Grid container spacing={3}>
+        {/* Equipment Availability */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card sx={{ p: 3, height: 400 }}>
+            <Typography variant="h6" gutterBottom fontWeight="600">
+              Equipment Availability
+            </Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              {(analyticsData.equipment?.byAvailability || []).length > 0 ? (
+                <PieChart>
+                  <Pie
+                    data={(analyticsData.equipment?.byAvailability || []).map(
+                      (item) => ({
+                        name: item.availability ? "Available" : "Unavailable",
+                        value: parseInt(item.count) || 0,
+                      })
+                    )}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius="90%"
+                    innerRadius="50%"
+                    fill="#8884d8"
+                  >
+                    {(analyticsData.equipment?.byAvailability || []).map(
+                      (entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      )
+                    )}
+                  </Pie>
+                  <Tooltip formatter={(value) => [value, "Equipment"]} />
+                  <Legend />
+                </PieChart>
+              ) : (
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  height="100%"
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    No equipment data available
+                  </Typography>
+                </Box>
+              )}
+            </ResponsiveContainer>
+          </Card>
+        </Grid>
+
+        {/* Labor Status */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card sx={{ p: 3, height: 400 }}>
+            <Typography variant="h6" gutterBottom fontWeight="600">
+              Labor Status Distribution
+            </Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart
+                data={(analyticsData.labor?.byStatus || []).map((item) => ({
+                  ...item,
+                  count: parseInt(item.count) || 0,
+                }))}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="status" />
+                <YAxis />
+                <Tooltip formatter={(value) => [value, "Workers"]} />
+                <Bar dataKey="count" fill="#f093fb" />
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+        </Grid>
+
+        {/* Material Summary */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom fontWeight="600">
+              Material Summary
+            </Typography>
+            <Stack spacing={3} sx={{ mt: 2 }}>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Total Required:</Typography>
+                <Typography variant="h6" color="primary">
+                  {parseFloat(
+                    analyticsData.materials?.summary?.totalRequired || 0
+                  ).toLocaleString()}
+                </Typography>
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Total Used:</Typography>
+                <Typography variant="h6" color="secondary">
+                  {parseFloat(
+                    analyticsData.materials?.summary?.totalUsed || 0
+                  ).toLocaleString()}
+                </Typography>
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Utilization:</Typography>
+                <Typography variant="h6" color="info.main">
+                  {analyticsData.materials?.summary?.utilizationPercent || 0}%
+                </Typography>
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Total Cost:</Typography>
+                <Typography variant="h6" color="success.main">
+                  KSh{" "}
+                  {parseFloat(
+                    analyticsData.materials?.summary?.totalCost || 0
+                  ).toLocaleString()}
+                </Typography>
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Total Spent:</Typography>
+                <Typography variant="h6" color="warning.main">
+                  KSh{" "}
+                  {parseFloat(
+                    analyticsData.materials?.summary?.totalSpent || 0
+                  ).toLocaleString()}
+                </Typography>
+              </Box>
+            </Stack>
+          </Card>
+        </Grid>
+
+        {/* Equipment Summary */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom fontWeight="600">
+              Equipment Summary
+            </Typography>
+            <Stack spacing={3} sx={{ mt: 2 }}>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Available Equipment:</Typography>
+                <Typography variant="h6" color="success.main">
+                  {analyticsData.equipmentSummary?.availableEquipment || 0}
+                </Typography>
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Total Equipment:</Typography>
+                <Typography variant="h6" color="primary">
+                  {analyticsData.overview?.totalEquipment || 0}
+                </Typography>
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Daily Rental Cost:</Typography>
+                <Typography variant="h6" color="warning.main">
+                  KSh{" "}
+                  {parseFloat(
+                    analyticsData.equipmentSummary?.totalDailyRentalCost || 0
+                  ).toLocaleString()}
+                </Typography>
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Equipment Utilization:</Typography>
+                <Typography variant="h6" color="info.main">
+                  {analyticsData.equipmentSummary?.availableEquipment > 0
+                    ? Math.round(
+                        (analyticsData.equipmentSummary?.availableEquipment /
+                          analyticsData.overview?.totalEquipment) *
+                          100
+                      )
+                    : 0}
+                  %
+                </Typography>
+              </Box>
+            </Stack>
+          </Card>
+        </Grid>
+
+        {/* Issues Summary */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom fontWeight="600">
+              Issues Summary
+            </Typography>
+            <Stack spacing={2}>
+              {(analyticsData.issues?.byStatus || []).map((issue) => (
+                <Box
+                  key={issue.status}
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  p={2}
+                  sx={{
+                    backgroundColor: "rgba(25, 118, 210, 0.05)",
+                    borderRadius: 2,
+                    border: "1px solid rgba(25, 118, 210, 0.1)",
+                  }}
+                >
+                  <Typography fontWeight="500" textTransform="capitalize">
+                    {issue.status.replace("_", " ")} Issues
+                  </Typography>
+                  <Chip
+                    label={issue.count}
+                    color={
+                      issue.status === "resolved"
+                        ? "success"
+                        : issue.status === "open"
+                        ? "error"
+                        : "warning"
+                    }
+                  />
+                </Box>
+              ))}
+            </Stack>
+          </Card>
+        </Grid>
+
+        {/* Documents Summary */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom fontWeight="600">
+              Documents & Activity
+            </Typography>
+            <Stack spacing={2}>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                p={2}
+                sx={{
+                  backgroundColor: "rgba(76, 175, 80, 0.05)",
+                  borderRadius: 2,
+                  border: "1px solid rgba(76, 175, 80, 0.1)",
+                }}
+              >
+                <Typography fontWeight="500">Total Documents:</Typography>
+                <Chip
+                  label={analyticsData.overview?.totalDocuments || 0}
+                  color="success"
+                />
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                p={2}
+                sx={{
+                  backgroundColor: "rgba(255, 152, 0, 0.05)",
+                  borderRadius: 2,
+                  border: "1px solid rgba(255, 152, 0, 0.1)",
+                }}
+              >
+                <Typography fontWeight="500">Progress Updates:</Typography>
+                <Chip
+                  label={
+                    analyticsData.recentActivity?.progressUpdates?.length || 0
+                  }
+                  color="warning"
+                />
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                p={2}
+                sx={{
+                  backgroundColor: "rgba(156, 39, 176, 0.05)",
+                  borderRadius: 2,
+                  border: "1px solid rgba(156, 39, 176, 0.1)",
+                }}
+              >
+                <Typography fontWeight="500">Overdue Tasks:</Typography>
+                <Chip
+                  label={analyticsData.overview?.overdueTasks || 0}
+                  color="secondary"
+                />
+              </Box>
+            </Stack>
           </Card>
         </Grid>
       </Grid>
@@ -2636,39 +3115,30 @@ const Analytics = () => {
       case 0:
         return renderOverview();
       case 1:
-        return renderHeatMap();
+        return renderProjects();
       case 2:
-        return renderBarCharts();
+        return renderTasksLabor();
       case 3:
-        return renderPieCharts();
+        return renderBudgetResources();
       case 4:
-        return renderTrendLines();
+        return renderPerformance();
       case 5:
-        return renderGauges();
+        return renderEquipmentMaterials();
       default:
         return renderOverview();
     }
   };
 
-  if (loading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="400px"
-      >
-        <CircularProgress size={60} />
-      </Box>
-    );
-  }
-
+  // Show error message if there's an error
   if (error) {
     return (
       <Box p={3}>
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
+        <Button variant="contained" onClick={fetchAnalyticsData} sx={{ mt: 2 }}>
+          Retry
+        </Button>
       </Box>
     );
   }
@@ -2689,7 +3159,7 @@ const Analytics = () => {
           WebkitTextFillColor: "transparent",
         }}
       >
-        Campaign Analytics Dashboard
+        Construction Management Dashboard
       </Typography>
 
       <Card
@@ -2711,13 +3181,14 @@ const Analytics = () => {
           <Tabs
             value={activeTab}
             onChange={(e, newValue) => setActiveTab(newValue)}
-            variant="scrollable"
-            scrollButtons="auto"
+            variant="fullWidth"
             sx={{
               "& .MuiTab-root": {
                 color: "#667eea",
                 fontWeight: 600,
                 minHeight: 60,
+                fontSize: "0.875rem",
+                padding: "8px 12px",
                 "&.Mui-selected": {
                   color: "#667eea",
                   backgroundColor: "rgba(102, 126, 234, 0.08)",
@@ -2749,12 +3220,12 @@ const Analytics = () => {
       </Card>
 
       {/* Help Dialogs */}
-      <HelpDialog />
-      <HeatMapHelpDialog />
-      <BarChartHelpDialog />
-      <PieChartHelpDialog />
-      <TrendLineHelpDialog />
-      <GaugeHelpDialog />
+      <OverviewHelpDialog />
+      <ProjectsHelpDialog />
+      <TasksLaborHelpDialog />
+      <BudgetResourcesHelpDialog />
+      <PerformanceHelpDialog />
+      <EquipmentMaterialsHelpDialog />
     </Box>
   );
 };

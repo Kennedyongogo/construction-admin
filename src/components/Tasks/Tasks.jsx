@@ -342,6 +342,7 @@ const Tasks = () => {
         assigned_to_admin: "",
       });
       fetchTasks();
+      fetchAllTasksForCounts(); // Refresh tab counts
 
       // Show success message
       Swal.fire({
@@ -410,6 +411,7 @@ const Tasks = () => {
       setOpenEditDialog(false);
       setSelectedTask(null);
       fetchTasks();
+      fetchAllTasksForCounts(); // Refresh tab counts
 
       // Show success message
       Swal.fire({
@@ -494,6 +496,7 @@ const Tasks = () => {
 
         // Refresh tasks list
         fetchTasks();
+        fetchAllTasksForCounts(); // Refresh tab counts
 
         // Show success message with SweetAlert
         Swal.fire({

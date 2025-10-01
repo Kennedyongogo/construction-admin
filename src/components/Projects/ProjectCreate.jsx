@@ -58,6 +58,8 @@ const ProjectCreate = () => {
     engineer_in_charge: "",
     progress_percent: 0,
     notes: "",
+    floor_size: "",
+    construction_type: "building",
   });
   const [blueprintFiles, setBlueprintFiles] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -301,7 +303,7 @@ const ProjectCreate = () => {
         py: 4,
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         {/* Header */}
         <Box
           sx={{
@@ -376,9 +378,9 @@ const ProjectCreate = () => {
           )}
         </Box>
 
-        <Grid container spacing={4}>
+        <Grid container spacing={4} sx={{ width: "100%" }}>
           {/* Basic Information */}
-          <Grid item xs={12}>
+          <Grid item xs={12} sx={{ width: "100%" }}>
             <Card
               sx={{
                 backgroundColor: "white",
@@ -395,8 +397,8 @@ const ProjectCreate = () => {
                   </Typography>
                 </Box>
 
-                <Grid container spacing={3}>
-                  <Grid item xs={12} md={6}>
+                <Grid container spacing={3} sx={{ flexDirection: "column" }}>
+                  <Grid item xs={12} sx={{ width: "100%", maxWidth: "100%" }}>
                     <TextField
                       fullWidth
                       label="Project Name"
@@ -412,7 +414,7 @@ const ProjectCreate = () => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12}>
                     <TextField
                       fullWidth
                       label="Location"
@@ -445,7 +447,7 @@ const ProjectCreate = () => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12}>
                     <TextField
                       fullWidth
                       label="Start Date"
@@ -463,7 +465,7 @@ const ProjectCreate = () => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12}>
                     <TextField
                       fullWidth
                       label="End Date"
@@ -480,7 +482,7 @@ const ProjectCreate = () => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12}>
                     <TextField
                       fullWidth
                       label="Latitude"
@@ -495,7 +497,7 @@ const ProjectCreate = () => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12}>
                     <TextField
                       fullWidth
                       label="Longitude"
@@ -531,8 +533,8 @@ const ProjectCreate = () => {
                   </Typography>
                 </Box>
 
-                <Grid container spacing={3}>
-                  <Grid item xs={12} md={4}>
+                <Grid container spacing={3} sx={{ flexDirection: "column" }}>
+                  <Grid item xs={12}>
                     <TextField
                       fullWidth
                       label="Budget Estimate"
@@ -548,7 +550,7 @@ const ProjectCreate = () => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid item xs={12}>
                     <TextField
                       fullWidth
                       label="Actual Cost"
@@ -564,7 +566,7 @@ const ProjectCreate = () => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid item xs={12}>
                     <FormControl
                       fullWidth
                       sx={{
@@ -610,8 +612,8 @@ const ProjectCreate = () => {
                   </Typography>
                 </Box>
 
-                <Grid container spacing={3}>
-                  <Grid item xs={12} md={6}>
+                <Grid container spacing={3} sx={{ flexDirection: "column" }}>
+                  <Grid item xs={12}>
                     <TextField
                       fullWidth
                       label="Contractor Name"
@@ -626,7 +628,7 @@ const ProjectCreate = () => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12}>
                     <TextField
                       fullWidth
                       label="Client Name"
@@ -641,7 +643,7 @@ const ProjectCreate = () => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12}>
                     <TextField
                       fullWidth
                       label="Funding Source"
@@ -656,7 +658,7 @@ const ProjectCreate = () => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12}>
                     <TextField
                       fullWidth
                       value={projectForm.engineer_in_charge}
@@ -719,8 +721,8 @@ const ProjectCreate = () => {
                   </Typography>
                 </Box>
 
-                <Grid container spacing={3}>
-                  <Grid item xs={12} md={6}>
+                <Grid container spacing={3} sx={{ flexDirection: "column" }}>
+                  <Grid item xs={12}>
                     <FormControl
                       fullWidth
                       sx={{
@@ -755,7 +757,7 @@ const ProjectCreate = () => {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12}>
                     <TextField
                       fullWidth
                       label="Progress Percentage"
@@ -788,6 +790,49 @@ const ProjectCreate = () => {
                         },
                       }}
                     />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Floor Size (m²)"
+                      type="number"
+                      value={projectForm.floor_size}
+                      onChange={(e) =>
+                        handleInputChange("floor_size", e.target.value)
+                      }
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "transparent",
+                        },
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <FormControl
+                      fullWidth
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "transparent",
+                        },
+                      }}
+                    >
+                      <InputLabel>Construction Type</InputLabel>
+                      <Select
+                        value={projectForm.construction_type}
+                        onChange={(e) =>
+                          handleInputChange("construction_type", e.target.value)
+                        }
+                        label="Construction Type"
+                      >
+                        <MenuItem value="building">Building</MenuItem>
+                        <MenuItem value="infrastructure">
+                          Infrastructure
+                        </MenuItem>
+                        <MenuItem value="industrial">Industrial</MenuItem>
+                        <MenuItem value="specialized">Specialized</MenuItem>
+                        <MenuItem value="other">Other</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
                 </Grid>
               </CardContent>
