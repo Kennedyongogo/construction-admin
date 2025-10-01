@@ -215,14 +215,10 @@ const UsersTable = () => {
   const handleEditUser = (user) => {
     setSelectedUser(user);
 
-    // Convert file path to URL for display
+    // Convert file path to URL for display (same as blueprints)
     let profilePictureUrl = "";
     if (user.profile_picture) {
-      // Extract filename from full path and create URL
-      const filename =
-        user.profile_picture.split("\\").pop() ||
-        user.profile_picture.split("/").pop();
-      profilePictureUrl = buildImageUrl(`uploads/documents/${filename}`);
+      profilePictureUrl = buildImageUrl(user.profile_picture);
     }
 
     setUserForm({
@@ -989,23 +985,76 @@ const UsersTable = () => {
                       Profile Picture
                     </Typography>
                     <Box
-                      component="img"
-                      src={(() => {
-                        const filename =
-                          selectedUser.profile_picture.split("\\").pop() ||
-                          selectedUser.profile_picture.split("/").pop();
-                        return buildImageUrl(`uploads/documents/${filename}`);
-                      })()}
-                      alt="Profile Picture"
                       sx={{
-                        width: 150,
-                        height: 150,
-                        objectFit: "cover",
-                        borderRadius: "50%",
-                        border: "4px solid #667eea",
-                        boxShadow: "0 8px 25px rgba(102, 126, 234, 0.3)",
+                        p: 2,
+                        backgroundColor: "rgba(102, 126, 234, 0.1)",
+                        borderRadius: 2,
+                        border: "2px solid rgba(102, 126, 234, 0.3)",
+                        cursor: "pointer",
+                        transition: "transform 0.2s ease-in-out",
+                        display: "inline-block",
+                        "&:hover": {
+                          transform: "scale(1.02)",
+                        },
                       }}
-                    />
+                      onClick={() => {
+                        const fullImageUrl = buildImageUrl(
+                          selectedUser.profile_picture
+                        );
+                        window.open(fullImageUrl, "_blank");
+                      }}
+                    >
+                      <Box
+                        component="img"
+                        src={buildImageUrl(selectedUser.profile_picture)}
+                        alt="Profile Picture"
+                        sx={{
+                          width: 150,
+                          height: 150,
+                          objectFit: "cover",
+                          borderRadius: "50%",
+                          border: "4px solid #667eea",
+                          boxShadow: "0 8px 25px rgba(102, 126, 234, 0.3)",
+                        }}
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                          e.target.nextSibling.style.display = "block";
+                        }}
+                      />
+                      <Box
+                        textAlign="center"
+                        sx={{
+                          display: "none",
+                          width: 150,
+                          height: 150,
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          backgroundColor: "rgba(102, 126, 234, 0.1)",
+                          borderRadius: "50%",
+                          border: "4px solid #667eea",
+                        }}
+                      >
+                        <PersonIcon
+                          sx={{
+                            fontSize: 48,
+                            color: "#667eea",
+                            mb: 1,
+                          }}
+                        />
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#667eea",
+                            display: "block",
+                            wordBreak: "break-word",
+                            textAlign: "center",
+                          }}
+                        >
+                          Profile Picture
+                        </Typography>
+                      </Box>
+                    </Box>
                   </Box>
                 )}
 

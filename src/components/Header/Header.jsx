@@ -139,12 +139,7 @@ export default function Header(props) {
           <Box sx={{ mr: 1 }}>
             {currentUser?.profile_picture ? (
               <Avatar
-                src={(() => {
-                  const filename =
-                    currentUser.profile_picture.split("\\").pop() ||
-                    currentUser.profile_picture.split("/").pop();
-                  return buildImageUrl(`uploads/documents/${filename}`);
-                })()}
+                src={buildImageUrl(currentUser.profile_picture)}
                 alt={currentUser?.name}
                 sx={{
                   width: 32,
