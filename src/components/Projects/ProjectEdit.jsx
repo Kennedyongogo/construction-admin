@@ -323,54 +323,6 @@ const ProjectEdit = () => {
     }
   };
 
-  const uploadFiles = async () => {
-    if (selectedFiles.length === 0) return [];
-
-    setUploadingFiles(true);
-    const uploadedFiles = [];
-
-    try {
-      // Upload all files in a single request
-      const formData = new FormData();
-
-      // Add all files to the form data
-      selectedFiles.forEach((file) => {
-        formData.append("documents", file);
-      });
-
-      formData.append("project_id", id);
-
-      // Get the current user ID from localStorage
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      formData.append("uploaded_by_admin_id", user.id);
-
-      const token = localStorage.getItem("token");
-      const response = await fetch("/api/documents/upload", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      const result = await response.json();
-      console.log("Upload response:", result);
-
-      if (result.success) {
-        // result.data is an array of documents
-        uploadedFiles.push(...result.data);
-      } else {
-        console.error("Upload failed:", result.message);
-      }
-    } catch (error) {
-      console.error("Error uploading files:", error);
-    } finally {
-      setUploadingFiles(false);
-    }
-
-    return uploadedFiles;
-  };
-
   const handleSave = async () => {
     try {
       setSaving(true);

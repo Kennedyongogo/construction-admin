@@ -323,35 +323,183 @@ const Tasks = () => {
     const currentStatus = selectedTask?.status;
     const currentProgress = selectedTask?.progress_percent || 0;
 
+    // Always update the form status first
+    setEditForm({ ...editForm, status: newStatus });
+
     // Check if progress update is required
     const statusChangingFromPending =
       currentStatus === "pending" && newStatus !== "pending";
+    const statusChangingFromInProgress =
+      currentStatus === "in_progress" && newStatus === "completed";
     const progressChangingFromZero =
       currentProgress === 0 && editForm.progress_percent > 0;
 
-    if (statusChangingFromPending || progressChangingFromZero) {
+    if (
+      statusChangingFromPending ||
+      statusChangingFromInProgress ||
+      progressChangingFromZero
+    ) {
       setRequiresProgressUpdate(true);
       setOpenProgressDialog(true);
-    } else {
-      setEditForm({ ...editForm, status: newStatus });
     }
   };
 
-  const handleProgressUpdateSubmit = () => {
-    // Update the edit form with the new status and progress
-    setEditForm({
-      ...editForm,
-      status: editForm.status,
-      progress_percent: progressForm.progress_percent,
-      progress_update: progressForm,
-    });
-    setOpenProgressDialog(false);
-    setRequiresProgressUpdate(false);
+  const handleProgressUpdateSubmit = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setError("No authentication token found. Please login again.");
+        return;
+      }
+
+      // Create FormData for progress update with images
+      const formData = new FormData();
+      formData.append("task_id", selectedTask.id);
+      formData.append("description", progressForm.description);
+      formData.append("progress_percent", progressForm.progress_percent);
+      formData.append("date", progressForm.date);
+
+      // Append images if any
+      if (progressForm.images && progressForm.images.length > 0) {
+        progressForm.images.forEach((file, index) => {
+          if (file instanceof File) {
+            formData.append("progress_images", file);
+          }
+        });
+      }
+
+      // Create progress update
+      const response = await fetch(`/api/progress-updates`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to create progress update");
+      }
+
+      // Update the edit form with the new status and progress
+      // Include the progress_update data so the task update knows it's already been created
+      setEditForm({
+        ...editForm,
+        status: editForm.status,
+        progress_percent: progressForm.progress_percent,
+        progress_update: {
+          description: progressForm.description,
+          progress_percent: progressForm.progress_percent,
+          date: progressForm.date,
+          images: progressForm.images.map((file) =>
+            file instanceof File
+              ? `/uploads/progress-updates/${file.name}`
+              : file
+          ),
+        },
+        progress_update_already_created: true,
+      });
+
+      // Clean up object URLs
+      progressForm.images.forEach((file) => {
+        if (file instanceof File) {
+          URL.revokeObjectURL(URL.createObjectURL(file));
+        }
+      });
+
+      // Reset progress form
+      setProgressForm({
+        description: "",
+        progress_percent: selectedTask?.progress_percent || 0,
+        date: new Date().toISOString().split("T")[0],
+        images: [],
+      });
+
+      setOpenProgressDialog(false);
+      setRequiresProgressUpdate(false);
+
+      // Now proceed with the task update
+      const taskUpdateData = {
+        ...editForm,
+        status: editForm.status,
+        progress_percent: progressForm.progress_percent,
+        progress_update_already_created: true,
+      };
+
+      const updateResponse = await fetch(`/api/tasks/${selectedTask.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(taskUpdateData),
+      });
+
+      if (!updateResponse.ok) {
+        throw new Error("Failed to update task");
+      }
+
+      // Refresh tasks
+      fetchTasks();
+      fetchAllTasksForCounts();
+
+      // Close edit dialog
+      setOpenEditDialog(false);
+      setSelectedTask(null);
+
+      // Show success message
+      Swal.fire({
+        icon: "success",
+        title: "Progress Updated!",
+        text: "Progress update has been created and task updated successfully.",
+        timer: 1500,
+        showConfirmButton: false,
+        customClass: {
+          container: "swal-z-index-fix",
+        },
+        didOpen: () => {
+          const swalContainer = document.querySelector(".swal-z-index-fix");
+          if (swalContainer) {
+            swalContainer.style.zIndex = "9999";
+          }
+        },
+      });
+    } catch (err) {
+      console.error("Error creating progress update:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to create progress update. Please try again.",
+        customClass: {
+          container: "swal-z-index-fix",
+        },
+        didOpen: () => {
+          const swalContainer = document.querySelector(".swal-z-index-fix");
+          if (swalContainer) {
+            swalContainer.style.zIndex = "9999";
+          }
+        },
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleProgressUpdateCancel = () => {
     setOpenProgressDialog(false);
     setRequiresProgressUpdate(false);
+
+    // Clean up object URLs to prevent memory leaks
+    progressForm.images.forEach((file) => {
+      if (file instanceof File) {
+        URL.revokeObjectURL(URL.createObjectURL(file));
+      }
+    });
+
     // Reset progress form
     setProgressForm({
       description: "",
@@ -359,6 +507,19 @@ const Tasks = () => {
       date: new Date().toISOString().split("T")[0],
       images: [],
     });
+  };
+
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case "pending":
+        return "Pending";
+      case "in_progress":
+        return "In Progress";
+      case "completed":
+        return "Completed";
+      default:
+        return "Unknown";
+    }
   };
 
   const handleCreateTask = async () => {
@@ -1626,7 +1787,9 @@ const Tasks = () => {
                 Progress Update Required
               </Typography>
               <Typography variant="body2" sx={{ opacity: 0.9, mt: 0.5 }}>
-                Please provide progress details for status change
+                Please provide progress details for status change from{" "}
+                {getStatusLabel(selectedTask?.status || "pending")} to{" "}
+                {getStatusLabel(editForm.status)}
               </Typography>
             </Box>
           </DialogTitle>
@@ -1690,6 +1853,111 @@ const Tasks = () => {
                 />
               </Box>
 
+              {/* Image Upload Section */}
+              <Box>
+                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                  Progress Images (Optional):
+                </Typography>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files);
+                    setProgressForm({
+                      ...progressForm,
+                      images: [...progressForm.images, ...files],
+                    });
+                  }}
+                  style={{ display: "none" }}
+                  id="progress-image-upload"
+                />
+                <label htmlFor="progress-image-upload">
+                  <Button
+                    variant="outlined"
+                    component="span"
+                    startIcon={<UploadIcon />}
+                    size="small"
+                    sx={{
+                      borderColor: "#667eea",
+                      color: "#667eea",
+                      "&:hover": {
+                        borderColor: "#5a6fd8",
+                        backgroundColor: "rgba(102, 126, 234, 0.1)",
+                      },
+                    }}
+                  >
+                    Add Images
+                  </Button>
+                </label>
+
+                {/* Selected Images Preview */}
+                {progressForm.images.length > 0 && (
+                  <Box sx={{ mt: 2 }}>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: "text.secondary" }}
+                    >
+                      Selected Images ({progressForm.images.length}):
+                    </Typography>
+                    <Box
+                      sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}
+                    >
+                      {progressForm.images.map((file, index) => (
+                        <Box
+                          key={index}
+                          sx={{
+                            position: "relative",
+                            width: 80,
+                            height: 80,
+                            borderRadius: 1,
+                            overflow: "hidden",
+                            border: "1px solid #e0e0e0",
+                          }}
+                        >
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`Preview ${index + 1}`}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                          />
+                          <IconButton
+                            size="small"
+                            onClick={() => {
+                              const newImages = progressForm.images.filter(
+                                (_, i) => i !== index
+                              );
+                              setProgressForm({
+                                ...progressForm,
+                                images: newImages,
+                              });
+                            }}
+                            sx={{
+                              position: "absolute",
+                              top: 2,
+                              right: 2,
+                              backgroundColor: "rgba(255, 255, 255, 0.9)",
+                              color: "error.main",
+                              width: 20,
+                              height: 20,
+                              "&:hover": {
+                                backgroundColor: "error.main",
+                                color: "white",
+                              },
+                            }}
+                          >
+                            <CloseIcon fontSize="small" />
+                          </IconButton>
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+                )}
+              </Box>
+
               {/* Status Display */}
               <Box
                 sx={{
@@ -1704,17 +1972,15 @@ const Tasks = () => {
                 </Typography>
                 <Box display="flex" alignItems="center" gap={2}>
                   <Chip
-                    label={selectedTask?.status || "pending"}
+                    label={getStatusLabel(selectedTask?.status || "pending")}
                     color="info"
                     size="small"
-                    sx={{ textTransform: "capitalize" }}
                   />
                   <Typography variant="body2">→</Typography>
                   <Chip
-                    label={editForm.status}
+                    label={getStatusLabel(editForm.status)}
                     color="warning"
                     size="small"
-                    sx={{ textTransform: "capitalize" }}
                   />
                 </Box>
               </Box>

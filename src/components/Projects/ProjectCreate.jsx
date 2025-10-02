@@ -168,44 +168,6 @@ const ProjectCreate = () => {
     setBlueprintPreviews(newPreviews);
   };
 
-  const uploadFiles = async () => {
-    if (selectedFiles.length === 0) return [];
-
-    setUploadingFiles(true);
-    const uploadedFiles = [];
-
-    try {
-      const formData = new FormData();
-      selectedFiles.forEach((file) => {
-        formData.append("documents", file);
-      });
-
-      // Get the current user ID from localStorage
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      formData.append("uploaded_by_admin_id", user.id);
-
-      const token = localStorage.getItem("token");
-      const response = await fetch("/api/documents/upload", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      const result = await response.json();
-      if (result.success) {
-        uploadedFiles.push(...result.data);
-      }
-    } catch (error) {
-      console.error("Error uploading files:", error);
-    } finally {
-      setUploadingFiles(false);
-    }
-
-    return uploadedFiles;
-  };
-
   const handleCreate = async () => {
     try {
       setSaving(true);

@@ -108,6 +108,12 @@ const Documents = () => {
         queryParams.append("document_type", documentTypeFilter);
       }
 
+      // Exclude project documents from all tabs except "Project Documents"
+      // Project documents should only be viewed within the project context or in the Project Documents tab
+      if (documentTypeFilter !== "project_document") {
+        queryParams.append("exclude_types", "project_document");
+      }
+
       const response = await fetch(`/api/documents?${queryParams}`, {
         method: "GET",
         headers: {
