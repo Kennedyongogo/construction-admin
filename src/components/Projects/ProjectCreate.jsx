@@ -210,15 +210,7 @@ const ProjectCreate = () => {
     try {
       setSaving(true);
 
-      // Upload document files first
-      const uploadedFiles = await uploadFiles();
-
-      // Prepare project data
-      const allDocumentUrls = uploadedFiles
-        .map((file) => file.file_url || file.url)
-        .filter(Boolean);
-
-      // Prepare form data for project creation with blueprint files
+      // Prepare form data for project creation with both blueprint and document files
       const formData = new FormData();
 
       // Add all project form fields
@@ -228,9 +220,9 @@ const ProjectCreate = () => {
         }
       });
 
-      // Add document URLs
-      allDocumentUrls.forEach((url) => {
-        formData.append("document_urls", url);
+      // Add document files directly (not through document API)
+      selectedFiles.forEach((file) => {
+        formData.append("documents", file);
       });
 
       // Add blueprint files

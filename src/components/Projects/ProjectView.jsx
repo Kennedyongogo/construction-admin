@@ -14,6 +14,7 @@ import {
   CircularProgress,
   Alert,
   Container,
+  Tooltip,
 } from "@mui/material";
 import {
   ArrowBack as ArrowBackIcon,
@@ -36,6 +37,10 @@ import {
   Phone as PhoneIcon,
   Email as EmailIcon,
   Image as ImageIcon,
+  PictureAsPdf as PdfIcon,
+  Description as WordIcon,
+  Download as DownloadIcon,
+  Visibility as PreviewIcon,
 } from "@mui/icons-material";
 
 const ProjectView = () => {
@@ -44,6 +49,12 @@ const ProjectView = () => {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [previewModal, setPreviewModal] = useState({
+    open: false,
+    url: "",
+    fileName: "",
+    type: "",
+  });
 
   // Helper to build URL for uploaded assets using Vite proxy
   const buildImageUrl = (imageUrl) => {
@@ -132,6 +143,53 @@ const ProjectView = () => {
       style: "currency",
       currency: currency,
     }).format(amount);
+  };
+
+  const getFileType = (fileName) => {
+    const extension = fileName.toLowerCase().split(".").pop();
+    if (["jpg", "jpeg", "png", "gif", "bmp", "webp"].includes(extension)) {
+      return "image";
+    } else if (extension === "pdf") {
+      return "pdf";
+    } else if (["doc", "docx"].includes(extension)) {
+      return "word";
+    } else if (["xls", "xlsx"].includes(extension)) {
+      return "excel";
+    }
+    return "document";
+  };
+
+  const getFileIcon = (fileName) => {
+    const type = getFileType(fileName);
+    switch (type) {
+      case "image":
+        return <ImageIcon sx={{ fontSize: 48, color: "white", mb: 1 }} />;
+      case "pdf":
+        return <PdfIcon sx={{ fontSize: 48, color: "#f44336", mb: 1 }} />;
+      case "word":
+        return <WordIcon sx={{ fontSize: 48, color: "#2196f3", mb: 1 }} />;
+      case "excel":
+        return <WordIcon sx={{ fontSize: 48, color: "#4caf50", mb: 1 }} />;
+      default:
+        return <ImageIcon sx={{ fontSize: 48, color: "white", mb: 1 }} />;
+    }
+  };
+
+  const handleDocumentClick = (fileUrl, fileName) => {
+    const fullUrl = buildImageUrl(fileUrl);
+    const type = getFileType(fileName);
+
+    if (type === "image") {
+      setPreviewModal({
+        open: true,
+        url: fullUrl,
+        fileName: fileName,
+        type: type,
+      });
+    } else {
+      // For other file types, open in new tab for download
+      window.open(fullUrl, "_blank");
+    }
   };
 
   if (loading) {
@@ -742,7 +800,7 @@ const ProjectView = () => {
             )}
 
             {/* Project Documents */}
-            {project.documents && project.documents.length > 0 && (
+            {project.document_urls && project.document_urls.length > 0 && (
               <Grid item xs={12}>
                 <Card
                   sx={{
@@ -753,21 +811,14 @@ const ProjectView = () => {
                 >
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
-                      Project Documents ({project.documents.length})
+                      Project Documents ({project.document_urls.length})
                     </Typography>
                     <Grid container spacing={2}>
-                      {project.documents.map((document, index) => {
+                      {project.document_urls.map((fileUrl, index) => {
                         const fileName =
-                          document.file_name ||
-                          document.name ||
-                          `Document ${index + 1}`;
-                        const fileUrl = document.file_url || document.url;
-                        const isImage = fileName.match(
-                          /\.(jpg|jpeg|png|gif|bmp|webp)$/i
-                        );
-
-                        // Construct full URL for the document (same as Users component)
-                        const fullDocumentUrl = buildImageUrl(fileUrl);
+                          fileUrl.split("/").pop() || `Document ${index + 1}`;
+                        const fileType = getFileType(fileName);
+                        const isImage = fileType === "image";
 
                         return (
                           <Grid item xs={12} sm={6} md={4} key={index}>
@@ -779,20 +830,19 @@ const ProjectView = () => {
                                 border: "2px solid rgba(255, 255, 255, 0.3)",
                                 cursor: "pointer",
                                 transition: "transform 0.2s ease-in-out",
+                                position: "relative",
                                 "&:hover": {
                                   transform: "scale(1.02)",
                                 },
                               }}
-                              onClick={() => {
-                                if (fullDocumentUrl) {
-                                  window.open(fullDocumentUrl, "_blank");
-                                }
-                              }}
+                              onClick={() =>
+                                handleDocumentClick(fileUrl, fileName)
+                              }
                             >
-                              {isImage && fullDocumentUrl ? (
+                              {isImage ? (
                                 <Box>
                                   <img
-                                    src={fullDocumentUrl}
+                                    src={buildImageUrl(fileUrl)}
                                     alt={fileName}
                                     style={{
                                       width: "100%",
@@ -811,13 +861,7 @@ const ProjectView = () => {
                                     textAlign="center"
                                     sx={{ display: "none" }}
                                   >
-                                    <ImageIcon
-                                      sx={{
-                                        fontSize: 48,
-                                        color: "white",
-                                        mb: 1,
-                                      }}
-                                    />
+                                    {getFileIcon(fileName)}
                                     <Typography
                                       variant="caption"
                                       sx={{
@@ -852,11 +896,64 @@ const ProjectView = () => {
                                     Click to view full size
                                   </Typography>
                                 </Box>
+                              ) : fileType === "pdf" ? (
+                                <Box>
+                                  <iframe
+                                    src={buildImageUrl(fileUrl)}
+                                    style={{
+                                      width: "100%",
+                                      height: "200px",
+                                      border: "none",
+                                      borderRadius: "8px",
+                                      marginBottom: "8px",
+                                    }}
+                                    title={fileName}
+                                  />
+                                  <Typography
+                                    variant="body2"
+                                    sx={{
+                                      fontWeight: 600,
+                                      color: "white",
+                                      textAlign: "center",
+                                      wordBreak: "break-word",
+                                    }}
+                                  >
+                                    {fileName}
+                                  </Typography>
+                                  <Typography
+                                    variant="caption"
+                                    sx={{
+                                      opacity: 0.8,
+                                      color: "white",
+                                      display: "block",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    PDF Preview
+                                  </Typography>
+                                  <Tooltip title="Download PDF" placement="top">
+                                    <DownloadIcon
+                                      sx={{
+                                        position: "absolute",
+                                        top: 8,
+                                        right: 8,
+                                        fontSize: 20,
+                                        color: "rgba(255,255,255,0.8)",
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        window.open(
+                                          buildImageUrl(fileUrl),
+                                          "_blank"
+                                        );
+                                      }}
+                                    />
+                                  </Tooltip>
+                                </Box>
                               ) : (
                                 <Box textAlign="center">
-                                  <ImageIcon
-                                    sx={{ fontSize: 48, color: "white", mb: 1 }}
-                                  />
+                                  {getFileIcon(fileName)}
                                   <Typography
                                     variant="body2"
                                     sx={{
@@ -875,8 +972,30 @@ const ProjectView = () => {
                                       display: "block",
                                     }}
                                   >
-                                    {document.file_type || "Document"}
+                                    Click to download
                                   </Typography>
+                                  <Tooltip
+                                    title="Download Document"
+                                    placement="top"
+                                  >
+                                    <DownloadIcon
+                                      sx={{
+                                        position: "absolute",
+                                        top: 8,
+                                        right: 8,
+                                        fontSize: 20,
+                                        color: "rgba(255,255,255,0.8)",
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        window.open(
+                                          buildImageUrl(fileUrl),
+                                          "_blank"
+                                        );
+                                      }}
+                                    />
+                                  </Tooltip>
                                 </Box>
                               )}
                             </Box>
@@ -1245,6 +1364,82 @@ const ProjectView = () => {
           </Grid>
         </Box>
       </Container>
+
+      {/* Image Preview Modal (for images only) */}
+      {previewModal.open && previewModal.type === "image" && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+          onClick={() =>
+            setPreviewModal({ open: false, url: "", fileName: "", type: "" })
+          }
+        >
+          <Box
+            sx={{
+              backgroundColor: "white",
+              borderRadius: 2,
+              p: 2,
+              maxWidth: "90%",
+              maxHeight: "90%",
+              position: "relative",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              mb={2}
+            >
+              <Typography variant="h6">{previewModal.fileName}</Typography>
+              <Box>
+                <Button
+                  variant="outlined"
+                  startIcon={<DownloadIcon />}
+                  onClick={() => window.open(previewModal.url, "_blank")}
+                  sx={{ mr: 1 }}
+                >
+                  Download
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() =>
+                    setPreviewModal({
+                      open: false,
+                      url: "",
+                      fileName: "",
+                      type: "",
+                    })
+                  }
+                >
+                  Close
+                </Button>
+              </Box>
+            </Box>
+
+            <img
+              src={previewModal.url}
+              alt={previewModal.fileName}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "600px",
+                objectFit: "contain",
+                borderRadius: "8px",
+              }}
+            />
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 };

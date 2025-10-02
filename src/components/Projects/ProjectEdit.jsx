@@ -21,6 +21,7 @@ import {
   Chip,
   IconButton,
   LinearProgress,
+  Tooltip,
 } from "@mui/material";
 import {
   ArrowBack as ArrowBackIcon,
@@ -35,6 +36,10 @@ import {
   CalendarToday as CalendarIcon,
   Description as DescriptionIcon,
   Notes as NotesIcon,
+  PictureAsPdf as PdfIcon,
+  Description as WordIcon,
+  Download as DownloadIcon,
+  Visibility as PreviewIcon,
 } from "@mui/icons-material";
 import Swal from "sweetalert2";
 
@@ -84,6 +89,12 @@ const ProjectEdit = () => {
   const [uploadingFiles, setUploadingFiles] = useState(false);
   const [projectFiles, setProjectFiles] = useState([]);
   const [filePreviews, setFilePreviews] = useState([]);
+  const [previewModal, setPreviewModal] = useState({
+    open: false,
+    url: "",
+    fileName: "",
+    type: "",
+  });
 
   useEffect(() => {
     fetchProject();
@@ -135,7 +146,7 @@ const ProjectEdit = () => {
           floor_size: result.data.floor_size || "",
           construction_type: result.data.construction_type || "building",
         });
-        setProjectFiles(result.data.documents || []);
+        setProjectFiles(result.data.document_urls || []);
         const blueprints = Array.isArray(result.data.blueprint_url)
           ? result.data.blueprint_url
           : result.data.blueprint_url
@@ -217,6 +228,58 @@ const ProjectEdit = () => {
     setBlueprintPreviews(newPreviews);
   };
 
+  const removeProjectDocument = (index) => {
+    const newDocuments = projectFiles.filter((_, i) => i !== index);
+    setProjectFiles(newDocuments);
+  };
+
+  const getFileType = (fileName) => {
+    const extension = fileName.toLowerCase().split(".").pop();
+    if (["jpg", "jpeg", "png", "gif", "bmp", "webp"].includes(extension)) {
+      return "image";
+    } else if (extension === "pdf") {
+      return "pdf";
+    } else if (["doc", "docx"].includes(extension)) {
+      return "word";
+    } else if (["xls", "xlsx"].includes(extension)) {
+      return "excel";
+    }
+    return "document";
+  };
+
+  const getFileIcon = (fileName) => {
+    const type = getFileType(fileName);
+    switch (type) {
+      case "image":
+        return <ImageIcon sx={{ fontSize: 48, color: "white", mb: 1 }} />;
+      case "pdf":
+        return <PdfIcon sx={{ fontSize: 48, color: "#f44336", mb: 1 }} />;
+      case "word":
+        return <WordIcon sx={{ fontSize: 48, color: "#2196f3", mb: 1 }} />;
+      case "excel":
+        return <WordIcon sx={{ fontSize: 48, color: "#4caf50", mb: 1 }} />;
+      default:
+        return <ImageIcon sx={{ fontSize: 48, color: "white", mb: 1 }} />;
+    }
+  };
+
+  const handleDocumentClick = (fileUrl, fileName) => {
+    const fullUrl = buildImageUrl(fileUrl);
+    const type = getFileType(fileName);
+
+    if (type === "image") {
+      setPreviewModal({
+        open: true,
+        url: fullUrl,
+        fileName: fileName,
+        type: type,
+      });
+    } else {
+      // For other file types, open in new tab for download
+      window.open(fullUrl, "_blank");
+    }
+  };
+
   const uploadFiles = async () => {
     if (selectedFiles.length === 0) return [];
 
@@ -273,21 +336,7 @@ const ProjectEdit = () => {
       console.log("💾 Current blueprintUrls state:", blueprintUrls);
       console.log("💾 Current blueprintFiles state:", blueprintFiles);
 
-      // Upload new files first
-      const uploadedFiles = await uploadFiles();
-      console.log("Uploaded files:", uploadedFiles);
-
-      // Update project with new file URLs
-      const allDocumentUrls = [
-        ...projectFiles.map((doc) => doc.file_url || doc.url).filter(Boolean),
-        ...uploadedFiles
-          .map((file) => file.file_url || file.url)
-          .filter(Boolean),
-      ];
-
-      console.log("All document URLs:", allDocumentUrls);
-
-      // Prepare form data for project update with blueprint files
+      // Prepare form data for project update with both blueprint and document files
       const formData = new FormData();
 
       // Add all project form fields
@@ -297,9 +346,14 @@ const ProjectEdit = () => {
         }
       });
 
-      // Add document URLs
-      allDocumentUrls.forEach((url) => {
+      // Add existing document URLs
+      projectFiles.forEach((url) => {
         formData.append("document_urls", url);
+      });
+
+      // Add new document files directly
+      selectedFiles.forEach((file) => {
+        formData.append("documents", file);
       });
 
       // Add existing blueprint URLs
@@ -1244,18 +1298,11 @@ const ProjectEdit = () => {
                         Current Documents:
                       </Typography>
                       <Grid container spacing={2}>
-                        {projectFiles.map((file, index) => {
+                        {projectFiles.map((fileUrl, index) => {
                           const fileName =
-                            file.file_name ||
-                            file.name ||
-                            `Document ${index + 1}`;
-                          const fileUrl = file.file_url || file.url;
-                          const isImage = fileName.match(
-                            /\.(jpg|jpeg|png|gif|bmp|webp)$/i
-                          );
-
-                          // Construct full URL for the document (same as Users component)
-                          const fullDocumentUrl = buildImageUrl(fileUrl);
+                            fileUrl.split("/").pop() || `Document ${index + 1}`;
+                          const fileType = getFileType(fileName);
+                          const isImage = fileType === "image";
 
                           return (
                             <Grid item xs={12} sm={6} md={4} key={index}>
@@ -1265,12 +1312,42 @@ const ProjectEdit = () => {
                                   backgroundColor: "rgba(255, 255, 255, 0.2)",
                                   borderRadius: 2,
                                   border: "2px solid rgba(255, 255, 255, 0.3)",
+                                  position: "relative",
+                                  cursor: "pointer",
+                                  transition: "transform 0.2s ease-in-out",
+                                  "&:hover": {
+                                    transform: "scale(1.02)",
+                                  },
                                 }}
+                                onClick={() =>
+                                  handleDocumentClick(fileUrl, fileName)
+                                }
                               >
-                                {isImage && fullDocumentUrl ? (
+                                <IconButton
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    removeProjectDocument(index);
+                                  }}
+                                  sx={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 8,
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    color: "white",
+                                    "&:hover": {
+                                      backgroundColor: "rgba(0, 0, 0, 0.7)",
+                                    },
+                                    zIndex: 2,
+                                  }}
+                                  size="small"
+                                >
+                                  <CloseIcon fontSize="small" />
+                                </IconButton>
+
+                                {isImage ? (
                                   <Box>
                                     <img
-                                      src={fullDocumentUrl}
+                                      src={buildImageUrl(fileUrl)}
                                       alt={fileName}
                                       style={{
                                         width: "100%",
@@ -1289,13 +1366,7 @@ const ProjectEdit = () => {
                                       textAlign="center"
                                       sx={{ display: "none" }}
                                     >
-                                      <ImageIcon
-                                        sx={{
-                                          fontSize: 48,
-                                          color: "white",
-                                          mb: 1,
-                                        }}
-                                      />
+                                      {getFileIcon(fileName)}
                                       <Typography
                                         variant="caption"
                                         sx={{
@@ -1318,16 +1389,59 @@ const ProjectEdit = () => {
                                     >
                                       {fileName}
                                     </Typography>
+                                    <Typography
+                                      variant="caption"
+                                      sx={{
+                                        color: "white",
+                                        display: "block",
+                                        textAlign: "center",
+                                        fontSize: "0.7rem",
+                                        opacity: 0.8,
+                                      }}
+                                    >
+                                      Click to view full size
+                                    </Typography>
+                                  </Box>
+                                ) : fileType === "pdf" ? (
+                                  <Box>
+                                    <iframe
+                                      src={buildImageUrl(fileUrl)}
+                                      style={{
+                                        width: "100%",
+                                        height: "200px",
+                                        border: "none",
+                                        borderRadius: "8px",
+                                        marginBottom: "8px",
+                                      }}
+                                      title={fileName}
+                                    />
+                                    <Typography
+                                      variant="caption"
+                                      sx={{
+                                        color: "white",
+                                        display: "block",
+                                        textAlign: "center",
+                                        wordBreak: "break-word",
+                                      }}
+                                    >
+                                      {fileName}
+                                    </Typography>
+                                    <Typography
+                                      variant="caption"
+                                      sx={{
+                                        color: "white",
+                                        display: "block",
+                                        textAlign: "center",
+                                        fontSize: "0.7rem",
+                                        opacity: 0.8,
+                                      }}
+                                    >
+                                      PDF Preview
+                                    </Typography>
                                   </Box>
                                 ) : (
                                   <Box textAlign="center">
-                                    <ImageIcon
-                                      sx={{
-                                        fontSize: 48,
-                                        color: "white",
-                                        mb: 1,
-                                      }}
-                                    />
+                                    {getFileIcon(fileName)}
                                     <Typography
                                       variant="caption"
                                       sx={{
@@ -1337,6 +1451,17 @@ const ProjectEdit = () => {
                                       }}
                                     >
                                       {fileName}
+                                    </Typography>
+                                    <Typography
+                                      variant="caption"
+                                      sx={{
+                                        color: "white",
+                                        display: "block",
+                                        fontSize: "0.7rem",
+                                        opacity: 0.8,
+                                      }}
+                                    >
+                                      Click to download
                                     </Typography>
                                   </Box>
                                 )}
@@ -1610,6 +1735,82 @@ const ProjectEdit = () => {
           </Grid>
         </Box>
       </Container>
+
+      {/* Image Preview Modal (for images only) */}
+      {previewModal.open && previewModal.type === "image" && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+          onClick={() =>
+            setPreviewModal({ open: false, url: "", fileName: "", type: "" })
+          }
+        >
+          <Box
+            sx={{
+              backgroundColor: "white",
+              borderRadius: 2,
+              p: 2,
+              maxWidth: "90%",
+              maxHeight: "90%",
+              position: "relative",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              mb={2}
+            >
+              <Typography variant="h6">{previewModal.fileName}</Typography>
+              <Box>
+                <Button
+                  variant="outlined"
+                  startIcon={<DownloadIcon />}
+                  onClick={() => window.open(previewModal.url, "_blank")}
+                  sx={{ mr: 1 }}
+                >
+                  Download
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() =>
+                    setPreviewModal({
+                      open: false,
+                      url: "",
+                      fileName: "",
+                      type: "",
+                    })
+                  }
+                >
+                  Close
+                </Button>
+              </Box>
+            </Box>
+
+            <img
+              src={previewModal.url}
+              alt={previewModal.fileName}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "600px",
+                objectFit: "contain",
+                borderRadius: "8px",
+              }}
+            />
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 };
