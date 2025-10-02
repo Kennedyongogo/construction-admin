@@ -63,7 +63,9 @@ const Tasks = () => {
   const [error, setError] = useState(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const [openProgressDialog, setOpenProgressDialog] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [requiresProgressUpdate, setRequiresProgressUpdate] = useState(false);
   const [editForm, setEditForm] = useState({
     name: "",
     description: "",
@@ -81,6 +83,12 @@ const Tasks = () => {
     due_date: "",
     project_id: "",
     assigned_to_admin: "",
+  });
+  const [progressForm, setProgressForm] = useState({
+    description: "",
+    progress_percent: 0,
+    date: "",
+    images: [],
   });
   const [activeTab, setActiveTab] = useState(0);
   const [page, setPage] = useState(0);
@@ -301,7 +309,56 @@ const Tasks = () => {
       start_date: task.start_date,
       due_date: task.due_date,
     });
+    setProgressForm({
+      description: "",
+      progress_percent: task.progress_percent || 0,
+      date: new Date().toISOString().split("T")[0],
+      images: [],
+    });
+    setRequiresProgressUpdate(false);
     setOpenEditDialog(true);
+  };
+
+  const handleStatusChange = (newStatus) => {
+    const currentStatus = selectedTask?.status;
+    const currentProgress = selectedTask?.progress_percent || 0;
+
+    // Check if progress update is required
+    const statusChangingFromPending =
+      currentStatus === "pending" && newStatus !== "pending";
+    const progressChangingFromZero =
+      currentProgress === 0 && editForm.progress_percent > 0;
+
+    if (statusChangingFromPending || progressChangingFromZero) {
+      setRequiresProgressUpdate(true);
+      setOpenProgressDialog(true);
+    } else {
+      setEditForm({ ...editForm, status: newStatus });
+    }
+  };
+
+  const handleProgressUpdateSubmit = () => {
+    // Update the edit form with the new status and progress
+    setEditForm({
+      ...editForm,
+      status: editForm.status,
+      progress_percent: progressForm.progress_percent,
+      progress_update: progressForm,
+    });
+    setOpenProgressDialog(false);
+    setRequiresProgressUpdate(false);
+  };
+
+  const handleProgressUpdateCancel = () => {
+    setOpenProgressDialog(false);
+    setRequiresProgressUpdate(false);
+    // Reset progress form
+    setProgressForm({
+      description: "",
+      progress_percent: selectedTask?.progress_percent || 0,
+      date: new Date().toISOString().split("T")[0],
+      images: [],
+    });
   };
 
   const handleCreateTask = async () => {
@@ -950,6 +1007,7 @@ const Tasks = () => {
           onClose={() => {
             setOpenEditDialog(false);
             setSelectedTask(null);
+            setRequiresProgressUpdate(false);
             setEditForm({
               name: "",
               description: "",
@@ -957,6 +1015,12 @@ const Tasks = () => {
               progress_percent: 0,
               start_date: "",
               due_date: "",
+            });
+            setProgressForm({
+              description: "",
+              progress_percent: 0,
+              date: "",
+              images: [],
             });
           }}
           maxWidth="sm"
@@ -1104,9 +1168,7 @@ const Tasks = () => {
                   <InputLabel>Status</InputLabel>
                   <Select
                     value={editForm.status}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, status: e.target.value })
-                    }
+                    onChange={(e) => handleStatusChange(e.target.value)}
                     label="Status"
                   >
                     <MenuItem value="pending">Pending</MenuItem>
@@ -1140,6 +1202,7 @@ const Tasks = () => {
               onClick={() => {
                 setOpenEditDialog(false);
                 setSelectedTask(null);
+                setRequiresProgressUpdate(false);
                 setEditForm({
                   name: "",
                   description: "",
@@ -1147,6 +1210,12 @@ const Tasks = () => {
                   progress_percent: 0,
                   start_date: "",
                   due_date: "",
+                });
+                setProgressForm({
+                  description: "",
+                  progress_percent: 0,
+                  date: "",
+                  images: [],
                 });
               }}
               variant="outlined"
@@ -1481,6 +1550,222 @@ const Tasks = () => {
               }}
             >
               {loading ? "Creating..." : "Create Task"}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Progress Update Dialog */}
+        <Dialog
+          open={openProgressDialog}
+          onClose={handleProgressUpdateCancel}
+          maxWidth="sm"
+          fullWidth
+          sx={{
+            "& .MuiDialog-paper": {
+              borderRadius: 4,
+              boxShadow: "0 20px 40px rgba(0, 0, 0, 0.15)",
+              maxHeight: "85vh",
+              background: "rgba(255, 255, 255, 0.95)",
+              backdropFilter: "blur(10px)",
+              border: "1px solid rgba(102, 126, 234, 0.2)",
+              overflow: "hidden",
+            },
+            "& .MuiBackdrop-root": {
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            },
+          }}
+        >
+          <DialogTitle
+            sx={{
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              color: "white",
+              fontWeight: "bold",
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              p: 3,
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            <Box
+              sx={{
+                position: "absolute",
+                top: -20,
+                right: -20,
+                width: 100,
+                height: 100,
+                background: "rgba(255, 255, 255, 0.1)",
+                borderRadius: "50%",
+                zIndex: 0,
+              }}
+            />
+            <Box
+              sx={{
+                position: "absolute",
+                bottom: -15,
+                left: -15,
+                width: 80,
+                height: 80,
+                background: "rgba(255, 255, 255, 0.05)",
+                borderRadius: "50%",
+                zIndex: 0,
+              }}
+            />
+            <Assignment
+              sx={{ position: "relative", zIndex: 1, fontSize: 28 }}
+            />
+            <Box sx={{ position: "relative", zIndex: 1 }}>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 800,
+                  textShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                }}
+              >
+                Progress Update Required
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.9, mt: 0.5 }}>
+                Please provide progress details for status change
+              </Typography>
+            </Box>
+          </DialogTitle>
+          <DialogContent
+            sx={{ p: 3, pt: 3, maxHeight: "70vh", overflowY: "auto" }}
+          >
+            <Stack spacing={3} sx={{ mt: 1 }}>
+              {/* Progress Description */}
+              <TextField
+                fullWidth
+                label="Progress Description"
+                value={progressForm.description}
+                onChange={(e) =>
+                  setProgressForm({
+                    ...progressForm,
+                    description: e.target.value,
+                  })
+                }
+                multiline
+                rows={3}
+                variant="outlined"
+                size="small"
+                required
+                placeholder="Describe what work has been completed..."
+              />
+
+              {/* Progress Percentage and Date Row */}
+              <Box
+                display="flex"
+                flexDirection={{ xs: "column", sm: "row" }}
+                gap={2}
+              >
+                <TextField
+                  fullWidth
+                  label="Progress (%)"
+                  type="number"
+                  value={progressForm.progress_percent}
+                  onChange={(e) =>
+                    setProgressForm({
+                      ...progressForm,
+                      progress_percent: parseInt(e.target.value) || 0,
+                    })
+                  }
+                  inputProps={{ min: 0, max: 100 }}
+                  variant="outlined"
+                  size="small"
+                  required
+                />
+                <TextField
+                  fullWidth
+                  label="Date"
+                  type="date"
+                  value={progressForm.date}
+                  onChange={(e) =>
+                    setProgressForm({ ...progressForm, date: e.target.value })
+                  }
+                  InputLabelProps={{ shrink: true }}
+                  variant="outlined"
+                  size="small"
+                  required
+                />
+              </Box>
+
+              {/* Status Display */}
+              <Box
+                sx={{
+                  p: 2,
+                  backgroundColor: "rgba(102, 126, 234, 0.1)",
+                  borderRadius: 2,
+                  border: "1px solid rgba(102, 126, 234, 0.2)",
+                }}
+              >
+                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                  Status Change:
+                </Typography>
+                <Box display="flex" alignItems="center" gap={2}>
+                  <Chip
+                    label={selectedTask?.status || "pending"}
+                    color="info"
+                    size="small"
+                    sx={{ textTransform: "capitalize" }}
+                  />
+                  <Typography variant="body2">→</Typography>
+                  <Chip
+                    label={editForm.status}
+                    color="warning"
+                    size="small"
+                    sx={{ textTransform: "capitalize" }}
+                  />
+                </Box>
+              </Box>
+            </Stack>
+          </DialogContent>
+          <DialogActions
+            sx={{ p: 3, gap: 2, backgroundColor: "rgba(102, 126, 234, 0.05)" }}
+          >
+            <Button
+              onClick={handleProgressUpdateCancel}
+              variant="outlined"
+              sx={{
+                borderColor: "#667eea",
+                color: "#667eea",
+                fontWeight: 600,
+                borderRadius: 2,
+                px: 3,
+                py: 1,
+                "&:hover": {
+                  borderColor: "#5a6fd8",
+                  backgroundColor: "rgba(102, 126, 234, 0.1)",
+                },
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleProgressUpdateSubmit}
+              variant="contained"
+              disabled={
+                !progressForm.description ||
+                !progressForm.date ||
+                progressForm.progress_percent < 0 ||
+                progressForm.progress_percent > 100
+              }
+              sx={{
+                background: "linear-gradient(45deg, #667eea, #764ba2)",
+                borderRadius: 2,
+                px: 3,
+                py: 1,
+                fontWeight: 600,
+                "&:hover": {
+                  background: "linear-gradient(45deg, #5a6fd8, #6a4c93)",
+                },
+                "&:disabled": {
+                  background: "rgba(102, 126, 234, 0.3)",
+                  color: "rgba(255, 255, 255, 0.6)",
+                },
+              }}
+            >
+              Continue with Update
             </Button>
           </DialogActions>
         </Dialog>

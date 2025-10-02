@@ -24,6 +24,7 @@ import {
   ListItemIcon,
   ListItemText,
   Avatar,
+  TextField,
 } from "@mui/material";
 import {
   BarChart,
@@ -98,6 +99,15 @@ const Analytics = () => {
     documents: {},
     engineers: {},
   });
+  const [projectsByDate, setProjectsByDate] = useState([]);
+  const [tasksByDate, setTasksByDate] = useState([]);
+  const [dateRange, setDateRange] = useState({
+    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0], // 30 days ago
+    endDate: new Date().toISOString().split("T")[0], // today
+  });
+
   const [overviewHelpOpen, setOverviewHelpOpen] = useState(false);
   const [projectsHelpOpen, setProjectsHelpOpen] = useState(false);
   const [tasksLaborHelpOpen, setTasksLaborHelpOpen] = useState(false);
@@ -117,7 +127,8 @@ const Analytics = () => {
 
   useEffect(() => {
     fetchAnalyticsData();
-  }, []);
+    fetchProjectsByDate();
+  }, [dateRange]);
 
   const fetchAnalyticsData = async () => {
     try {
@@ -156,6 +167,33 @@ const Analytics = () => {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchProjectsByDate = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const response = await fetch(
+        `/api/admins/projects/by-date?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}&groupBy=day`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setProjectsByDate(data.data.chartData);
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching projects by date:", err);
     }
   };
 
@@ -1738,7 +1776,7 @@ const Analytics = () => {
                     >
                       <Typography fontWeight="500">Top Engineer</Typography>
                       <Chip
-                        label={analyticsData.engineers?.top?.[0]?.name || "N/A"}
+                        label={analyticsData.engineers?.top?.name || "N/A"}
                         color="primary"
                       />
                     </Box>
@@ -1928,6 +1966,98 @@ const Analytics = () => {
               </Card>
             </Grid>
 
+            {/* Projects Timeline Bar Chart */}
+            <Grid size={{ xs: 12 }}>
+              <Card sx={{ p: 3, height: 400 }}>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  mb={2}
+                >
+                  <Typography variant="h6" fontWeight="600">
+                    Projects Created by Date ({dateRange.startDate} to{" "}
+                    {dateRange.endDate})
+                  </Typography>
+
+                  {/* Date Filter Controls */}
+                  <Box display="flex" gap={2} alignItems="center">
+                    <TextField
+                      label="Start Date"
+                      type="date"
+                      value={dateRange.startDate}
+                      onChange={(e) =>
+                        setDateRange({
+                          ...dateRange,
+                          startDate: e.target.value,
+                        })
+                      }
+                      InputLabelProps={{ shrink: true }}
+                      size="small"
+                      sx={{ minWidth: 140 }}
+                    />
+                    <TextField
+                      label="End Date"
+                      type="date"
+                      value={dateRange.endDate}
+                      onChange={(e) =>
+                        setDateRange({ ...dateRange, endDate: e.target.value })
+                      }
+                      InputLabelProps={{ shrink: true }}
+                      size="small"
+                      sx={{ minWidth: 140 }}
+                    />
+                  </Box>
+                </Box>
+                <ResponsiveContainer width="100%" height={400}>
+                  {projectsByDate.length > 0 ? (
+                    <BarChart
+                      data={projectsByDate}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis
+                        dataKey="date"
+                        angle={-45}
+                        textAnchor="end"
+                        height={100}
+                        tick={{ fontSize: 12 }}
+                        stroke="#666"
+                      />
+                      <YAxis tick={{ fontSize: 12 }} stroke="#666" />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "rgba(255, 255, 255, 0.95)",
+                          border: "1px solid #ccc",
+                          borderRadius: "8px",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                        }}
+                        formatter={(value) => [value, "Projects"]}
+                      />
+                      <Legend />
+                      <Bar
+                        dataKey="total"
+                        fill="#667eea"
+                        name="Total Projects"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  ) : (
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      height="100%"
+                    >
+                      <Typography variant="body2" color="text.secondary">
+                        No project data available for the selected date range
+                      </Typography>
+                    </Box>
+                  )}
+                </ResponsiveContainer>
+              </Card>
+            </Grid>
+
             {/* Recent Projects */}
             <Grid size={{ xs: 12 }}>
               <Card sx={{ p: 3 }}>
@@ -2083,75 +2213,94 @@ const Analytics = () => {
       </Box>
 
       <Grid container spacing={3}>
-        {/* Task Status Chart */}
-        <Grid size={{ xs: 12, md: 6 }}>
+        {/* Task Status Chart - Full Width */}
+        <Grid size={{ xs: 12 }}>
           <Card sx={{ p: 3, height: 400 }}>
             <Typography variant="h6" gutterBottom fontWeight="600">
               Task Status Distribution
             </Typography>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={400}>
               <BarChart
                 data={(analyticsData.tasks?.byStatus || []).map((item) => ({
                   ...item,
                   count: parseInt(item.count) || 0,
                 }))}
+                margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
               >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="status" />
-                <YAxis />
-                <Tooltip formatter={(value) => [value, "Tasks"]} />
-                <Bar dataKey="count" fill="#667eea" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis
+                  dataKey="status"
+                  angle={-45}
+                  textAnchor="end"
+                  height={100}
+                  tick={{ fontSize: 12 }}
+                  stroke="#666"
+                />
+                <YAxis tick={{ fontSize: 12 }} stroke="#666" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "rgba(255, 255, 255, 0.95)",
+                    border: "1px solid #ccc",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                  }}
+                  formatter={(value) => [value, "Tasks"]}
+                />
+                <Legend />
+                <Bar
+                  dataKey="count"
+                  fill="#667eea"
+                  name="Tasks"
+                  radius={[4, 4, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </Card>
         </Grid>
 
-        {/* Labor Type Chart */}
-        <Grid size={{ xs: 12, md: 6 }}>
+        {/* Labor Type Chart - Full Width Bar Chart */}
+        <Grid size={{ xs: 12 }}>
           <Card sx={{ p: 3, height: 400 }}>
             <Typography variant="h6" gutterBottom fontWeight="600">
               Labor by Worker Type
             </Typography>
-            <ResponsiveContainer width="100%" height={300}>
-              {(analyticsData.labor?.byType || []).length > 0 ? (
-                <PieChart>
-                  <Pie
-                    data={(analyticsData.labor?.byType || []).map((item) => ({
-                      name: item.worker_type
-                        .replace("_", " ")
-                        .replace(/\b\w/g, (l) => l.toUpperCase()),
-                      value: parseInt(item.count) || 0,
-                    }))}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius="90%"
-                    innerRadius="50%"
-                    fill="#8884d8"
-                  >
-                    {(analyticsData.labor?.byType || []).map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => [value, "Workers"]} />
-                  <Legend />
-                </PieChart>
-              ) : (
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  height="100%"
-                >
-                  <Typography variant="body2" color="text.secondary">
-                    No labor data available
-                  </Typography>
-                </Box>
-              )}
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart
+                data={(analyticsData.labor?.byType || []).map((item) => ({
+                  name: item.worker_type
+                    .replace("_", " ")
+                    .replace(/\b\w/g, (l) => l.toUpperCase()),
+                  count: parseInt(item.count) || 0,
+                }))}
+                margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis
+                  dataKey="name"
+                  angle={-45}
+                  textAnchor="end"
+                  height={100}
+                  tick={{ fontSize: 12 }}
+                  stroke="#666"
+                />
+                <YAxis tick={{ fontSize: 12 }} stroke="#666" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "rgba(255, 255, 255, 0.95)",
+                    border: "1px solid #ccc",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                  }}
+                  formatter={(value) => [value, "Workers"]}
+                />
+                <Legend />
+                <Bar
+                  dataKey="count"
+                  fill="#f093fb"
+                  name="Workers"
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
             </ResponsiveContainer>
           </Card>
         </Grid>

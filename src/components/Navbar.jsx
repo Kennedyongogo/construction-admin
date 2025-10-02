@@ -30,6 +30,7 @@ import {
   AttachMoney,
   Business,
   Engineering,
+  Folder,
 } from "@mui/icons-material";
 import { Money } from "@phosphor-icons/react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
@@ -199,6 +200,11 @@ const Navbar = (props) => {
       text: "Construction Map",
       icon: <Map />,
       path: "/map",
+    },
+    {
+      text: "Documents",
+      icon: <Folder />,
+      path: "/documents",
     },
   ];
 

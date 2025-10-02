@@ -16,6 +16,7 @@ import Labor from "./Labor/Labor";
 import Budget from "./budget/Budget";
 import BudgetView from "./budget/BudgetView";
 import ConstructionMap from "../ConstructionMap";
+import Documents from "./Documents/Documents";
 import UsersTable from "./Users/UsersTable";
 import Analytics from "./Analytics/Analytics";
 
@@ -73,6 +74,7 @@ function PageRoutes() {
             <Route path="budget" element={<Budget />} />
             <Route path="budget/:id" element={<BudgetView />} />
             <Route path="map" element={<ConstructionMap />} />
+            <Route path="documents" element={<Documents />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="users" element={<UsersTable />} />
             <Route path="settings" element={<Settings user={user} />} />
