@@ -100,6 +100,17 @@ const ProjectEdit = () => {
     fetchProject();
   }, [id]);
 
+  // Cleanup object URLs on component unmount
+  useEffect(() => {
+    return () => {
+      filePreviews.forEach((preview) => {
+        if (preview.previewType === "pdf" && preview.preview) {
+          URL.revokeObjectURL(preview.preview);
+        }
+      });
+    };
+  }, [filePreviews]);
+
   const fetchProject = async () => {
     try {
       setLoading(true);
@@ -176,25 +187,57 @@ const ProjectEdit = () => {
     const files = Array.from(event.target.files);
     setSelectedFiles((prev) => [...prev, ...files]);
 
-    // Create previews for image files
+    // Create previews for all file types
     const newPreviews = [];
     files.forEach((file) => {
+      const fileType = getFileType(file.name);
+
       if (file.type.startsWith("image/")) {
+        // For images, create image preview
         const reader = new FileReader();
         reader.onload = (e) => {
           newPreviews.push({
             file: file,
             preview: e.target.result,
             name: file.name,
+            type: "image",
+            previewType: "image",
           });
           setFilePreviews((prev) => [...prev, ...newPreviews]);
         };
         reader.readAsDataURL(file);
+      } else if (file.type === "application/pdf") {
+        // For PDFs, create object URL for preview
+        const objectUrl = URL.createObjectURL(file);
+        newPreviews.push({
+          file: file,
+          preview: objectUrl,
+          name: file.name,
+          type: "pdf",
+          previewType: "pdf",
+        });
+        setFilePreviews((prev) => [...prev, ...newPreviews]);
+      } else {
+        // For other files, just show file info
+        newPreviews.push({
+          file: file,
+          preview: null,
+          name: file.name,
+          type: fileType,
+          previewType: "none",
+        });
+        setFilePreviews((prev) => [...prev, ...newPreviews]);
       }
     });
   };
 
   const removeSelectedFile = (index) => {
+    // Clean up object URLs to prevent memory leaks
+    const preview = filePreviews[index];
+    if (preview && preview.previewType === "pdf" && preview.preview) {
+      URL.revokeObjectURL(preview.preview);
+    }
+
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
     setFilePreviews((prev) => prev.filter((_, i) => i !== index));
   };
@@ -1186,10 +1229,10 @@ const ProjectEdit = () => {
                       </Typography>
                       <Grid container spacing={2}>
                         {selectedFiles.map((file, index) => {
-                          const isImage = file.type.startsWith("image/");
                           const preview = filePreviews.find(
                             (p) => p.file === file
                           );
+                          const fileType = getFileType(file.name);
 
                           return (
                             <Grid item xs={12} sm={6} md={4} key={index}>
@@ -1213,14 +1256,15 @@ const ProjectEdit = () => {
                                     "&:hover": {
                                       backgroundColor: "rgba(0, 0, 0, 0.7)",
                                     },
-                                    zIndex: 1,
+                                    zIndex: 2,
                                   }}
                                   size="small"
                                 >
                                   <CloseIcon fontSize="small" />
                                 </IconButton>
 
-                                {isImage && preview ? (
+                                {preview?.previewType === "image" &&
+                                preview.preview ? (
                                   <Box>
                                     <img
                                       src={preview.preview}
@@ -1244,16 +1288,60 @@ const ProjectEdit = () => {
                                     >
                                       {file.name}
                                     </Typography>
+                                    <Typography
+                                      variant="caption"
+                                      sx={{
+                                        color: "white",
+                                        display: "block",
+                                        textAlign: "center",
+                                        fontSize: "0.7rem",
+                                        opacity: 0.8,
+                                      }}
+                                    >
+                                      Click to view full size
+                                    </Typography>
+                                  </Box>
+                                ) : preview?.previewType === "pdf" &&
+                                  preview.preview ? (
+                                  <Box>
+                                    <iframe
+                                      src={preview.preview}
+                                      style={{
+                                        width: "100%",
+                                        height: "200px",
+                                        border: "none",
+                                        borderRadius: "8px",
+                                        marginBottom: "8px",
+                                      }}
+                                      title={file.name}
+                                    />
+                                    <Typography
+                                      variant="caption"
+                                      sx={{
+                                        color: "white",
+                                        display: "block",
+                                        textAlign: "center",
+                                        wordBreak: "break-word",
+                                      }}
+                                    >
+                                      {file.name}
+                                    </Typography>
+                                    <Typography
+                                      variant="caption"
+                                      sx={{
+                                        color: "white",
+                                        display: "block",
+                                        textAlign: "center",
+                                        fontSize: "0.7rem",
+                                        opacity: 0.8,
+                                      }}
+                                    >
+                                      PDF Preview
+                                    </Typography>
                                   </Box>
                                 ) : (
                                   <Box textAlign="center">
-                                    <ImageIcon
-                                      sx={{
-                                        fontSize: 48,
-                                        color: "white",
-                                        mb: 1,
-                                      }}
-                                    />
+                                    {getFileIcon(file.name)}
                                     <Typography
                                       variant="caption"
                                       sx={{
@@ -1263,6 +1351,23 @@ const ProjectEdit = () => {
                                       }}
                                     >
                                       {file.name}
+                                    </Typography>
+                                    <Typography
+                                      variant="caption"
+                                      sx={{
+                                        color: "white",
+                                        display: "block",
+                                        fontSize: "0.7rem",
+                                        opacity: 0.8,
+                                      }}
+                                    >
+                                      {fileType === "pdf"
+                                        ? "PDF Document"
+                                        : fileType === "word"
+                                        ? "Word Document"
+                                        : fileType === "excel"
+                                        ? "Excel Document"
+                                        : "Document"}
                                     </Typography>
                                   </Box>
                                 )}
