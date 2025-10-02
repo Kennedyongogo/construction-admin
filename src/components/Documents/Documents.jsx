@@ -106,11 +106,9 @@ const Documents = () => {
 
       if (documentTypeFilter !== "all") {
         queryParams.append("document_type", documentTypeFilter);
-      }
-
-      // Exclude project documents from all tabs except "Project Documents"
-      // Project documents should only be viewed within the project context or in the Project Documents tab
-      if (documentTypeFilter !== "project_document") {
+      } else {
+        // Only exclude project_document when showing "All Documents"
+        // Project documents are stored in the Project model, not Document model
         queryParams.append("exclude_types", "project_document");
       }
 
@@ -300,7 +298,7 @@ const Documents = () => {
 
       // Create FormData for file upload
       const formData = new FormData();
-      formData.append("documents", selectedFile);
+      formData.append("general_documents", selectedFile);
       formData.append("document_type", documentForm.document_type);
       formData.append("category", documentForm.category);
       formData.append("description", documentForm.description);
@@ -521,7 +519,6 @@ const Documents = () => {
             >
               <Tab label="All Documents" value="all" />
               <Tab label="Company Documents" value="company_document" />
-              <Tab label="Project Documents" value="project_document" />
               <Tab label="Templates" value="template" />
               <Tab label="Policies" value="policy" />
               <Tab label="Contracts" value="contract" />
@@ -1006,9 +1003,6 @@ const Documents = () => {
                     >
                       <MenuItem value="company_document">
                         Company Document
-                      </MenuItem>
-                      <MenuItem value="project_document">
-                        Project Document
                       </MenuItem>
                       <MenuItem value="template">Template</MenuItem>
                       <MenuItem value="policy">Policy</MenuItem>

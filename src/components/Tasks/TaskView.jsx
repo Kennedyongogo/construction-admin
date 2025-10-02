@@ -51,6 +51,7 @@ import {
   People as PeopleIcon,
   AccountBalanceWallet as BudgetIcon,
   Add as AddIcon,
+  Close as CloseIcon,
 } from "@mui/icons-material";
 import { Tabs, Tab } from "@mui/material";
 
@@ -65,6 +66,13 @@ const TaskView = () => {
   const [loadingResources, setLoadingResources] = useState(false);
   const [budgetSummary, setBudgetSummary] = useState(null);
   const [loadingBudgetSummary, setLoadingBudgetSummary] = useState(false);
+  const [progressUpdates, setProgressUpdates] = useState([]);
+  const [loadingProgressUpdates, setLoadingProgressUpdates] = useState(false);
+  const [selectedUpdateId, setSelectedUpdateId] = useState(null);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [openAddImagesDialog, setOpenAddImagesDialog] = useState(false);
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [budgetForm, setBudgetForm] = useState({
     category: "",
     resource_type: "", // material, equipment, labor, manual
@@ -173,6 +181,36 @@ const TaskView = () => {
     }
   };
 
+  const fetchProgressUpdates = async () => {
+    try {
+      setLoadingProgressUpdates(true);
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        console.error("No authentication token found");
+        return;
+      }
+
+      const response = await fetch(`/api/progress-updates/task/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setProgressUpdates(result.data || []);
+      } else {
+        console.error("Failed to fetch progress updates:", result.message);
+      }
+    } catch (err) {
+      console.error("Error fetching progress updates:", err);
+    } finally {
+      setLoadingProgressUpdates(false);
+    }
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -217,10 +255,14 @@ const TaskView = () => {
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
-    if (newValue === 1 && !budgetResources) {
-      fetchBudgetResources();
-    }
     if (newValue === 1) {
+      // Progress Updates tab
+      fetchProgressUpdates();
+    } else if (newValue === 2) {
+      // Budget Resources tab
+      if (!budgetResources) {
+        fetchBudgetResources();
+      }
       fetchBudgetSummary();
     }
   };
@@ -330,6 +372,126 @@ const TaskView = () => {
       resource_id: resourceId,
       amount: amount.toString(),
     });
+  };
+
+  const handleAddImagesToUpdate = (updateId) => {
+    setSelectedUpdateId(updateId);
+    setSelectedImages([]);
+    setImagePreviews([]);
+    setOpenAddImagesDialog(true);
+  };
+
+  const handleImageSelect = (event) => {
+    const files = Array.from(event.target.files);
+    setSelectedImages(files);
+
+    // Create preview URLs for the selected images
+    const previews = files.map((file) => ({
+      file: file,
+      preview: URL.createObjectURL(file),
+    }));
+    setImagePreviews(previews);
+  };
+
+  const handleRemoveImage = (indexToRemove) => {
+    // Clean up the object URL for the removed image
+    URL.revokeObjectURL(imagePreviews[indexToRemove].preview);
+
+    // Remove from both arrays
+    const updatedSelectedImages = selectedImages.filter(
+      (_, index) => index !== indexToRemove
+    );
+    const updatedImagePreviews = imagePreviews.filter(
+      (_, index) => index !== indexToRemove
+    );
+
+    setSelectedImages(updatedSelectedImages);
+    setImagePreviews(updatedImagePreviews);
+  };
+
+  const handleUploadImages = async () => {
+    if (selectedImages.length === 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "No Images Selected",
+        text: "Please select at least one image to upload.",
+      });
+      return;
+    }
+
+    try {
+      setUploadingImages(true);
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        Swal.fire({
+          icon: "error",
+          title: "Authentication Error",
+          text: "Please login again.",
+        });
+        return;
+      }
+
+      const formData = new FormData();
+      selectedImages.forEach((image) => {
+        formData.append("progress_images", image);
+      });
+
+      const response = await fetch(
+        `/api/progress-updates/${selectedUpdateId}/upload-images`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        // Clean up preview URLs
+        imagePreviews.forEach((preview) =>
+          URL.revokeObjectURL(preview.preview)
+        );
+
+        // Close dialog and reset state
+        setOpenAddImagesDialog(false);
+        setSelectedUpdateId(null);
+        setSelectedImages([]);
+        setImagePreviews([]);
+
+        // Refresh progress updates to show new images
+        fetchProgressUpdates();
+
+        // Show success message
+        Swal.fire({
+          icon: "success",
+          title: "Images Added!",
+          text: `${selectedImages.length} image(s) added to progress update successfully.`,
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: false,
+          position: "center",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Upload Failed",
+          text: result.message || "Failed to upload images. Please try again.",
+        });
+      }
+    } catch (err) {
+      console.error("Error uploading images:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "An error occurred while uploading images.",
+      });
+    } finally {
+      setUploadingImages(false);
+    }
   };
 
   if (loading) {
@@ -498,6 +660,14 @@ const TaskView = () => {
                 <Box display="flex" alignItems="center" gap={1}>
                   <TaskIcon />
                   <span>Task Details</span>
+                </Box>
+              }
+            />
+            <Tab
+              label={
+                <Box display="flex" alignItems="center" gap={1}>
+                  <ProgressIcon />
+                  <span>Progress Updates</span>
                 </Box>
               }
             />
@@ -1264,8 +1434,238 @@ const TaskView = () => {
             </Grid>
           )}
 
-          {/* Budget Resources Tab */}
+          {/* Progress Updates Tab */}
           {activeTab === 1 && (
+            <Box>
+              {loadingProgressUpdates ? (
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  height="200px"
+                >
+                  <CircularProgress />
+                </Box>
+              ) : progressUpdates && progressUpdates.length > 0 ? (
+                <Box>
+                  {/* Progress Updates Header */}
+                  <Card
+                    sx={{
+                      background:
+                        "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      color: "white",
+                      mb: 3,
+                      width: "100%",
+                      maxWidth: "none",
+                    }}
+                  >
+                    <CardContent>
+                      <Box display="flex" alignItems="center" gap={1} mb={2}>
+                        <ProgressIcon />
+                        <Typography variant="h6">
+                          Progress Updates ({progressUpdates.length})
+                        </Typography>
+                      </Box>
+                      <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                        Track the progress and updates for this task
+                      </Typography>
+                    </CardContent>
+                  </Card>
+
+                  {/* Progress Updates List */}
+                  <Grid container spacing={3}>
+                    {progressUpdates.map((update, index) => (
+                      <Grid item xs={12} key={update.id}>
+                        <Card
+                          sx={{
+                            background:
+                              "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+                            color: "white",
+                            width: "100%",
+                            maxWidth: "none",
+                          }}
+                        >
+                          <CardContent>
+                            <Box
+                              display="flex"
+                              justifyContent="space-between"
+                              alignItems="flex-start"
+                              mb={2}
+                            >
+                              <Box>
+                                <Typography
+                                  variant="h6"
+                                  sx={{ fontWeight: 600 }}
+                                >
+                                  Update #{index + 1}
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  sx={{ opacity: 0.8 }}
+                                >
+                                  {formatDate(update.date)}
+                                </Typography>
+                              </Box>
+                              <Chip
+                                label={`${update.progress_percent}%`}
+                                color="primary"
+                                sx={{
+                                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                                  color: "white",
+                                  fontWeight: 600,
+                                }}
+                              />
+                            </Box>
+
+                            <Typography
+                              variant="body1"
+                              sx={{ mb: 3, opacity: 0.9 }}
+                            >
+                              {update.description}
+                            </Typography>
+
+                            {/* Progress Update Images */}
+                            {update.images && update.images.length > 0 && (
+                              <Box>
+                                <Typography
+                                  variant="subtitle2"
+                                  sx={{ mb: 2, opacity: 0.8 }}
+                                >
+                                  Progress Images ({update.images.length})
+                                </Typography>
+                                <Grid container spacing={2}>
+                                  {update.images.map((imageUrl, imageIndex) => (
+                                    <Grid
+                                      item
+                                      xs={12}
+                                      sm={6}
+                                      md={4}
+                                      key={imageIndex}
+                                    >
+                                      <Box
+                                        sx={{
+                                          position: "relative",
+                                          width: "100%",
+                                          height: 200,
+                                          borderRadius: 2,
+                                          overflow: "hidden",
+                                          border:
+                                            "2px solid rgba(255, 255, 255, 0.3)",
+                                        }}
+                                      >
+                                        <img
+                                          src={`${window.location.origin}${imageUrl}`}
+                                          alt={`Progress image ${
+                                            imageIndex + 1
+                                          }`}
+                                          style={{
+                                            width: "100%",
+                                            height: "100%",
+                                            objectFit: "cover",
+                                          }}
+                                          onError={(e) => {
+                                            e.target.style.display = "none";
+                                            e.target.nextSibling.style.display =
+                                              "flex";
+                                          }}
+                                        />
+                                        <Box
+                                          sx={{
+                                            display: "none",
+                                            width: "100%",
+                                            height: "100%",
+                                            backgroundColor:
+                                              "rgba(255, 255, 255, 0.2)",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            flexDirection: "column",
+                                          }}
+                                        >
+                                          <ImageIcon
+                                            sx={{ fontSize: 48, opacity: 0.5 }}
+                                          />
+                                          <Typography
+                                            variant="caption"
+                                            sx={{ opacity: 0.7 }}
+                                          >
+                                            Image not available
+                                          </Typography>
+                                        </Box>
+                                      </Box>
+                                    </Grid>
+                                  ))}
+                                </Grid>
+                              </Box>
+                            )}
+
+                            <Box
+                              display="flex"
+                              justifyContent="space-between"
+                              alignItems="center"
+                              mt={2}
+                            >
+                              <Typography
+                                variant="caption"
+                                sx={{ opacity: 0.7 }}
+                              >
+                                Created: {formatDate(update.createdAt)}
+                              </Typography>
+                              <Box display="flex" alignItems="center" gap={1}>
+                                <Button
+                                  variant="outlined"
+                                  size="small"
+                                  startIcon={<AddIcon />}
+                                  onClick={() =>
+                                    handleAddImagesToUpdate(update.id)
+                                  }
+                                  sx={{
+                                    borderColor: "rgba(255, 255, 255, 0.5)",
+                                    color: "white",
+                                    fontSize: "0.75rem",
+                                    py: 0.5,
+                                    px: 1,
+                                    "&:hover": {
+                                      borderColor: "rgba(255, 255, 255, 0.8)",
+                                      backgroundColor:
+                                        "rgba(255, 255, 255, 0.1)",
+                                    },
+                                  }}
+                                >
+                                  Add Photos
+                                </Button>
+                                <Typography
+                                  variant="caption"
+                                  sx={{ opacity: 0.7 }}
+                                >
+                                  Updated: {formatDate(update.updatedAt)}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Box>
+              ) : (
+                <Box textAlign="center" py={4}>
+                  <ProgressIcon
+                    sx={{ fontSize: 64, color: "text.secondary", mb: 2 }}
+                  />
+                  <Typography variant="h6" color="text.secondary">
+                    No progress updates available
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Progress updates will appear here when they are created for
+                    this task.
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          )}
+
+          {/* Budget Resources Tab */}
+          {activeTab === 2 && (
             <Box>
               {loadingResources ? (
                 <Box
@@ -2363,6 +2763,320 @@ const TaskView = () => {
               }}
             >
               {creatingBudget ? "Creating..." : "Create Budget"}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Add Images Dialog */}
+        <Dialog
+          open={openAddImagesDialog}
+          onClose={() => {
+            // Clean up preview URLs
+            imagePreviews.forEach((preview) =>
+              URL.revokeObjectURL(preview.preview)
+            );
+            setOpenAddImagesDialog(false);
+            setSelectedUpdateId(null);
+            setSelectedImages([]);
+            setImagePreviews([]);
+          }}
+          maxWidth="sm"
+          fullWidth
+          sx={{
+            "& .MuiDialog-paper": {
+              borderRadius: 4,
+              boxShadow: "0 20px 40px rgba(0, 0, 0, 0.15)",
+              maxHeight: "85vh",
+              background: "rgba(255, 255, 255, 0.95)",
+              backdropFilter: "blur(10px)",
+              border: "1px solid rgba(102, 126, 234, 0.2)",
+              overflow: "hidden",
+            },
+            "& .MuiBackdrop-root": {
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            },
+          }}
+        >
+          <DialogTitle
+            sx={{
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              color: "white",
+              fontWeight: "bold",
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              p: 3,
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            <Box
+              sx={{
+                position: "absolute",
+                top: -20,
+                right: -20,
+                width: 100,
+                height: 100,
+                background: "rgba(255, 255, 255, 0.1)",
+                borderRadius: "50%",
+                zIndex: 0,
+              }}
+            />
+            <Box
+              sx={{
+                position: "absolute",
+                bottom: -15,
+                left: -15,
+                width: 80,
+                height: 80,
+                background: "rgba(255, 255, 255, 0.05)",
+                borderRadius: "50%",
+                zIndex: 0,
+              }}
+            />
+            <ImageIcon sx={{ position: "relative", zIndex: 1, fontSize: 28 }} />
+            <Box sx={{ position: "relative", zIndex: 1 }}>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 800,
+                  textShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                }}
+              >
+                Add Photos to Progress Update
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.9, mt: 0.5 }}>
+                Upload additional images for this progress update
+              </Typography>
+            </Box>
+          </DialogTitle>
+          <DialogContent sx={{ p: 3, pt: 3 }}>
+            <Box
+              sx={{
+                border: "2px dashed #667eea",
+                borderRadius: 2,
+                p: 3,
+                textAlign: "center",
+                backgroundColor: "rgba(102, 126, 234, 0.05)",
+                mb: 3,
+              }}
+            >
+              <ImageIcon sx={{ fontSize: 48, color: "#667eea", mb: 1 }} />
+              <Typography variant="h6" sx={{ mb: 1, color: "#667eea" }}>
+                Select Images
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Choose multiple images to add to this progress update
+              </Typography>
+
+              {imagePreviews.length > 0 && (
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, mb: 2 }}>
+                    Selected Images ({imagePreviews.length}):
+                  </Typography>
+                  <Grid container spacing={2}>
+                    {imagePreviews.map((preview, index) => (
+                      <Grid item xs={6} sm={4} key={index}>
+                        <Box
+                          sx={{
+                            position: "relative",
+                            width: "100%",
+                            height: 120,
+                            borderRadius: 2,
+                            overflow: "hidden",
+                            border: "2px solid rgba(102, 126, 234, 0.3)",
+                            backgroundColor: "rgba(102, 126, 234, 0.1)",
+                            "&:hover .remove-icon": {
+                              opacity: 1,
+                            },
+                          }}
+                        >
+                          <img
+                            src={preview.preview}
+                            alt={`Preview ${index + 1}`}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                            onError={(e) => {
+                              e.target.style.display = "none";
+                              e.target.nextSibling.style.display = "flex";
+                            }}
+                          />
+
+                          {/* Remove button */}
+                          <IconButton
+                            className="remove-icon"
+                            onClick={() => handleRemoveImage(index)}
+                            sx={{
+                              position: "absolute",
+                              top: 4,
+                              right: 4,
+                              backgroundColor: "rgba(0, 0, 0, 0.6)",
+                              color: "white",
+                              width: 24,
+                              height: 24,
+                              opacity: 0,
+                              transition: "opacity 0.2s ease",
+                              "&:hover": {
+                                backgroundColor: "rgba(244, 67, 54, 0.8)",
+                              },
+                            }}
+                          >
+                            <CloseIcon sx={{ fontSize: 16 }} />
+                          </IconButton>
+                          <Box
+                            sx={{
+                              display: "none",
+                              width: "100%",
+                              height: "100%",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              flexDirection: "column",
+                              backgroundColor: "rgba(102, 126, 234, 0.1)",
+                            }}
+                          >
+                            <ImageIcon
+                              sx={{
+                                fontSize: 32,
+                                color: "#667eea",
+                                opacity: 0.7,
+                              }}
+                            />
+                            <Typography
+                              variant="caption"
+                              sx={{ color: "#667eea", opacity: 0.7 }}
+                            >
+                              Preview Error
+                            </Typography>
+                          </Box>
+
+                          {/* Image info overlay */}
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              background:
+                                "linear-gradient(transparent, rgba(0,0,0,0.7))",
+                              color: "white",
+                              p: 1,
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                display: "block",
+                                fontSize: "0.7rem",
+                                fontWeight: 600,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {preview.file.name}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                fontSize: "0.65rem",
+                                opacity: 0.8,
+                              }}
+                            >
+                              {(preview.file.size / 1024 / 1024).toFixed(2)} MB
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Box>
+              )}
+
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                style={{ display: "none" }}
+                id="image-upload"
+                onChange={handleImageSelect}
+              />
+              <label htmlFor="image-upload">
+                <Button
+                  variant="contained"
+                  component="span"
+                  sx={{
+                    background:
+                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  }}
+                >
+                  {selectedImages.length > 0
+                    ? "Change Images"
+                    : "Choose Images"}
+                </Button>
+              </label>
+            </Box>
+          </DialogContent>
+          <DialogActions
+            sx={{ p: 3, gap: 2, backgroundColor: "rgba(102, 126, 234, 0.05)" }}
+          >
+            <Button
+              onClick={() => {
+                // Clean up preview URLs
+                imagePreviews.forEach((preview) =>
+                  URL.revokeObjectURL(preview.preview)
+                );
+                setOpenAddImagesDialog(false);
+                setSelectedUpdateId(null);
+                setSelectedImages([]);
+                setImagePreviews([]);
+              }}
+              variant="outlined"
+              sx={{
+                borderColor: "#667eea",
+                color: "#667eea",
+                fontWeight: 600,
+                borderRadius: 2,
+                px: 3,
+                py: 1,
+                "&:hover": {
+                  borderColor: "#5a6fd8",
+                  backgroundColor: "rgba(102, 126, 234, 0.1)",
+                },
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleUploadImages}
+              variant="contained"
+              disabled={uploadingImages || imagePreviews.length === 0}
+              sx={{
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                borderRadius: 2,
+                px: 4,
+                py: 1,
+                fontWeight: 600,
+                textTransform: "none",
+                boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
+                "&:hover": {
+                  background:
+                    "linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)",
+                  transform: "translateY(-1px)",
+                  boxShadow: "0 6px 20px rgba(102, 126, 234, 0.4)",
+                },
+                "&:disabled": {
+                  background: "rgba(102, 126, 234, 0.3)",
+                  color: "rgba(255, 255, 255, 0.6)",
+                },
+                transition: "all 0.3s ease",
+              }}
+            >
+              {uploadingImages
+                ? "Uploading..."
+                : `Upload ${imagePreviews.length} Image(s)`}
             </Button>
           </DialogActions>
         </Dialog>
