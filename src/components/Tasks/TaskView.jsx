@@ -544,7 +544,7 @@ const TaskView = () => {
   return (
     <Box
       sx={{
-        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+        background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
         minHeight: "100vh",
         py: 3,
       }}
@@ -558,6 +558,7 @@ const TaskView = () => {
             color: "white",
             position: "relative",
             overflow: "hidden",
+            borderRadius: "0 0 16px 16px",
           }}
         >
           <Box
@@ -690,22 +691,25 @@ const TaskView = () => {
               <Grid item xs={12} sx={{ width: "100%" }}>
                 <Card
                   sx={{
-                    background:
-                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                    color: "white",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                    border: "1px solid #e0e0e0",
                     width: "100%",
                     maxWidth: "none",
                   }}
                 >
                   <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      Basic Information
-                    </Typography>
+                    <Box display="flex" alignItems="center" gap={1} mb={3}>
+                      <TaskIcon sx={{ color: "#667eea" }} />
+                      <Typography variant="h5" sx={{ color: "#333" }}>
+                        Basic Information
+                      </Typography>
+                    </Box>
                     <Stack spacing={2}>
                       <Box display="flex" alignItems="center" gap={1}>
                         <TaskIcon />
                         <Box>
-                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                          <Typography variant="body2" sx={{ color: "#666" }}>
                             Task Status
                           </Typography>
                           <Chip
@@ -719,10 +723,10 @@ const TaskView = () => {
                       <Box display="flex" alignItems="center" gap={1}>
                         <ProjectIcon />
                         <Box>
-                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                          <Typography variant="body2" sx={{ color: "#666" }}>
                             Project
                           </Typography>
-                          <Typography variant="body1">
+                          <Typography variant="body1" sx={{ color: "#333" }}>
                             {task.project?.name || "Not specified"}
                           </Typography>
                         </Box>
@@ -730,10 +734,10 @@ const TaskView = () => {
                       <Box display="flex" alignItems="center" gap={1}>
                         <CalendarIcon />
                         <Box>
-                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                          <Typography variant="body2" sx={{ color: "#666" }}>
                             Start Date
                           </Typography>
-                          <Typography variant="body1">
+                          <Typography variant="body1" sx={{ color: "#333" }}>
                             {formatDate(task.start_date)}
                           </Typography>
                         </Box>
@@ -741,10 +745,10 @@ const TaskView = () => {
                       <Box display="flex" alignItems="center" gap={1}>
                         <CalendarIcon />
                         <Box>
-                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                          <Typography variant="body2" sx={{ color: "#666" }}>
                             Due Date
                           </Typography>
-                          <Typography variant="body1">
+                          <Typography variant="body1" sx={{ color: "#333" }}>
                             {formatDate(task.due_date)}
                           </Typography>
                         </Box>
@@ -752,10 +756,10 @@ const TaskView = () => {
                       <Box display="flex" alignItems="center" gap={1}>
                         <ProgressIcon />
                         <Box>
-                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                          <Typography variant="body2" sx={{ color: "#666" }}>
                             Progress
                           </Typography>
-                          <Typography variant="body1">
+                          <Typography variant="body1" sx={{ color: "#333" }}>
                             {task.progress_percent || 0}%
                           </Typography>
                         </Box>
@@ -769,25 +773,28 @@ const TaskView = () => {
               <Grid item xs={12} sx={{ width: "100%" }}>
                 <Card
                   sx={{
-                    background:
-                      "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
-                    color: "white",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                    border: "1px solid #e0e0e0",
                     width: "100%",
                     maxWidth: "none",
                   }}
                 >
                   <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      Assigned Admin
-                    </Typography>
+                    <Box display="flex" alignItems="center" gap={1} mb={3}>
+                      <PeopleIcon sx={{ color: "#fa709a" }} />
+                      <Typography variant="h5" sx={{ color: "#333" }}>
+                        Assigned Admin
+                      </Typography>
+                    </Box>
                     <Stack spacing={2}>
                       {task.assignedAdmin ? (
                         <Box display="flex" alignItems="center" gap={2}>
-                          <Avatar sx={{ bgcolor: "rgba(255, 255, 255, 0.2)" }}>
+                          <Avatar sx={{ bgcolor: "#667eea" }}>
                             {task.assignedAdmin.name?.charAt(0)}
                           </Avatar>
                           <Box>
-                            <Typography variant="h6">
+                            <Typography variant="h6" sx={{ color: "#333" }}>
                               {task.assignedAdmin.name}
                             </Typography>
                             <Box
@@ -796,14 +803,17 @@ const TaskView = () => {
                               gap={1}
                               mb={0.5}
                             >
-                              <EmailIcon sx={{ fontSize: 16 }} />
-                              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                              <EmailIcon sx={{ fontSize: 16, color: "#666" }} />
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "#666" }}
+                              >
                                 {task.assignedAdmin.email}
                               </Typography>
                             </Box>
                             <Typography
                               variant="body2"
-                              sx={{ opacity: 0.6, mt: 0.5 }}
+                              sx={{ color: "#999", mt: 0.5 }}
                             >
                               Role:{" "}
                               {task.assignedAdmin.role
@@ -813,7 +823,7 @@ const TaskView = () => {
                           </Box>
                         </Box>
                       ) : (
-                        <Typography variant="body1" sx={{ opacity: 0.8 }}>
+                        <Typography variant="body1" sx={{ color: "#666" }}>
                           No admin assigned
                         </Typography>
                       )}
@@ -826,45 +836,56 @@ const TaskView = () => {
               <Grid item xs={12} sx={{ width: "100%" }}>
                 <Card
                   sx={{
-                    background:
-                      "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-                    color: "white",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                    border: "1px solid #e0e0e0",
                     width: "100%",
                     maxWidth: "none",
                   }}
                 >
                   <CardContent>
-                    <Box display="flex" alignItems="center" gap={1} mb={2}>
-                      <DescriptionIcon />
-                      <Typography variant="h6">Task Summary</Typography>
+                    <Box display="flex" alignItems="center" gap={1} mb={3}>
+                      <DescriptionIcon sx={{ color: "#4facfe" }} />
+                      <Typography variant="h5" sx={{ color: "#333" }}>
+                        Task Summary
+                      </Typography>
                     </Box>
                     <Grid container spacing={2}>
                       <Grid item xs={12} sm={6} md={3}>
                         <Box textAlign="center">
-                          <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                          <Typography
+                            variant="h4"
+                            sx={{ fontWeight: 800, color: "#333" }}
+                          >
                             {task.materials?.length || 0}
                           </Typography>
-                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                          <Typography variant="body2" sx={{ color: "#666" }}>
                             Materials
                           </Typography>
                         </Box>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
                         <Box textAlign="center">
-                          <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                          <Typography
+                            variant="h4"
+                            sx={{ fontWeight: 800, color: "#333" }}
+                          >
                             {task.equipment?.length || 0}
                           </Typography>
-                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                          <Typography variant="body2" sx={{ color: "#666" }}>
                             Equipment
                           </Typography>
                         </Box>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
                         <Box textAlign="center">
-                          <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                          <Typography
+                            variant="h4"
+                            sx={{ fontWeight: 800, color: "#333" }}
+                          >
                             {task.labor?.length || 0}
                           </Typography>
-                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                          <Typography variant="body2" sx={{ color: "#666" }}>
                             Workers
                           </Typography>
                         </Box>
@@ -879,19 +900,21 @@ const TaskView = () => {
                 <Grid item xs={12} sx={{ width: "100%" }}>
                   <Card
                     sx={{
-                      background:
-                        "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
-                      color: "white",
+                      backgroundColor: "white",
+                      boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                      border: "1px solid #e0e0e0",
                       width: "100%",
                       maxWidth: "none",
                     }}
                   >
                     <CardContent>
-                      <Box display="flex" alignItems="center" gap={1} mb={2}>
-                        <DescriptionIcon />
-                        <Typography variant="h6">Description</Typography>
+                      <Box display="flex" alignItems="center" gap={1} mb={3}>
+                        <DescriptionIcon sx={{ color: "#a8edea" }} />
+                        <Typography variant="h5" sx={{ color: "#333" }}>
+                          Description
+                        </Typography>
                       </Box>
-                      <Typography variant="body1">
+                      <Typography variant="body1" sx={{ color: "#333" }}>
                         {task.description}
                       </Typography>
                     </CardContent>
@@ -904,17 +927,17 @@ const TaskView = () => {
                 <Grid item xs={12} sx={{ width: "100%" }}>
                   <Card
                     sx={{
-                      background:
-                        "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-                      color: "white",
+                      backgroundColor: "white",
+                      boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                      border: "1px solid #e0e0e0",
                       width: "100%",
                       maxWidth: "none",
                     }}
                   >
                     <CardContent>
-                      <Box display="flex" alignItems="center" gap={1} mb={2}>
-                        <MaterialIcon />
-                        <Typography variant="h6">
+                      <Box display="flex" alignItems="center" gap={1} mb={3}>
+                        <MaterialIcon sx={{ color: "#f093fb" }} />
+                        <Typography variant="h5" sx={{ color: "#333" }}>
                           Materials ({task.materials.length})
                         </Typography>
                       </Box>
@@ -936,7 +959,7 @@ const TaskView = () => {
                               >
                                 <Typography
                                   variant="body2"
-                                  sx={{ fontWeight: 600, mb: 1 }}
+                                  sx={{ fontWeight: 600, mb: 1, color: "#333" }}
                                 >
                                   {material.name || `Material ${index + 1}`}
                                 </Typography>
@@ -944,13 +967,13 @@ const TaskView = () => {
                                 <Box sx={{ mb: 1 }}>
                                   <Typography
                                     variant="caption"
-                                    sx={{ opacity: 0.8, fontWeight: 600 }}
+                                    sx={{ color: "#666", fontWeight: 600 }}
                                   >
                                     Unit:{" "}
                                   </Typography>
                                   <Typography
                                     variant="caption"
-                                    sx={{ opacity: 0.8 }}
+                                    sx={{ color: "#666" }}
                                   >
                                     {material.unit || "N/A"}
                                   </Typography>
@@ -959,13 +982,13 @@ const TaskView = () => {
                                 <Box sx={{ mb: 1 }}>
                                   <Typography
                                     variant="caption"
-                                    sx={{ opacity: 0.8, fontWeight: 600 }}
+                                    sx={{ color: "#666", fontWeight: 600 }}
                                   >
                                     Required:{" "}
                                   </Typography>
                                   <Typography
                                     variant="caption"
-                                    sx={{ opacity: 0.8 }}
+                                    sx={{ color: "#666" }}
                                   >
                                     {material.quantity_required || 0}
                                   </Typography>
@@ -974,13 +997,13 @@ const TaskView = () => {
                                 <Box sx={{ mb: 1 }}>
                                   <Typography
                                     variant="caption"
-                                    sx={{ opacity: 0.8, fontWeight: 600 }}
+                                    sx={{ color: "#666", fontWeight: 600 }}
                                   >
                                     Used:{" "}
                                   </Typography>
                                   <Typography
                                     variant="caption"
-                                    sx={{ opacity: 0.8 }}
+                                    sx={{ color: "#666" }}
                                   >
                                     {material.quantity_used || 0}
                                   </Typography>
@@ -990,13 +1013,13 @@ const TaskView = () => {
                                   <Box sx={{ mb: 1 }}>
                                     <Typography
                                       variant="caption"
-                                      sx={{ opacity: 0.8, fontWeight: 600 }}
+                                      sx={{ color: "#666", fontWeight: 600 }}
                                     >
                                       Unit Cost:{" "}
                                     </Typography>
                                     <Typography
                                       variant="caption"
-                                      sx={{ opacity: 0.8 }}
+                                      sx={{ color: "#666" }}
                                     >
                                       {formatCurrency(material.unit_cost)}
                                     </Typography>
@@ -1007,13 +1030,13 @@ const TaskView = () => {
                                   <Box sx={{ mb: 1 }}>
                                     <Typography
                                       variant="caption"
-                                      sx={{ opacity: 0.8, fontWeight: 600 }}
+                                      sx={{ color: "#666", fontWeight: 600 }}
                                     >
                                       Total Cost:{" "}
                                     </Typography>
                                     <Typography
                                       variant="caption"
-                                      sx={{ opacity: 0.8, fontWeight: 600 }}
+                                      sx={{ color: "#666", fontWeight: 600 }}
                                     >
                                       {formatCurrency(totalCost)}
                                     </Typography>
@@ -1034,17 +1057,17 @@ const TaskView = () => {
                 <Grid item xs={12} sx={{ width: "100%" }}>
                   <Card
                     sx={{
-                      background:
-                        "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-                      color: "white",
+                      backgroundColor: "white",
+                      boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                      border: "1px solid #e0e0e0",
                       width: "100%",
                       maxWidth: "none",
                     }}
                   >
                     <CardContent>
-                      <Box display="flex" alignItems="center" gap={1} mb={2}>
-                        <EquipmentIcon />
-                        <Typography variant="h6">
+                      <Box display="flex" alignItems="center" gap={1} mb={3}>
+                        <EquipmentIcon sx={{ color: "#4facfe" }} />
+                        <Typography variant="h5" sx={{ color: "#333" }}>
                           Equipment ({task.equipment.length})
                         </Typography>
                       </Box>
@@ -1054,15 +1077,15 @@ const TaskView = () => {
                             <Box
                               sx={{
                                 p: 2,
-                                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                                backgroundColor: "#f8f9fa",
                                 borderRadius: 2,
-                                border: "2px solid rgba(255, 255, 255, 0.3)",
+                                border: "1px solid #e0e0e0",
                                 height: "100%",
                               }}
                             >
                               <Typography
                                 variant="body2"
-                                sx={{ fontWeight: 600, mb: 1 }}
+                                sx={{ fontWeight: 600, mb: 1, color: "#333" }}
                               >
                                 {equipment.name || `Equipment ${index + 1}`}
                               </Typography>
@@ -1070,13 +1093,13 @@ const TaskView = () => {
                               <Box sx={{ mb: 1 }}>
                                 <Typography
                                   variant="caption"
-                                  sx={{ opacity: 0.8, fontWeight: 600 }}
+                                  sx={{ color: "#666", fontWeight: 600 }}
                                 >
                                   Type:{" "}
                                 </Typography>
                                 <Typography
                                   variant="caption"
-                                  sx={{ opacity: 0.8 }}
+                                  sx={{ color: "#666" }}
                                 >
                                   {equipment.type || "N/A"}
                                 </Typography>
@@ -1085,14 +1108,13 @@ const TaskView = () => {
                               <Box sx={{ mb: 1 }}>
                                 <Typography
                                   variant="caption"
-                                  sx={{ opacity: 0.8, fontWeight: 600 }}
+                                  sx={{ color: "#666", fontWeight: 600 }}
                                 >
                                   Status:{" "}
                                 </Typography>
                                 <Typography
                                   variant="caption"
                                   sx={{
-                                    opacity: 0.8,
                                     color: equipment.availability
                                       ? "#4caf50"
                                       : "#f44336",
@@ -1109,13 +1131,13 @@ const TaskView = () => {
                                 <Box sx={{ mb: 1 }}>
                                   <Typography
                                     variant="caption"
-                                    sx={{ opacity: 0.8, fontWeight: 600 }}
+                                    sx={{ color: "#666", fontWeight: 600 }}
                                   >
                                     Daily Rate:{" "}
                                   </Typography>
                                   <Typography
                                     variant="caption"
-                                    sx={{ opacity: 0.8, fontWeight: 600 }}
+                                    sx={{ color: "#666", fontWeight: 600 }}
                                   >
                                     {formatCurrency(
                                       equipment.rental_cost_per_day
@@ -1129,15 +1151,15 @@ const TaskView = () => {
                                   mt: 1,
                                   p: 1,
                                   backgroundColor: equipment.availability
-                                    ? "rgba(76, 175, 80, 0.2)"
-                                    : "rgba(244, 67, 54, 0.2)",
+                                    ? "rgba(76, 175, 80, 0.1)"
+                                    : "rgba(244, 67, 54, 0.1)",
                                   borderRadius: 1,
                                   textAlign: "center",
                                 }}
                               >
                                 <Typography
                                   variant="caption"
-                                  sx={{ opacity: 0.9, fontWeight: 600 }}
+                                  sx={{ color: "#333", fontWeight: 600 }}
                                 >
                                   {equipment.availability
                                     ? "Ready for Use"
@@ -1158,17 +1180,17 @@ const TaskView = () => {
                 <Grid item xs={12} sx={{ width: "100%" }}>
                   <Card
                     sx={{
-                      background:
-                        "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
-                      color: "white",
+                      backgroundColor: "white",
+                      boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                      border: "1px solid #e0e0e0",
                       width: "100%",
                       maxWidth: "none",
                     }}
                   >
                     <CardContent>
-                      <Box display="flex" alignItems="center" gap={1} mb={2}>
-                        <LaborIcon />
-                        <Typography variant="h6">
+                      <Box display="flex" alignItems="center" gap={1} mb={3}>
+                        <LaborIcon sx={{ color: "#fa709a" }} />
+                        <Typography variant="h5" sx={{ color: "#333" }}>
                           Labor ({task.labor.length})
                         </Typography>
                       </Box>
@@ -1178,15 +1200,15 @@ const TaskView = () => {
                             <Box
                               sx={{
                                 p: 2,
-                                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                                backgroundColor: "#f8f9fa",
                                 borderRadius: 2,
-                                border: "2px solid rgba(255, 255, 255, 0.3)",
+                                border: "1px solid #e0e0e0",
                                 height: "100%",
                               }}
                             >
                               <Typography
                                 variant="body2"
-                                sx={{ fontWeight: 600, mb: 1 }}
+                                sx={{ fontWeight: 600, mb: 1, color: "#333" }}
                               >
                                 {worker.worker_name || `Worker ${index + 1}`}
                               </Typography>
@@ -1194,13 +1216,13 @@ const TaskView = () => {
                               <Box sx={{ mb: 1 }}>
                                 <Typography
                                   variant="caption"
-                                  sx={{ opacity: 0.8, fontWeight: 600 }}
+                                  sx={{ color: "#666", fontWeight: 600 }}
                                 >
                                   Type:{" "}
                                 </Typography>
                                 <Typography
                                   variant="caption"
-                                  sx={{ opacity: 0.8 }}
+                                  sx={{ color: "#666" }}
                                 >
                                   {worker.worker_type
                                     ?.replace("_", " ")
@@ -1211,13 +1233,13 @@ const TaskView = () => {
                               <Box sx={{ mb: 1 }}>
                                 <Typography
                                   variant="caption"
-                                  sx={{ opacity: 0.8, fontWeight: 600 }}
+                                  sx={{ color: "#666", fontWeight: 600 }}
                                 >
                                   Status:{" "}
                                 </Typography>
                                 <Typography
                                   variant="caption"
-                                  sx={{ opacity: 0.8 }}
+                                  sx={{ color: "#666" }}
                                 >
                                   {worker.status?.toUpperCase() || "N/A"}
                                 </Typography>
@@ -1226,13 +1248,13 @@ const TaskView = () => {
                               <Box sx={{ mb: 1 }}>
                                 <Typography
                                   variant="caption"
-                                  sx={{ opacity: 0.8, fontWeight: 600 }}
+                                  sx={{ color: "#666", fontWeight: 600 }}
                                 >
                                   Rate:{" "}
                                 </Typography>
                                 <Typography
                                   variant="caption"
-                                  sx={{ opacity: 0.8 }}
+                                  sx={{ color: "#666" }}
                                 >
                                   {formatCurrency(worker.hourly_rate)}/hr
                                 </Typography>
@@ -1241,13 +1263,13 @@ const TaskView = () => {
                               <Box sx={{ mb: 1 }}>
                                 <Typography
                                   variant="caption"
-                                  sx={{ opacity: 0.8, fontWeight: 600 }}
+                                  sx={{ color: "#666", fontWeight: 600 }}
                                 >
                                   Hours:{" "}
                                 </Typography>
                                 <Typography
                                   variant="caption"
-                                  sx={{ opacity: 0.8 }}
+                                  sx={{ color: "#666" }}
                                 >
                                   {worker.hours_worked || 0}
                                 </Typography>
@@ -1256,13 +1278,13 @@ const TaskView = () => {
                               <Box sx={{ mb: 1 }}>
                                 <Typography
                                   variant="caption"
-                                  sx={{ opacity: 0.8, fontWeight: 600 }}
+                                  sx={{ color: "#666", fontWeight: 600 }}
                                 >
                                   Total:{" "}
                                 </Typography>
                                 <Typography
                                   variant="caption"
-                                  sx={{ opacity: 0.8, fontWeight: 600 }}
+                                  sx={{ color: "#666", fontWeight: 600 }}
                                 >
                                   {formatCurrency(worker.total_cost)}
                                 </Typography>
@@ -1272,13 +1294,13 @@ const TaskView = () => {
                                 <Box sx={{ mb: 1 }}>
                                   <Typography
                                     variant="caption"
-                                    sx={{ opacity: 0.8, fontWeight: 600 }}
+                                    sx={{ color: "#666", fontWeight: 600 }}
                                   >
                                     Phone:{" "}
                                   </Typography>
                                   <Typography
                                     variant="caption"
-                                    sx={{ opacity: 0.8 }}
+                                    sx={{ color: "#666" }}
                                   >
                                     {worker.phone}
                                   </Typography>
@@ -1289,13 +1311,13 @@ const TaskView = () => {
                                 <Box sx={{ mb: 1 }}>
                                   <Typography
                                     variant="caption"
-                                    sx={{ opacity: 0.8, fontWeight: 600 }}
+                                    sx={{ color: "#666", fontWeight: 600 }}
                                   >
                                     Period:{" "}
                                   </Typography>
                                   <Typography
                                     variant="caption"
-                                    sx={{ opacity: 0.8 }}
+                                    sx={{ color: "#666" }}
                                   >
                                     {formatDate(worker.start_date)} -{" "}
                                     {formatDate(worker.end_date)}
@@ -1308,7 +1330,7 @@ const TaskView = () => {
                                   <Typography
                                     variant="caption"
                                     sx={{
-                                      opacity: 0.8,
+                                      color: "#666",
                                       fontWeight: 600,
                                       display: "block",
                                       mb: 0.5,
@@ -1329,10 +1351,10 @@ const TaskView = () => {
                                         sx={{
                                           px: 1,
                                           py: 0.25,
-                                          backgroundColor:
-                                            "rgba(255, 255, 255, 0.3)",
+                                          backgroundColor: "#e0e0e0",
                                           borderRadius: 1,
                                           fontSize: "0.65rem",
+                                          color: "#333",
                                         }}
                                       >
                                         {skill}
@@ -1346,13 +1368,13 @@ const TaskView = () => {
                                 <Box sx={{ mb: 1 }}>
                                   <Typography
                                     variant="caption"
-                                    sx={{ opacity: 0.8, fontWeight: 600 }}
+                                    sx={{ color: "#666", fontWeight: 600 }}
                                   >
                                     Required Qty:{" "}
                                   </Typography>
                                   <Typography
                                     variant="caption"
-                                    sx={{ opacity: 0.8 }}
+                                    sx={{ color: "#666" }}
                                   >
                                     {worker.required_quantity || 1}
                                   </Typography>
@@ -1372,17 +1394,17 @@ const TaskView = () => {
                 <Grid item xs={12} sx={{ width: "100%" }}>
                   <Card
                     sx={{
-                      background:
-                        "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
-                      color: "white",
+                      backgroundColor: "white",
+                      boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                      border: "1px solid #e0e0e0",
                       width: "100%",
                       maxWidth: "none",
                     }}
                   >
                     <CardContent>
-                      <Box display="flex" alignItems="center" gap={1} mb={2}>
-                        <MoneyIcon />
-                        <Typography variant="h6">
+                      <Box display="flex" alignItems="center" gap={1} mb={3}>
+                        <MoneyIcon sx={{ color: "#43e97b" }} />
+                        <Typography variant="h5" sx={{ color: "#333" }}>
                           Budget Details ({task.budgets.length})
                         </Typography>
                       </Box>
@@ -1392,34 +1414,34 @@ const TaskView = () => {
                             <Box
                               sx={{
                                 p: 2,
-                                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                                backgroundColor: "#f8f9fa",
                                 borderRadius: 2,
-                                border: "2px solid rgba(255, 255, 255, 0.3)",
+                                border: "1px solid #e0e0e0",
                               }}
                             >
                               <Typography
                                 variant="body2"
-                                sx={{ fontWeight: 600, mb: 1 }}
+                                sx={{ fontWeight: 600, mb: 1, color: "#333" }}
                               >
                                 {budget.category || `Budget ${index + 1}`}
                               </Typography>
                               <Typography
                                 variant="caption"
-                                sx={{ opacity: 0.8 }}
+                                sx={{ color: "#666" }}
                               >
                                 Type: {budget.type || "N/A"}
                               </Typography>
                               <br />
                               <Typography
                                 variant="caption"
-                                sx={{ opacity: 0.8 }}
+                                sx={{ color: "#666" }}
                               >
                                 Amount: {formatCurrency(budget.amount)}
                               </Typography>
                               <br />
                               <Typography
                                 variant="caption"
-                                sx={{ opacity: 0.8 }}
+                                sx={{ color: "#666" }}
                               >
                                 Date: {formatDate(budget.date)}
                               </Typography>
@@ -1451,22 +1473,22 @@ const TaskView = () => {
                   {/* Progress Updates Header */}
                   <Card
                     sx={{
-                      background:
-                        "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                      color: "white",
+                      backgroundColor: "white",
+                      boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                      border: "1px solid #e0e0e0",
                       mb: 3,
                       width: "100%",
                       maxWidth: "none",
                     }}
                   >
                     <CardContent>
-                      <Box display="flex" alignItems="center" gap={1} mb={2}>
-                        <ProgressIcon />
-                        <Typography variant="h6">
+                      <Box display="flex" alignItems="center" gap={1} mb={3}>
+                        <ProgressIcon sx={{ color: "#667eea" }} />
+                        <Typography variant="h5" sx={{ color: "#333" }}>
                           Progress Updates ({progressUpdates.length})
                         </Typography>
                       </Box>
-                      <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                      <Typography variant="body2" sx={{ color: "#666" }}>
                         Track the progress and updates for this task
                       </Typography>
                     </CardContent>
@@ -1478,9 +1500,9 @@ const TaskView = () => {
                       <Grid item xs={12} key={update.id}>
                         <Card
                           sx={{
-                            background:
-                              "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-                            color: "white",
+                            backgroundColor: "white",
+                            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                            border: "1px solid #e0e0e0",
                             width: "100%",
                             maxWidth: "none",
                           }}
@@ -1495,13 +1517,13 @@ const TaskView = () => {
                               <Box>
                                 <Typography
                                   variant="h6"
-                                  sx={{ fontWeight: 600 }}
+                                  sx={{ fontWeight: 600, color: "#333" }}
                                 >
                                   Update #{index + 1}
                                 </Typography>
                                 <Typography
                                   variant="body2"
-                                  sx={{ opacity: 0.8 }}
+                                  sx={{ color: "#666" }}
                                 >
                                   {formatDate(update.date)}
                                 </Typography>
@@ -1510,7 +1532,7 @@ const TaskView = () => {
                                 label={`${update.progress_percent}%`}
                                 color="primary"
                                 sx={{
-                                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                                  backgroundColor: "#667eea",
                                   color: "white",
                                   fontWeight: 600,
                                 }}
@@ -1519,7 +1541,7 @@ const TaskView = () => {
 
                             <Typography
                               variant="body1"
-                              sx={{ mb: 3, opacity: 0.9 }}
+                              sx={{ mb: 3, color: "#333" }}
                             >
                               {update.description}
                             </Typography>
@@ -1529,7 +1551,7 @@ const TaskView = () => {
                               <Box>
                                 <Typography
                                   variant="subtitle2"
-                                  sx={{ mb: 2, opacity: 0.8 }}
+                                  sx={{ mb: 2, color: "#666" }}
                                 >
                                   Progress Images ({update.images.length})
                                 </Typography>
@@ -1549,8 +1571,7 @@ const TaskView = () => {
                                           height: 200,
                                           borderRadius: 2,
                                           overflow: "hidden",
-                                          border:
-                                            "2px solid rgba(255, 255, 255, 0.3)",
+                                          border: "1px solid #e0e0e0",
                                         }}
                                       >
                                         <img
@@ -1574,19 +1595,18 @@ const TaskView = () => {
                                             display: "none",
                                             width: "100%",
                                             height: "100%",
-                                            backgroundColor:
-                                              "rgba(255, 255, 255, 0.2)",
+                                            backgroundColor: "#f8f9fa",
                                             justifyContent: "center",
                                             alignItems: "center",
                                             flexDirection: "column",
                                           }}
                                         >
                                           <ImageIcon
-                                            sx={{ fontSize: 48, opacity: 0.5 }}
+                                            sx={{ fontSize: 48, color: "#666" }}
                                           />
                                           <Typography
                                             variant="caption"
-                                            sx={{ opacity: 0.7 }}
+                                            sx={{ color: "#666" }}
                                           >
                                             Image not available
                                           </Typography>
@@ -1606,7 +1626,7 @@ const TaskView = () => {
                             >
                               <Typography
                                 variant="caption"
-                                sx={{ opacity: 0.7 }}
+                                sx={{ color: "#999" }}
                               >
                                 Created: {formatDate(update.createdAt)}
                               </Typography>
@@ -1619,15 +1639,15 @@ const TaskView = () => {
                                     handleAddImagesToUpdate(update.id)
                                   }
                                   sx={{
-                                    borderColor: "rgba(255, 255, 255, 0.5)",
-                                    color: "white",
+                                    borderColor: "#667eea",
+                                    color: "#667eea",
                                     fontSize: "0.75rem",
                                     py: 0.5,
                                     px: 1,
                                     "&:hover": {
-                                      borderColor: "rgba(255, 255, 255, 0.8)",
+                                      borderColor: "#5a6fd8",
                                       backgroundColor:
-                                        "rgba(255, 255, 255, 0.1)",
+                                        "rgba(102, 126, 234, 0.1)",
                                     },
                                   }}
                                 >
@@ -1635,7 +1655,7 @@ const TaskView = () => {
                                 </Button>
                                 <Typography
                                   variant="caption"
-                                  sx={{ opacity: 0.7 }}
+                                  sx={{ color: "#999" }}
                                 >
                                   Updated: {formatDate(update.updatedAt)}
                                 </Typography>
@@ -1649,13 +1669,11 @@ const TaskView = () => {
                 </Box>
               ) : (
                 <Box textAlign="center" py={4}>
-                  <ProgressIcon
-                    sx={{ fontSize: 64, color: "text.secondary", mb: 2 }}
-                  />
-                  <Typography variant="h6" color="text.secondary">
+                  <ProgressIcon sx={{ fontSize: 64, color: "#666", mb: 2 }} />
+                  <Typography variant="h6" sx={{ color: "#666" }}>
                     No progress updates available
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" sx={{ color: "#666" }}>
                     Progress updates will appear here when they are created for
                     this task.
                   </Typography>
@@ -1681,48 +1699,57 @@ const TaskView = () => {
                   {/* Budget Resources Summary - Full Width Header */}
                   <Card
                     sx={{
-                      background:
-                        "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                      color: "white",
+                      backgroundColor: "white",
+                      boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                      border: "1px solid #e0e0e0",
                       mb: 3,
                       width: "100%",
                       maxWidth: "none",
                     }}
                   >
                     <CardContent>
-                      <Box display="flex" alignItems="center" gap={1} mb={2}>
-                        <BudgetIcon />
-                        <Typography variant="h6">
+                      <Box display="flex" alignItems="center" gap={1} mb={3}>
+                        <BudgetIcon sx={{ color: "#667eea" }} />
+                        <Typography variant="h5" sx={{ color: "#333" }}>
                           Budget Resources Summary
                         </Typography>
                       </Box>
                       <Grid container spacing={2}>
                         <Grid item xs={12} sm={6} md={3}>
                           <Box textAlign="center">
-                            <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                            <Typography
+                              variant="h4"
+                              sx={{ fontWeight: 800, color: "#333" }}
+                            >
                               {budgetResources.materials?.length || 0}
                             </Typography>
-                            <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                            <Typography variant="body2" sx={{ color: "#666" }}>
                               Materials
                             </Typography>
                           </Box>
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
                           <Box textAlign="center">
-                            <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                            <Typography
+                              variant="h4"
+                              sx={{ fontWeight: 800, color: "#333" }}
+                            >
                               {budgetResources.equipment?.length || 0}
                             </Typography>
-                            <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                            <Typography variant="body2" sx={{ color: "#666" }}>
                               Equipment
                             </Typography>
                           </Box>
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
                           <Box textAlign="center">
-                            <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                            <Typography
+                              variant="h4"
+                              sx={{ fontWeight: 800, color: "#333" }}
+                            >
                               {budgetResources.labor?.length || 0}
                             </Typography>
-                            <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                            <Typography variant="body2" sx={{ color: "#666" }}>
                               Workers
                             </Typography>
                           </Box>
@@ -1735,58 +1762,82 @@ const TaskView = () => {
                   {budgetSummary && (
                     <Card
                       sx={{
-                        background:
-                          "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                        color: "white",
+                        backgroundColor: "white",
+                        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                        border: "1px solid #e0e0e0",
                         mb: 3,
                         width: "100%",
                         maxWidth: "none",
                       }}
                     >
                       <CardContent>
-                        <Box display="flex" alignItems="center" gap={1} mb={2}>
-                          <BudgetIcon />
-                          <Typography variant="h6">
+                        <Box display="flex" alignItems="center" gap={1} mb={3}>
+                          <BudgetIcon sx={{ color: "#667eea" }} />
+                          <Typography variant="h5" sx={{ color: "#333" }}>
                             Total Budget Summary
                           </Typography>
                         </Box>
                         <Grid container spacing={2}>
                           <Grid item xs={12} sm={6} md={3}>
                             <Box textAlign="center">
-                              <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                              <Typography
+                                variant="h4"
+                                sx={{ fontWeight: 800, color: "#333" }}
+                              >
                                 {formatCurrency(budgetSummary.total_budgeted)}
                               </Typography>
-                              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "#666" }}
+                              >
                                 Total Budgeted
                               </Typography>
                             </Box>
                           </Grid>
                           <Grid item xs={12} sm={6} md={3}>
                             <Box textAlign="center">
-                              <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                              <Typography
+                                variant="h4"
+                                sx={{ fontWeight: 800, color: "#333" }}
+                              >
                                 {formatCurrency(budgetSummary.total_actual)}
                               </Typography>
-                              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "#666" }}
+                              >
                                 Total Actual
                               </Typography>
                             </Box>
                           </Grid>
                           <Grid item xs={12} sm={6} md={3}>
                             <Box textAlign="center">
-                              <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                              <Typography
+                                variant="h4"
+                                sx={{ fontWeight: 800, color: "#333" }}
+                              >
                                 {formatCurrency(budgetSummary.total_overall)}
                               </Typography>
-                              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "#666" }}
+                              >
                                 Total Overall
                               </Typography>
                             </Box>
                           </Grid>
                           <Grid item xs={12} sm={6} md={3}>
                             <Box textAlign="center">
-                              <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                              <Typography
+                                variant="h4"
+                                sx={{ fontWeight: 800, color: "#333" }}
+                              >
                                 {budgetSummary.budget_entries?.length || 0}
                               </Typography>
-                              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "#666" }}
+                              >
                                 Budget Entries
                               </Typography>
                             </Box>
@@ -1796,7 +1847,11 @@ const TaskView = () => {
                         {/* Category Breakdown */}
                         {Object.keys(budgetSummary.by_category).length > 0 && (
                           <Box mt={3}>
-                            <Typography variant="subtitle1" gutterBottom>
+                            <Typography
+                              variant="subtitle1"
+                              gutterBottom
+                              sx={{ color: "#333" }}
+                            >
                               Budget by Category:
                             </Typography>
                             <Grid container spacing={2}>
@@ -1812,33 +1867,34 @@ const TaskView = () => {
                                     <Box
                                       sx={{
                                         p: 2,
-                                        bgcolor: "rgba(255, 255, 255, 0.1)",
+                                        bgcolor: "#f8f9fa",
                                         borderRadius: 1,
                                         textAlign: "center",
+                                        border: "1px solid #e0e0e0",
                                       }}
                                     >
                                       <Typography
                                         variant="h6"
-                                        sx={{ fontWeight: 600 }}
+                                        sx={{ fontWeight: 600, color: "#333" }}
                                       >
                                         {category}
                                       </Typography>
                                       <Typography
                                         variant="body2"
-                                        sx={{ opacity: 0.8 }}
+                                        sx={{ color: "#666" }}
                                       >
                                         Budgeted:{" "}
                                         {formatCurrency(data.budgeted)}
                                       </Typography>
                                       <Typography
                                         variant="body2"
-                                        sx={{ opacity: 0.8 }}
+                                        sx={{ color: "#666" }}
                                       >
                                         Actual: {formatCurrency(data.actual)}
                                       </Typography>
                                       <Typography
                                         variant="body2"
-                                        sx={{ opacity: 0.8, fontWeight: 600 }}
+                                        sx={{ color: "#666", fontWeight: 600 }}
                                       >
                                         Total: {formatCurrency(data.total)}
                                       </Typography>
@@ -1858,9 +1914,9 @@ const TaskView = () => {
                     budgetResources.materials.length > 0 && (
                       <Card
                         sx={{
-                          background:
-                            "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-                          color: "white",
+                          backgroundColor: "white",
+                          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                          border: "1px solid #e0e0e0",
                           width: "100%",
                           maxWidth: "none",
                         }}
@@ -1870,10 +1926,10 @@ const TaskView = () => {
                             display="flex"
                             alignItems="center"
                             gap={1}
-                            mb={2}
+                            mb={3}
                           >
-                            <MaterialIcon />
-                            <Typography variant="h6">
+                            <MaterialIcon sx={{ color: "#f093fb" }} />
+                            <Typography variant="h5" sx={{ color: "#333" }}>
                               Budget Materials (
                               {budgetResources.materials.length})
                             </Typography>
@@ -1895,7 +1951,11 @@ const TaskView = () => {
                                   >
                                     <Typography
                                       variant="body2"
-                                      sx={{ fontWeight: 600, mb: 1 }}
+                                      sx={{
+                                        fontWeight: 600,
+                                        mb: 1,
+                                        color: "#333",
+                                      }}
                                     >
                                       {material.name}
                                     </Typography>
@@ -1903,13 +1963,13 @@ const TaskView = () => {
                                     <Box sx={{ mb: 1 }}>
                                       <Typography
                                         variant="caption"
-                                        sx={{ opacity: 0.8, fontWeight: 600 }}
+                                        sx={{ color: "#666", fontWeight: 600 }}
                                       >
                                         Unit:{" "}
                                       </Typography>
                                       <Typography
                                         variant="caption"
-                                        sx={{ opacity: 0.8 }}
+                                        sx={{ color: "#666" }}
                                       >
                                         {material.unit}
                                       </Typography>
@@ -1918,13 +1978,13 @@ const TaskView = () => {
                                     <Box sx={{ mb: 1 }}>
                                       <Typography
                                         variant="caption"
-                                        sx={{ opacity: 0.8, fontWeight: 600 }}
+                                        sx={{ color: "#666", fontWeight: 600 }}
                                       >
                                         Required:{" "}
                                       </Typography>
                                       <Typography
                                         variant="caption"
-                                        sx={{ opacity: 0.8 }}
+                                        sx={{ color: "#666" }}
                                       >
                                         {material.quantity_required}
                                       </Typography>
@@ -1933,13 +1993,13 @@ const TaskView = () => {
                                     <Box sx={{ mb: 1 }}>
                                       <Typography
                                         variant="caption"
-                                        sx={{ opacity: 0.8, fontWeight: 600 }}
+                                        sx={{ color: "#666", fontWeight: 600 }}
                                       >
                                         Unit Cost:{" "}
                                       </Typography>
                                       <Typography
                                         variant="caption"
-                                        sx={{ opacity: 0.8 }}
+                                        sx={{ color: "#666" }}
                                       >
                                         {formatCurrency(material.unit_cost)}
                                       </Typography>
@@ -1949,15 +2009,14 @@ const TaskView = () => {
                                       sx={{
                                         mt: 1,
                                         p: 1,
-                                        backgroundColor:
-                                          "rgba(255, 255, 255, 0.3)",
+                                        backgroundColor: "#e0e0e0",
                                         borderRadius: 1,
                                         textAlign: "center",
                                       }}
                                     >
                                       <Typography
                                         variant="caption"
-                                        sx={{ opacity: 0.9, fontWeight: 600 }}
+                                        sx={{ color: "#333", fontWeight: 600 }}
                                       >
                                         Estimated Cost:{" "}
                                         {formatCurrency(
@@ -1988,13 +2047,11 @@ const TaskView = () => {
                                       sx={{
                                         mt: 1,
                                         width: "100%",
-                                        background: "rgba(255, 255, 255, 0.2)",
+                                        background: "#f093fb",
                                         color: "white",
-                                        border:
-                                          "1px solid rgba(255, 255, 255, 0.3)",
+                                        border: "1px solid #f093fb",
                                         "&:hover": {
-                                          background:
-                                            "rgba(255, 255, 255, 0.3)",
+                                          background: "#e085e8",
                                         },
                                         textTransform: "none",
                                         fontWeight: 600,
@@ -2016,9 +2073,9 @@ const TaskView = () => {
                     budgetResources.equipment.length > 0 && (
                       <Card
                         sx={{
-                          background:
-                            "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-                          color: "white",
+                          backgroundColor: "white",
+                          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                          border: "1px solid #e0e0e0",
                           width: "100%",
                           maxWidth: "none",
                         }}
@@ -2028,10 +2085,10 @@ const TaskView = () => {
                             display="flex"
                             alignItems="center"
                             gap={1}
-                            mb={2}
+                            mb={3}
                           >
-                            <EquipmentIcon />
-                            <Typography variant="h6">
+                            <EquipmentIcon sx={{ color: "#4facfe" }} />
+                            <Typography variant="h5" sx={{ color: "#333" }}>
                               Budget Equipment (
                               {budgetResources.equipment.length})
                             </Typography>
@@ -2053,7 +2110,11 @@ const TaskView = () => {
                                   >
                                     <Typography
                                       variant="body2"
-                                      sx={{ fontWeight: 600, mb: 1 }}
+                                      sx={{
+                                        fontWeight: 600,
+                                        mb: 1,
+                                        color: "#333",
+                                      }}
                                     >
                                       {equipment.name}
                                     </Typography>
@@ -2061,13 +2122,13 @@ const TaskView = () => {
                                     <Box sx={{ mb: 1 }}>
                                       <Typography
                                         variant="caption"
-                                        sx={{ opacity: 0.8, fontWeight: 600 }}
+                                        sx={{ color: "#666", fontWeight: 600 }}
                                       >
                                         Type:{" "}
                                       </Typography>
                                       <Typography
                                         variant="caption"
-                                        sx={{ opacity: 0.8 }}
+                                        sx={{ color: "#666" }}
                                       >
                                         {equipment.type}
                                       </Typography>
@@ -2076,14 +2137,13 @@ const TaskView = () => {
                                     <Box sx={{ mb: 1 }}>
                                       <Typography
                                         variant="caption"
-                                        sx={{ opacity: 0.8, fontWeight: 600 }}
+                                        sx={{ color: "#666", fontWeight: 600 }}
                                       >
                                         Status:{" "}
                                       </Typography>
                                       <Typography
                                         variant="caption"
                                         sx={{
-                                          opacity: 0.8,
                                           color: equipment.availability
                                             ? "#4caf50"
                                             : "#f44336",
@@ -2100,8 +2160,7 @@ const TaskView = () => {
                                       sx={{
                                         mt: 1,
                                         p: 1,
-                                        backgroundColor:
-                                          "rgba(255, 255, 255, 0.3)",
+                                        backgroundColor: "#e0e0e0",
                                         borderRadius: 1,
                                         textAlign: "center",
                                       }}
@@ -2109,7 +2168,7 @@ const TaskView = () => {
                                       <Typography
                                         variant="caption"
                                         sx={{
-                                          opacity: 0.9,
+                                          color: "#333",
                                           fontWeight: 600,
                                         }}
                                       >
@@ -2138,13 +2197,11 @@ const TaskView = () => {
                                       sx={{
                                         mt: 1,
                                         width: "100%",
-                                        background: "rgba(255, 255, 255, 0.2)",
+                                        background: "#4facfe",
                                         color: "white",
-                                        border:
-                                          "1px solid rgba(255, 255, 255, 0.3)",
+                                        border: "1px solid #4facfe",
                                         "&:hover": {
-                                          background:
-                                            "rgba(255, 255, 255, 0.3)",
+                                          background: "#3d8bfe",
                                         },
                                         textTransform: "none",
                                         fontWeight: 600,
@@ -2166,9 +2223,9 @@ const TaskView = () => {
                     budgetResources.labor.length > 0 && (
                       <Card
                         sx={{
-                          background:
-                            "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
-                          color: "white",
+                          backgroundColor: "white",
+                          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                          border: "1px solid #e0e0e0",
                           width: "100%",
                           maxWidth: "none",
                         }}
@@ -2178,10 +2235,10 @@ const TaskView = () => {
                             display="flex"
                             alignItems="center"
                             gap={1}
-                            mb={2}
+                            mb={3}
                           >
-                            <LaborIcon />
-                            <Typography variant="h6">
+                            <LaborIcon sx={{ color: "#fa709a" }} />
+                            <Typography variant="h5" sx={{ color: "#333" }}>
                               Budget Labor ({budgetResources.labor.length})
                             </Typography>
                           </Box>
@@ -2200,7 +2257,11 @@ const TaskView = () => {
                                 >
                                   <Typography
                                     variant="body2"
-                                    sx={{ fontWeight: 600, mb: 1 }}
+                                    sx={{
+                                      fontWeight: 600,
+                                      mb: 1,
+                                      color: "#333",
+                                    }}
                                   >
                                     {worker.worker_name}
                                   </Typography>
@@ -2208,13 +2269,13 @@ const TaskView = () => {
                                   <Box sx={{ mb: 1 }}>
                                     <Typography
                                       variant="caption"
-                                      sx={{ opacity: 0.8, fontWeight: 600 }}
+                                      sx={{ color: "#666", fontWeight: 600 }}
                                     >
                                       Type:{" "}
                                     </Typography>
                                     <Typography
                                       variant="caption"
-                                      sx={{ opacity: 0.8 }}
+                                      sx={{ color: "#666" }}
                                     >
                                       {worker.worker_type
                                         ?.replace("_", " ")
@@ -2225,13 +2286,13 @@ const TaskView = () => {
                                   <Box sx={{ mb: 1 }}>
                                     <Typography
                                       variant="caption"
-                                      sx={{ opacity: 0.8, fontWeight: 600 }}
+                                      sx={{ color: "#666", fontWeight: 600 }}
                                     >
                                       Rate:{" "}
                                     </Typography>
                                     <Typography
                                       variant="caption"
-                                      sx={{ opacity: 0.8 }}
+                                      sx={{ color: "#666" }}
                                     >
                                       {formatCurrency(worker.hourly_rate)}/hr
                                     </Typography>
@@ -2240,13 +2301,13 @@ const TaskView = () => {
                                   <Box sx={{ mb: 1 }}>
                                     <Typography
                                       variant="caption"
-                                      sx={{ opacity: 0.8, fontWeight: 600 }}
+                                      sx={{ color: "#666", fontWeight: 600 }}
                                     >
                                       Hours:{" "}
                                     </Typography>
                                     <Typography
                                       variant="caption"
-                                      sx={{ opacity: 0.8 }}
+                                      sx={{ color: "#666" }}
                                     >
                                       {worker.hours_worked}
                                     </Typography>
@@ -2256,13 +2317,13 @@ const TaskView = () => {
                                     <Box sx={{ mb: 1 }}>
                                       <Typography
                                         variant="caption"
-                                        sx={{ opacity: 0.8, fontWeight: 600 }}
+                                        sx={{ color: "#666", fontWeight: 600 }}
                                       >
                                         Required Qty:{" "}
                                       </Typography>
                                       <Typography
                                         variant="caption"
-                                        sx={{ opacity: 0.8 }}
+                                        sx={{ color: "#666" }}
                                       >
                                         {worker.required_quantity}
                                       </Typography>
@@ -2273,15 +2334,14 @@ const TaskView = () => {
                                     sx={{
                                       mt: 1,
                                       p: 1,
-                                      backgroundColor:
-                                        "rgba(255, 255, 255, 0.3)",
+                                      backgroundColor: "#e0e0e0",
                                       borderRadius: 1,
                                       textAlign: "center",
                                     }}
                                   >
                                     <Typography
                                       variant="caption"
-                                      sx={{ opacity: 0.9, fontWeight: 600 }}
+                                      sx={{ color: "#333", fontWeight: 600 }}
                                     >
                                       Estimated Cost:{" "}
                                       {formatCurrency(
@@ -2310,12 +2370,11 @@ const TaskView = () => {
                                     sx={{
                                       mt: 1,
                                       width: "100%",
-                                      background: "rgba(255, 255, 255, 0.2)",
+                                      background: "#fa709a",
                                       color: "white",
-                                      border:
-                                        "1px solid rgba(255, 255, 255, 0.3)",
+                                      border: "1px solid #fa709a",
                                       "&:hover": {
-                                        background: "rgba(255, 255, 255, 0.3)",
+                                        background: "#f85a8a",
                                       },
                                       textTransform: "none",
                                       fontWeight: 600,
@@ -2333,7 +2392,7 @@ const TaskView = () => {
                 </Box>
               ) : (
                 <Box textAlign="center" py={4}>
-                  <Typography variant="h6" color="text.secondary">
+                  <Typography variant="h6" sx={{ color: "#666" }}>
                     No budget resources available
                   </Typography>
                 </Box>

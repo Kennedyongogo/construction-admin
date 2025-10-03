@@ -41,6 +41,7 @@ import {
   Description as WordIcon,
   Download as DownloadIcon,
   Visibility as PreviewIcon,
+  CloudUpload as UploadIcon,
 } from "@mui/icons-material";
 
 const ProjectView = () => {
@@ -346,22 +347,25 @@ const ProjectView = () => {
             <Grid item xs={12} sx={{ width: "100%" }}>
               <Card
                 sx={{
-                  background:
-                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                  color: "white",
+                  backgroundColor: "white",
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                  border: "1px solid #e0e0e0",
                   width: "100%",
                   maxWidth: "none",
                 }}
               >
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    Basic Information
-                  </Typography>
+                  <Box display="flex" alignItems="center" gap={1} mb={3}>
+                    <ProjectIcon sx={{ color: "#667eea" }} />
+                    <Typography variant="h5" sx={{ color: "#333" }}>
+                      Basic Information
+                    </Typography>
+                  </Box>
                   <Stack spacing={2}>
                     <Box display="flex" alignItems="center" gap={1}>
                       <ProjectIcon />
                       <Box>
-                        <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                        <Typography variant="body2" sx={{ color: "#666" }}>
                           Project Status
                         </Typography>
                         <Chip
@@ -381,17 +385,17 @@ const ProjectView = () => {
                       <Box display="flex" alignItems="center" gap={1}>
                         <LocationIcon />
                         <Box>
-                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                          <Typography variant="body2" sx={{ color: "#666" }}>
                             Location
                           </Typography>
-                          <Typography variant="body1">
+                          <Typography variant="body1" sx={{ color: "#333" }}>
                             {project.location_name || "Not specified"}
                           </Typography>
                           {project.latitude && project.longitude && (
                             <Typography
                               variant="caption"
                               sx={{
-                                opacity: 0.7,
+                                color: "#999",
                                 fontFamily: "monospace",
                                 display: "block",
                                 mt: 0.5,
@@ -420,11 +424,11 @@ const ProjectView = () => {
                             });
                           }}
                           sx={{
-                            color: "white",
-                            borderColor: "rgba(255, 255, 255, 0.5)",
+                            color: "#667eea",
+                            borderColor: "#667eea",
                             "&:hover": {
-                              borderColor: "rgba(255, 255, 255, 0.8)",
-                              backgroundColor: "rgba(255, 255, 255, 0.1)",
+                              borderColor: "#667eea",
+                              backgroundColor: "rgba(102, 126, 234, 0.1)",
                             },
                           }}
                         >
@@ -435,10 +439,10 @@ const ProjectView = () => {
                     <Box display="flex" alignItems="center" gap={1}>
                       <CalendarIcon />
                       <Box>
-                        <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                        <Typography variant="body2" sx={{ color: "#666" }}>
                           Start Date
                         </Typography>
-                        <Typography variant="body1">
+                        <Typography variant="body1" sx={{ color: "#333" }}>
                           {formatDate(project.start_date)}
                         </Typography>
                       </Box>
@@ -446,10 +450,10 @@ const ProjectView = () => {
                     <Box display="flex" alignItems="center" gap={1}>
                       <CalendarIcon />
                       <Box>
-                        <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                        <Typography variant="body2" sx={{ color: "#666" }}>
                           End Date
                         </Typography>
-                        <Typography variant="body1">
+                        <Typography variant="body1" sx={{ color: "#333" }}>
                           {formatDate(project.end_date)}
                         </Typography>
                       </Box>
@@ -458,10 +462,10 @@ const ProjectView = () => {
                       <Box display="flex" alignItems="center" gap={1}>
                         <ProjectIcon />
                         <Box>
-                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                          <Typography variant="body2" sx={{ color: "#666" }}>
                             Floor Size
                           </Typography>
-                          <Typography variant="body1">
+                          <Typography variant="body1" sx={{ color: "#333" }}>
                             {project.floor_size} m²
                           </Typography>
                         </Box>
@@ -471,10 +475,10 @@ const ProjectView = () => {
                       <Box display="flex" alignItems="center" gap={1}>
                         <ProjectIcon />
                         <Box>
-                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                          <Typography variant="body2" sx={{ color: "#666" }}>
                             Construction Type
                           </Typography>
-                          <Typography variant="body1">
+                          <Typography variant="body1" sx={{ color: "#333" }}>
                             {project.construction_type
                               .replace("_", " ")
                               .toUpperCase()}
@@ -486,10 +490,10 @@ const ProjectView = () => {
                       <Box display="flex" alignItems="flex-start" gap={1}>
                         <NotesIcon />
                         <Box>
-                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                          <Typography variant="body2" sx={{ color: "#666" }}>
                             Notes
                           </Typography>
-                          <Typography variant="body1">
+                          <Typography variant="body1" sx={{ color: "#333" }}>
                             {project.notes}
                           </Typography>
                         </Box>
@@ -504,25 +508,28 @@ const ProjectView = () => {
             <Grid item xs={12} sx={{ width: "100%" }}>
               <Card
                 sx={{
-                  background:
-                    "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-                  color: "white",
+                  backgroundColor: "white",
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                  border: "1px solid #e0e0e0",
                   width: "100%",
                   maxWidth: "none",
                 }}
               >
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    Financial & Progress
-                  </Typography>
+                  <Box display="flex" alignItems="center" gap={1} mb={3}>
+                    <MoneyIcon sx={{ color: "#f093fb" }} />
+                    <Typography variant="h5" sx={{ color: "#333" }}>
+                      Financial & Progress
+                    </Typography>
+                  </Box>
                   <Stack spacing={2}>
                     <Box display="flex" alignItems="center" gap={1}>
                       <MoneyIcon />
                       <Box>
-                        <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                        <Typography variant="body2" sx={{ color: "#666" }}>
                           Budget Estimate
                         </Typography>
-                        <Typography variant="body1">
+                        <Typography variant="body1" sx={{ color: "#333" }}>
                           {formatCurrency(
                             project.budget_estimate,
                             project.currency
@@ -533,10 +540,10 @@ const ProjectView = () => {
                     <Box display="flex" alignItems="center" gap={1}>
                       <MoneyIcon />
                       <Box>
-                        <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                        <Typography variant="body2" sx={{ color: "#666" }}>
                           Actual Cost
                         </Typography>
-                        <Typography variant="body1">
+                        <Typography variant="body1" sx={{ color: "#333" }}>
                           {formatCurrency(
                             project.actual_cost,
                             project.currency
@@ -547,10 +554,10 @@ const ProjectView = () => {
                     <Box display="flex" alignItems="center" gap={1}>
                       <ProjectIcon />
                       <Box>
-                        <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                        <Typography variant="body2" sx={{ color: "#666" }}>
                           Progress
                         </Typography>
-                        <Typography variant="body1">
+                        <Typography variant="body1" sx={{ color: "#333" }}>
                           {project.progress_percent || 0}%
                         </Typography>
                       </Box>
@@ -558,10 +565,10 @@ const ProjectView = () => {
                     <Box display="flex" alignItems="center" gap={1}>
                       <AccountBalanceIcon />
                       <Box>
-                        <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                        <Typography variant="body2" sx={{ color: "#666" }}>
                           Funding Source
                         </Typography>
-                        <Typography variant="body1">
+                        <Typography variant="body1" sx={{ color: "#333" }}>
                           {project.funding_source || "Not specified"}
                         </Typography>
                       </Box>
@@ -576,17 +583,19 @@ const ProjectView = () => {
               <Grid item xs={12}>
                 <Card
                   sx={{
-                    background:
-                      "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-                    color: "white",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                    border: "1px solid #e0e0e0",
                   }}
                 >
                   <CardContent>
                     <Box display="flex" alignItems="center" gap={1} mb={2}>
-                      <DescriptionIcon />
-                      <Typography variant="h6">Description</Typography>
+                      <DescriptionIcon sx={{ color: "#4facfe" }} />
+                      <Typography variant="h6" sx={{ color: "#333" }}>
+                        Description
+                      </Typography>
                     </Box>
-                    <Typography variant="body1">
+                    <Typography variant="body1" sx={{ color: "#333" }}>
                       {project.description}
                     </Typography>
                   </CardContent>
@@ -598,26 +607,29 @@ const ProjectView = () => {
             <Grid item xs={12} sx={{ width: "100%" }}>
               <Card
                 sx={{
-                  background:
-                    "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
-                  color: "white",
+                  backgroundColor: "white",
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                  border: "1px solid #e0e0e0",
                   width: "100%",
                   maxWidth: "none",
                 }}
               >
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    Project Stakeholders
-                  </Typography>
+                  <Box display="flex" alignItems="center" gap={1} mb={3}>
+                    <ProjectIcon sx={{ color: "#4facfe" }} />
+                    <Typography variant="h5" sx={{ color: "#333" }}>
+                      Project Stakeholders
+                    </Typography>
+                  </Box>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
                       <Box display="flex" alignItems="center" gap={1} mb={2}>
                         <BusinessIcon />
                         <Box>
-                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                          <Typography variant="body2" sx={{ color: "#666" }}>
                             Contractor
                           </Typography>
-                          <Typography variant="body1">
+                          <Typography variant="body1" sx={{ color: "#333" }}>
                             {project.contractor_name || "Not specified"}
                           </Typography>
                         </Box>
@@ -627,10 +639,10 @@ const ProjectView = () => {
                       <Box display="flex" alignItems="center" gap={1} mb={2}>
                         <BusinessIcon />
                         <Box>
-                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                          <Typography variant="body2" sx={{ color: "#666" }}>
                             Client
                           </Typography>
-                          <Typography variant="body1">
+                          <Typography variant="body1" sx={{ color: "#333" }}>
                             {project.client_name || "Not specified"}
                           </Typography>
                         </Box>
@@ -640,10 +652,10 @@ const ProjectView = () => {
                       <Box display="flex" alignItems="center" gap={1} mb={2}>
                         <AccountBalanceIcon />
                         <Box>
-                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                          <Typography variant="body2" sx={{ color: "#666" }}>
                             Funding Source
                           </Typography>
-                          <Typography variant="body1">
+                          <Typography variant="body1" sx={{ color: "#333" }}>
                             {project.funding_source || "Not specified"}
                           </Typography>
                         </Box>
@@ -659,17 +671,20 @@ const ProjectView = () => {
               <Grid item xs={12} sx={{ width: "100%" }}>
                 <Card
                   sx={{
-                    background:
-                      "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
-                    color: "white",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                    border: "1px solid #e0e0e0",
                     width: "100%",
                     maxWidth: "none",
                   }}
                 >
                   <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      Project Blueprints ({project.blueprint_url.length})
-                    </Typography>
+                    <Box display="flex" alignItems="center" gap={1} mb={3}>
+                      <ProjectIcon sx={{ color: "#ff6b6b" }} />
+                      <Typography variant="h5" sx={{ color: "#333" }}>
+                        Project Blueprints ({project.blueprint_url.length})
+                      </Typography>
+                    </Box>
                     <Grid container spacing={2}>
                       {project.blueprint_url.map((url, index) => {
                         const fileName =
@@ -686,9 +701,9 @@ const ProjectView = () => {
                             <Box
                               sx={{
                                 p: 2,
-                                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                                backgroundColor: "#f8f9fa",
                                 borderRadius: 2,
-                                border: "2px solid rgba(255, 255, 255, 0.3)",
+                                border: "1px solid #e0e0e0",
                                 cursor: "pointer",
                                 transition: "transform 0.2s ease-in-out",
                                 "&:hover": {
@@ -743,7 +758,7 @@ const ProjectView = () => {
                                     variant="body2"
                                     sx={{
                                       fontWeight: 600,
-                                      color: "white",
+                                      color: "#333",
                                       textAlign: "center",
                                       wordBreak: "break-word",
                                     }}
@@ -753,8 +768,7 @@ const ProjectView = () => {
                                   <Typography
                                     variant="caption"
                                     sx={{
-                                      opacity: 0.8,
-                                      color: "white",
+                                      color: "#666",
                                       display: "block",
                                       textAlign: "center",
                                     }}
@@ -765,13 +779,13 @@ const ProjectView = () => {
                               ) : (
                                 <Box textAlign="center">
                                   <ImageIcon
-                                    sx={{ fontSize: 48, color: "white", mb: 1 }}
+                                    sx={{ fontSize: 48, color: "#666", mb: 1 }}
                                   />
                                   <Typography
                                     variant="body2"
                                     sx={{
                                       fontWeight: 600,
-                                      color: "white",
+                                      color: "#333",
                                       wordBreak: "break-word",
                                     }}
                                   >
@@ -780,8 +794,7 @@ const ProjectView = () => {
                                   <Typography
                                     variant="caption"
                                     sx={{
-                                      opacity: 0.8,
-                                      color: "white",
+                                      color: "#666",
                                       display: "block",
                                     }}
                                   >
@@ -804,15 +817,18 @@ const ProjectView = () => {
               <Grid item xs={12}>
                 <Card
                   sx={{
-                    background:
-                      "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
-                    color: "white",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                    border: "1px solid #e0e0e0",
                   }}
                 >
                   <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      Project Documents ({project.document_urls.length})
-                    </Typography>
+                    <Box display="flex" alignItems="center" gap={1} mb={3}>
+                      <UploadIcon sx={{ color: "#fa709a" }} />
+                      <Typography variant="h5" sx={{ color: "#333" }}>
+                        Project Documents ({project.document_urls.length})
+                      </Typography>
+                    </Box>
                     <Grid container spacing={2}>
                       {project.document_urls.map((fileUrl, index) => {
                         const fileName =
@@ -825,9 +841,9 @@ const ProjectView = () => {
                             <Box
                               sx={{
                                 p: 2,
-                                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                                backgroundColor: "#f8f9fa",
                                 borderRadius: 2,
-                                border: "2px solid rgba(255, 255, 255, 0.3)",
+                                border: "1px solid #e0e0e0",
                                 cursor: "pointer",
                                 transition: "transform 0.2s ease-in-out",
                                 position: "relative",
@@ -877,7 +893,7 @@ const ProjectView = () => {
                                     variant="body2"
                                     sx={{
                                       fontWeight: 600,
-                                      color: "white",
+                                      color: "#333",
                                       textAlign: "center",
                                       wordBreak: "break-word",
                                     }}
@@ -887,8 +903,7 @@ const ProjectView = () => {
                                   <Typography
                                     variant="caption"
                                     sx={{
-                                      opacity: 0.8,
-                                      color: "white",
+                                      color: "#666",
                                       display: "block",
                                       textAlign: "center",
                                     }}
@@ -913,7 +928,7 @@ const ProjectView = () => {
                                     variant="body2"
                                     sx={{
                                       fontWeight: 600,
-                                      color: "white",
+                                      color: "#333",
                                       textAlign: "center",
                                       wordBreak: "break-word",
                                     }}
@@ -923,8 +938,7 @@ const ProjectView = () => {
                                   <Typography
                                     variant="caption"
                                     sx={{
-                                      opacity: 0.8,
-                                      color: "white",
+                                      color: "#666",
                                       display: "block",
                                       textAlign: "center",
                                     }}
@@ -938,7 +952,7 @@ const ProjectView = () => {
                                         top: 8,
                                         right: 8,
                                         fontSize: 20,
-                                        color: "rgba(255,255,255,0.8)",
+                                        color: "#666",
                                         cursor: "pointer",
                                       }}
                                       onClick={(e) => {
@@ -958,7 +972,7 @@ const ProjectView = () => {
                                     variant="body2"
                                     sx={{
                                       fontWeight: 600,
-                                      color: "white",
+                                      color: "#333",
                                       wordBreak: "break-word",
                                     }}
                                   >
@@ -967,8 +981,7 @@ const ProjectView = () => {
                                   <Typography
                                     variant="caption"
                                     sx={{
-                                      opacity: 0.8,
-                                      color: "white",
+                                      color: "#666",
                                       display: "block",
                                     }}
                                   >
@@ -984,7 +997,7 @@ const ProjectView = () => {
                                         top: 8,
                                         right: 8,
                                         fontSize: 20,
-                                        color: "rgba(255,255,255,0.8)",
+                                        color: "#666",
                                         cursor: "pointer",
                                       }}
                                       onClick={(e) => {
@@ -1013,23 +1026,26 @@ const ProjectView = () => {
               <Grid item xs={12} sx={{ width: "100%" }}>
                 <Card
                   sx={{
-                    background:
-                      "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
-                    color: "white",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                    border: "1px solid #e0e0e0",
                     width: "100%",
                     maxWidth: "none",
                   }}
                 >
                   <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      Engineer in Charge
-                    </Typography>
+                    <Box display="flex" alignItems="center" gap={1} mb={3}>
+                      <EngineerIcon sx={{ color: "#43e97b" }} />
+                      <Typography variant="h5" sx={{ color: "#333" }}>
+                        Engineer in Charge
+                      </Typography>
+                    </Box>
                     <Box display="flex" alignItems="center" gap={2}>
-                      <Avatar sx={{ bgcolor: "rgba(255, 255, 255, 0.2)" }}>
+                      <Avatar sx={{ bgcolor: "#667eea" }}>
                         {project.engineer.name?.charAt(0)}
                       </Avatar>
                       <Box>
-                        <Typography variant="h6">
+                        <Typography variant="h6" sx={{ color: "#333" }}>
                           {project.engineer.name}
                         </Typography>
                         <Box
@@ -1038,22 +1054,22 @@ const ProjectView = () => {
                           gap={1}
                           mb={0.5}
                         >
-                          <EmailIcon sx={{ fontSize: 16 }} />
-                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                          <EmailIcon sx={{ fontSize: 16, color: "#666" }} />
+                          <Typography variant="body2" sx={{ color: "#666" }}>
                             {project.engineer.email}
                           </Typography>
                         </Box>
                         {project.engineer.phone && (
                           <Box display="flex" alignItems="center" gap={1}>
-                            <PhoneIcon sx={{ fontSize: 16 }} />
-                            <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                            <PhoneIcon sx={{ fontSize: 16, color: "#666" }} />
+                            <Typography variant="body2" sx={{ color: "#666" }}>
                               {project.engineer.phone}
                             </Typography>
                           </Box>
                         )}
                         <Typography
                           variant="body2"
-                          sx={{ opacity: 0.6, mt: 0.5 }}
+                          sx={{ color: "#999", mt: 0.5 }}
                         >
                           Role:{" "}
                           {project.engineer.role
@@ -1072,15 +1088,15 @@ const ProjectView = () => {
               <Grid item xs={12}>
                 <Card
                   sx={{
-                    background:
-                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                    color: "white",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                    border: "1px solid #e0e0e0",
                   }}
                 >
                   <CardContent>
                     <Box display="flex" alignItems="center" gap={1} mb={2}>
-                      <TaskIcon />
-                      <Typography variant="h6">
+                      <TaskIcon sx={{ color: "#667eea" }} />
+                      <Typography variant="h6" sx={{ color: "#333" }}>
                         Project Tasks ({project.tasks.length})
                       </Typography>
                     </Box>
@@ -1090,18 +1106,21 @@ const ProjectView = () => {
                           <Box
                             sx={{
                               p: 2,
-                              backgroundColor: "rgba(255, 255, 255, 0.2)",
+                              backgroundColor: "#f8f9fa",
                               borderRadius: 2,
-                              border: "2px solid rgba(255, 255, 255, 0.3)",
+                              border: "1px solid #e0e0e0",
                             }}
                           >
                             <Typography
                               variant="body2"
-                              sx={{ fontWeight: 600, mb: 1 }}
+                              sx={{ fontWeight: 600, mb: 1, color: "#333" }}
                             >
                               {task.title || task.name || `Task ${index + 1}`}
                             </Typography>
-                            <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                            <Typography
+                              variant="caption"
+                              sx={{ color: "#666" }}
+                            >
                               {task.description ||
                                 task.status ||
                                 "No description"}
@@ -1120,15 +1139,15 @@ const ProjectView = () => {
               <Grid item xs={12}>
                 <Card
                   sx={{
-                    background:
-                      "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-                    color: "white",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                    border: "1px solid #e0e0e0",
                   }}
                 >
                   <CardContent>
                     <Box display="flex" alignItems="center" gap={1} mb={2}>
-                      <MaterialIcon />
-                      <Typography variant="h6">
+                      <MaterialIcon sx={{ color: "#f093fb" }} />
+                      <Typography variant="h6" sx={{ color: "#333" }}>
                         Materials ({project.materials.length})
                       </Typography>
                     </Box>
@@ -1138,20 +1157,23 @@ const ProjectView = () => {
                           <Box
                             sx={{
                               p: 2,
-                              backgroundColor: "rgba(255, 255, 255, 0.2)",
+                              backgroundColor: "#f8f9fa",
                               borderRadius: 2,
-                              border: "2px solid rgba(255, 255, 255, 0.3)",
+                              border: "1px solid #e0e0e0",
                             }}
                           >
                             <Typography
                               variant="body2"
-                              sx={{ fontWeight: 600, mb: 1 }}
+                              sx={{ fontWeight: 600, mb: 1, color: "#333" }}
                             >
                               {material.name ||
                                 material.title ||
                                 `Material ${index + 1}`}
                             </Typography>
-                            <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                            <Typography
+                              variant="caption"
+                              sx={{ color: "#666" }}
+                            >
                               {material.description ||
                                 material.type ||
                                 "No description"}
@@ -1170,15 +1192,15 @@ const ProjectView = () => {
               <Grid item xs={12}>
                 <Card
                   sx={{
-                    background:
-                      "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-                    color: "white",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                    border: "1px solid #e0e0e0",
                   }}
                 >
                   <CardContent>
                     <Box display="flex" alignItems="center" gap={1} mb={2}>
                       <EquipmentIcon />
-                      <Typography variant="h6">
+                      <Typography variant="h6" sx={{ color: "#333" }}>
                         Equipment ({project.equipment.length})
                       </Typography>
                     </Box>
@@ -1188,20 +1210,23 @@ const ProjectView = () => {
                           <Box
                             sx={{
                               p: 2,
-                              backgroundColor: "rgba(255, 255, 255, 0.2)",
+                              backgroundColor: "#f8f9fa",
                               borderRadius: 2,
-                              border: "2px solid rgba(255, 255, 255, 0.3)",
+                              border: "1px solid #e0e0e0",
                             }}
                           >
                             <Typography
                               variant="body2"
-                              sx={{ fontWeight: 600, mb: 1 }}
+                              sx={{ fontWeight: 600, mb: 1, color: "#333" }}
                             >
                               {equipment.name ||
                                 equipment.title ||
                                 `Equipment ${index + 1}`}
                             </Typography>
-                            <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                            <Typography
+                              variant="caption"
+                              sx={{ color: "#666" }}
+                            >
                               {equipment.description ||
                                 equipment.type ||
                                 "No description"}
@@ -1220,15 +1245,15 @@ const ProjectView = () => {
               <Grid item xs={12}>
                 <Card
                   sx={{
-                    background:
-                      "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
-                    color: "white",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                    border: "1px solid #e0e0e0",
                   }}
                 >
                   <CardContent>
                     <Box display="flex" alignItems="center" gap={1} mb={2}>
                       <MoneyIcon />
-                      <Typography variant="h6">
+                      <Typography variant="h6" sx={{ color: "#333" }}>
                         Budget Details ({project.budgets.length})
                       </Typography>
                     </Box>
@@ -1238,20 +1263,23 @@ const ProjectView = () => {
                           <Box
                             sx={{
                               p: 2,
-                              backgroundColor: "rgba(255, 255, 255, 0.2)",
+                              backgroundColor: "#f8f9fa",
                               borderRadius: 2,
-                              border: "2px solid rgba(255, 255, 255, 0.3)",
+                              border: "1px solid #e0e0e0",
                             }}
                           >
                             <Typography
                               variant="body2"
-                              sx={{ fontWeight: 600, mb: 1 }}
+                              sx={{ fontWeight: 600, mb: 1, color: "#333" }}
                             >
                               {budget.category ||
                                 budget.name ||
                                 `Budget ${index + 1}`}
                             </Typography>
-                            <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                            <Typography
+                              variant="caption"
+                              sx={{ color: "#666" }}
+                            >
                               Amount:{" "}
                               {formatCurrency(budget.amount, project.currency)}
                             </Typography>
@@ -1269,15 +1297,15 @@ const ProjectView = () => {
               <Grid item xs={12}>
                 <Card
                   sx={{
-                    background:
-                      "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
-                    color: "white",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                    border: "1px solid #e0e0e0",
                   }}
                 >
                   <CardContent>
                     <Box display="flex" alignItems="center" gap={1} mb={2}>
                       <ProgressIcon />
-                      <Typography variant="h6">
+                      <Typography variant="h6" sx={{ color: "#333" }}>
                         Progress Updates ({project.progressUpdates.length})
                       </Typography>
                     </Box>
@@ -1287,20 +1315,23 @@ const ProjectView = () => {
                           <Box
                             sx={{
                               p: 2,
-                              backgroundColor: "rgba(255, 255, 255, 0.2)",
+                              backgroundColor: "#f8f9fa",
                               borderRadius: 2,
-                              border: "2px solid rgba(255, 255, 255, 0.3)",
+                              border: "1px solid #e0e0e0",
                             }}
                           >
                             <Typography
                               variant="body2"
-                              sx={{ fontWeight: 600, mb: 1 }}
+                              sx={{ fontWeight: 600, mb: 1, color: "#333" }}
                             >
                               {update.title ||
                                 update.description ||
                                 `Update ${index + 1}`}
                             </Typography>
-                            <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                            <Typography
+                              variant="caption"
+                              sx={{ color: "#666" }}
+                            >
                               {update.date
                                 ? formatDate(update.date)
                                 : "No date"}
@@ -1319,15 +1350,15 @@ const ProjectView = () => {
               <Grid item xs={12}>
                 <Card
                   sx={{
-                    background:
-                      "linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)",
-                    color: "white",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                    border: "1px solid #e0e0e0",
                   }}
                 >
                   <CardContent>
                     <Box display="flex" alignItems="center" gap={1} mb={2}>
                       <IssueIcon />
-                      <Typography variant="h6">
+                      <Typography variant="h6" sx={{ color: "#333" }}>
                         Project Issues ({project.issues.length})
                       </Typography>
                     </Box>
@@ -1337,20 +1368,23 @@ const ProjectView = () => {
                           <Box
                             sx={{
                               p: 2,
-                              backgroundColor: "rgba(255, 255, 255, 0.2)",
+                              backgroundColor: "#f8f9fa",
                               borderRadius: 2,
-                              border: "2px solid rgba(255, 255, 255, 0.3)",
+                              border: "1px solid #e0e0e0",
                             }}
                           >
                             <Typography
                               variant="body2"
-                              sx={{ fontWeight: 600, mb: 1 }}
+                              sx={{ fontWeight: 600, mb: 1, color: "#333" }}
                             >
                               {issue.title ||
                                 issue.description ||
                                 `Issue ${index + 1}`}
                             </Typography>
-                            <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                            <Typography
+                              variant="caption"
+                              sx={{ color: "#666" }}
+                            >
                               {issue.status || issue.priority || "No status"}
                             </Typography>
                           </Box>

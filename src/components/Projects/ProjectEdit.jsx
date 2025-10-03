@@ -575,15 +575,17 @@ const ProjectEdit = () => {
             <Grid item xs={12}>
               <Card
                 sx={{
-                  background:
-                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                  color: "white",
+                  backgroundColor: "white",
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                  border: "1px solid #e0e0e0",
                 }}
               >
                 <CardContent>
                   <Box display="flex" alignItems="center" gap={1} mb={3}>
-                    <ProjectIcon />
-                    <Typography variant="h6">Basic Information</Typography>
+                    <ProjectIcon sx={{ color: "#667eea" }} />
+                    <Typography variant="h6" sx={{ color: "#333" }}>
+                      Basic Information
+                    </Typography>
                   </Box>
                   <Stack spacing={3}>
                     <TextField
@@ -596,22 +598,7 @@ const ProjectEdit = () => {
                       required
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          "& fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.3)",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.5)",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "white",
-                          },
-                        },
-                        "& .MuiInputLabel-root": {
-                          color: "rgba(255, 255, 255, 0.8)",
-                        },
-                        "& .MuiInputBase-input": {
-                          color: "white",
+                          backgroundColor: "transparent",
                         },
                       }}
                     />
@@ -625,22 +612,7 @@ const ProjectEdit = () => {
                       required
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          "& fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.3)",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.5)",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "white",
-                          },
-                        },
-                        "& .MuiInputLabel-root": {
-                          color: "rgba(255, 255, 255, 0.8)",
-                        },
-                        "& .MuiInputBase-input": {
-                          color: "white",
+                          backgroundColor: "transparent",
                         },
                       }}
                     />
@@ -656,22 +628,7 @@ const ProjectEdit = () => {
                       InputLabelProps={{ shrink: true }}
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          "& fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.3)",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.5)",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "white",
-                          },
-                        },
-                        "& .MuiInputLabel-root": {
-                          color: "rgba(255, 255, 255, 0.8)",
-                        },
-                        "& .MuiInputBase-input": {
-                          color: "white",
+                          backgroundColor: "transparent",
                         },
                       }}
                     />
@@ -686,22 +643,7 @@ const ProjectEdit = () => {
                       InputLabelProps={{ shrink: true }}
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          "& fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.3)",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.5)",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "white",
-                          },
-                        },
-                        "& .MuiInputLabel-root": {
-                          color: "rgba(255, 255, 255, 0.8)",
-                        },
-                        "& .MuiInputBase-input": {
-                          color: "white",
+                          backgroundColor: "transparent",
                         },
                       }}
                     />
@@ -757,22 +699,7 @@ const ProjectEdit = () => {
                       inputProps={{ min: 0, max: 100 }}
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          "& fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.3)",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.5)",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "white",
-                          },
-                        },
-                        "& .MuiInputLabel-root": {
-                          color: "rgba(255, 255, 255, 0.8)",
-                        },
-                        "& .MuiInputBase-input": {
-                          color: "white",
+                          backgroundColor: "transparent",
                         },
                       }}
                     />
@@ -787,22 +714,7 @@ const ProjectEdit = () => {
                       }
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          "& fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.3)",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.5)",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "white",
-                          },
-                        },
-                        "& .MuiInputLabel-root": {
-                          color: "rgba(255, 255, 255, 0.8)",
-                        },
-                        "& .MuiInputBase-input": {
-                          color: "white",
+                          backgroundColor: "transparent",
                         },
                       }}
                     />
@@ -817,22 +729,7 @@ const ProjectEdit = () => {
                       }
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          "& fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.3)",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.5)",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "white",
-                          },
-                        },
-                        "& .MuiInputLabel-root": {
-                          color: "rgba(255, 255, 255, 0.8)",
-                        },
-                        "& .MuiInputBase-input": {
-                          color: "white",
+                          backgroundColor: "transparent",
                         },
                       }}
                     />
@@ -846,22 +743,7 @@ const ProjectEdit = () => {
                       }
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          "& fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.3)",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.5)",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "white",
-                          },
-                        },
-                        "& .MuiInputLabel-root": {
-                          color: "rgba(255, 255, 255, 0.8)",
-                        },
-                        "& .MuiInputBase-input": {
-                          color: "white",
+                          backgroundColor: "transparent",
                         },
                       }}
                     />
@@ -914,15 +796,17 @@ const ProjectEdit = () => {
             <Grid item xs={12}>
               <Card
                 sx={{
-                  background:
-                    "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-                  color: "white",
+                  backgroundColor: "white",
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                  border: "1px solid #e0e0e0",
                 }}
               >
                 <CardContent>
                   <Box display="flex" alignItems="center" gap={1} mb={3}>
-                    <MoneyIcon />
-                    <Typography variant="h6">Financial Information</Typography>
+                    <MoneyIcon sx={{ color: "#f093fb" }} />
+                    <Typography variant="h6" sx={{ color: "#333" }}>
+                      Financial Information
+                    </Typography>
                   </Box>
                   <Stack spacing={3}>
                     <TextField
@@ -935,22 +819,7 @@ const ProjectEdit = () => {
                       }
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          "& fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.3)",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.5)",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "white",
-                          },
-                        },
-                        "& .MuiInputLabel-root": {
-                          color: "rgba(255, 255, 255, 0.8)",
-                        },
-                        "& .MuiInputBase-input": {
-                          color: "white",
+                          backgroundColor: "transparent",
                         },
                       }}
                     />
@@ -964,22 +833,7 @@ const ProjectEdit = () => {
                       }
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          "& fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.3)",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.5)",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "white",
-                          },
-                        },
-                        "& .MuiInputLabel-root": {
-                          color: "rgba(255, 255, 255, 0.8)",
-                        },
-                        "& .MuiInputBase-input": {
-                          color: "white",
+                          backgroundColor: "transparent",
                         },
                       }}
                     />
@@ -1029,15 +883,17 @@ const ProjectEdit = () => {
             <Grid item xs={12}>
               <Card
                 sx={{
-                  background:
-                    "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-                  color: "white",
+                  backgroundColor: "white",
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                  border: "1px solid #e0e0e0",
                 }}
               >
                 <CardContent>
                   <Box display="flex" alignItems="center" gap={1} mb={3}>
-                    <ProjectIcon />
-                    <Typography variant="h6">Project Stakeholders</Typography>
+                    <ProjectIcon sx={{ color: "#4facfe" }} />
+                    <Typography variant="h6" sx={{ color: "#333" }}>
+                      Project Stakeholders
+                    </Typography>
                   </Box>
                   <Stack spacing={3}>
                     <TextField
@@ -1049,22 +905,7 @@ const ProjectEdit = () => {
                       }
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          "& fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.3)",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.5)",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "white",
-                          },
-                        },
-                        "& .MuiInputLabel-root": {
-                          color: "rgba(255, 255, 255, 0.8)",
-                        },
-                        "& .MuiInputBase-input": {
-                          color: "white",
+                          backgroundColor: "transparent",
                         },
                       }}
                     />
@@ -1077,22 +918,7 @@ const ProjectEdit = () => {
                       }
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          "& fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.3)",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.5)",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "white",
-                          },
-                        },
-                        "& .MuiInputLabel-root": {
-                          color: "rgba(255, 255, 255, 0.8)",
-                        },
-                        "& .MuiInputBase-input": {
-                          color: "white",
+                          backgroundColor: "transparent",
                         },
                       }}
                     />
@@ -1105,22 +931,7 @@ const ProjectEdit = () => {
                       }
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          "& fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.3)",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.5)",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "white",
-                          },
-                        },
-                        "& .MuiInputLabel-root": {
-                          color: "rgba(255, 255, 255, 0.8)",
-                        },
-                        "& .MuiInputBase-input": {
-                          color: "white",
+                          backgroundColor: "transparent",
                         },
                       }}
                     />
@@ -1133,15 +944,17 @@ const ProjectEdit = () => {
             <Grid item xs={12}>
               <Card
                 sx={{
-                  background:
-                    "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
-                  color: "white",
+                  backgroundColor: "white",
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                  border: "1px solid #e0e0e0",
                 }}
               >
                 <CardContent>
                   <Box display="flex" alignItems="center" gap={1} mb={3}>
-                    <UploadIcon />
-                    <Typography variant="h6">Project Documents</Typography>
+                    <UploadIcon sx={{ color: "#43e97b" }} />
+                    <Typography variant="h6" sx={{ color: "#333" }}>
+                      Project Documents
+                    </Typography>
                   </Box>
 
                   {/* File Upload */}
@@ -1160,11 +973,11 @@ const ProjectEdit = () => {
                         component="span"
                         startIcon={<UploadIcon />}
                         sx={{
-                          color: "white",
-                          borderColor: "rgba(255, 255, 255, 0.5)",
+                          color: "#43e97b",
+                          borderColor: "#43e97b",
                           "&:hover": {
-                            borderColor: "white",
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
+                            borderColor: "#43e97b",
+                            backgroundColor: "rgba(67, 233, 123, 0.1)",
                           },
                         }}
                       >
@@ -1191,9 +1004,9 @@ const ProjectEdit = () => {
                               <Box
                                 sx={{
                                   p: 2,
-                                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                                  backgroundColor: "#f8f9fa",
                                   borderRadius: 2,
-                                  border: "2px solid rgba(255, 255, 255, 0.3)",
+                                  border: "1px solid #e0e0e0",
                                   position: "relative",
                                 }}
                               >
@@ -1232,7 +1045,7 @@ const ProjectEdit = () => {
                                     <Typography
                                       variant="caption"
                                       sx={{
-                                        color: "white",
+                                        color: "#333",
                                         display: "block",
                                         textAlign: "center",
                                         wordBreak: "break-word",
@@ -1270,7 +1083,7 @@ const ProjectEdit = () => {
                                     <Typography
                                       variant="caption"
                                       sx={{
-                                        color: "white",
+                                        color: "#333",
                                         display: "block",
                                         textAlign: "center",
                                         wordBreak: "break-word",
@@ -1297,7 +1110,7 @@ const ProjectEdit = () => {
                                     <Typography
                                       variant="caption"
                                       sx={{
-                                        color: "white",
+                                        color: "#333",
                                         display: "block",
                                         wordBreak: "break-word",
                                       }}
@@ -1307,10 +1120,9 @@ const ProjectEdit = () => {
                                     <Typography
                                       variant="caption"
                                       sx={{
-                                        color: "white",
+                                        color: "#666",
                                         display: "block",
                                         fontSize: "0.7rem",
-                                        opacity: 0.8,
                                       }}
                                     >
                                       {fileType === "pdf"
@@ -1366,9 +1178,9 @@ const ProjectEdit = () => {
                               <Box
                                 sx={{
                                   p: 2,
-                                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                                  backgroundColor: "#f8f9fa",
                                   borderRadius: 2,
-                                  border: "2px solid rgba(255, 255, 255, 0.3)",
+                                  border: "1px solid #e0e0e0",
                                   position: "relative",
                                   cursor: "pointer",
                                   transition: "transform 0.2s ease-in-out",
@@ -1438,7 +1250,7 @@ const ProjectEdit = () => {
                                     <Typography
                                       variant="caption"
                                       sx={{
-                                        color: "white",
+                                        color: "#333",
                                         display: "block",
                                         textAlign: "center",
                                         wordBreak: "break-word",
@@ -1475,7 +1287,7 @@ const ProjectEdit = () => {
                                     <Typography
                                       variant="caption"
                                       sx={{
-                                        color: "white",
+                                        color: "#333",
                                         display: "block",
                                         textAlign: "center",
                                         wordBreak: "break-word",
@@ -1502,7 +1314,7 @@ const ProjectEdit = () => {
                                     <Typography
                                       variant="caption"
                                       sx={{
-                                        color: "white",
+                                        color: "#333",
                                         display: "block",
                                         wordBreak: "break-word",
                                       }}
@@ -1512,10 +1324,9 @@ const ProjectEdit = () => {
                                     <Typography
                                       variant="caption"
                                       sx={{
-                                        color: "white",
+                                        color: "#666",
                                         display: "block",
                                         fontSize: "0.7rem",
-                                        opacity: 0.8,
                                       }}
                                     >
                                       Click to download
@@ -1537,15 +1348,17 @@ const ProjectEdit = () => {
             <Grid item xs={12}>
               <Card
                 sx={{
-                  background:
-                    "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
-                  color: "white",
+                  backgroundColor: "white",
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                  border: "1px solid #e0e0e0",
                 }}
               >
                 <CardContent>
                   <Box display="flex" alignItems="center" gap={1} mb={3}>
-                    <ProjectIcon />
-                    <Typography variant="h6">Project Blueprints</Typography>
+                    <ProjectIcon sx={{ color: "#ff6b6b" }} />
+                    <Typography variant="h6" sx={{ color: "#333" }}>
+                      Project Blueprints
+                    </Typography>
                   </Box>
 
                   {/* Current Blueprints */}
@@ -1570,9 +1383,9 @@ const ProjectEdit = () => {
                               <Box
                                 sx={{
                                   p: 2,
-                                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                                  backgroundColor: "#f8f9fa",
                                   borderRadius: 2,
-                                  border: "2px solid rgba(255, 255, 255, 0.3)",
+                                  border: "1px solid #e0e0e0",
                                   position: "relative",
                                 }}
                               >
@@ -1642,7 +1455,7 @@ const ProjectEdit = () => {
                                     <Typography
                                       variant="caption"
                                       sx={{
-                                        color: "white",
+                                        color: "#333",
                                         display: "block",
                                         textAlign: "center",
                                         wordBreak: "break-word",
@@ -1656,14 +1469,14 @@ const ProjectEdit = () => {
                                     <ImageIcon
                                       sx={{
                                         fontSize: 48,
-                                        color: "white",
+                                        color: "#666",
                                         mb: 1,
                                       }}
                                     />
                                     <Typography
                                       variant="caption"
                                       sx={{
-                                        color: "white",
+                                        color: "#333",
                                         display: "block",
                                         wordBreak: "break-word",
                                       }}
@@ -1697,11 +1510,11 @@ const ProjectEdit = () => {
                         startIcon={<UploadIcon />}
                         fullWidth
                         sx={{
-                          color: "white",
-                          borderColor: "rgba(255, 255, 255, 0.3)",
+                          color: "#ff6b6b",
+                          borderColor: "#ff6b6b",
                           "&:hover": {
-                            borderColor: "rgba(255, 255, 255, 0.5)",
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
+                            borderColor: "#ff6b6b",
+                            backgroundColor: "rgba(255, 107, 107, 0.1)",
                           },
                           mb: 2,
                         }}
@@ -1762,7 +1575,7 @@ const ProjectEdit = () => {
                                     <ImageIcon />
                                     <Typography
                                       variant="caption"
-                                      sx={{ color: "white" }}
+                                      sx={{ color: "#333" }}
                                     >
                                       {file.name}
                                     </Typography>
@@ -1771,7 +1584,7 @@ const ProjectEdit = () => {
                                 <Typography
                                   variant="caption"
                                   sx={{
-                                    color: "white",
+                                    color: "#333",
                                     display: "block",
                                     textAlign: "center",
                                     wordBreak: "break-word",

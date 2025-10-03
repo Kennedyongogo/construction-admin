@@ -101,11 +101,23 @@ const Analytics = () => {
   });
   const [projectsByDate, setProjectsByDate] = useState([]);
   const [tasksByDate, setTasksByDate] = useState([]);
+  // Helper function to format date for display
+  const formatDateForDisplay = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
   const [dateRange, setDateRange] = useState({
-    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    startDate: new Date(new Date().getFullYear(), 0, 1)
       .toISOString()
-      .split("T")[0], // 30 days ago
-    endDate: new Date().toISOString().split("T")[0], // today
+      .split("T")[0], // January 1st of current year
+    endDate: new Date(new Date().getFullYear(), 11, 31)
+      .toISOString()
+      .split("T")[0], // December 31st of current year
   });
 
   const [overviewHelpOpen, setOverviewHelpOpen] = useState(false);
@@ -1976,8 +1988,9 @@ const Analytics = () => {
                   mb={2}
                 >
                   <Typography variant="h6" fontWeight="600">
-                    Projects Created by Date ({dateRange.startDate} to{" "}
-                    {dateRange.endDate})
+                    Projects Starting by Date (
+                    {formatDateForDisplay(dateRange.startDate)} to{" "}
+                    {formatDateForDisplay(dateRange.endDate)})
                   </Typography>
 
                   {/* Date Filter Controls */}
@@ -2007,6 +2020,24 @@ const Analytics = () => {
                       size="small"
                       sx={{ minWidth: 140 }}
                     />
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => {
+                        const currentYear = new Date().getFullYear();
+                        setDateRange({
+                          startDate: new Date(currentYear, 0, 1)
+                            .toISOString()
+                            .split("T")[0],
+                          endDate: new Date(currentYear, 11, 31)
+                            .toISOString()
+                            .split("T")[0],
+                        });
+                      }}
+                      sx={{ minWidth: 80 }}
+                    >
+                      Reset
+                    </Button>
                   </Box>
                 </Box>
                 <ResponsiveContainer width="100%" height={400}>
