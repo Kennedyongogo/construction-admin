@@ -43,6 +43,7 @@ import {
   Visibility as PreviewIcon,
   CloudUpload as UploadIcon,
 } from "@mui/icons-material";
+import QuotationGenerator from "./QuotationGenerator";
 
 const ProjectView = () => {
   const { id } = useParams();
@@ -56,6 +57,7 @@ const ProjectView = () => {
     fileName: "",
     type: "",
   });
+  const [quotationModal, setQuotationModal] = useState(false);
 
   // Helper to build URL for uploaded assets using Vite proxy
   const buildImageUrl = (imageUrl) => {
@@ -322,21 +324,38 @@ const ProjectView = () => {
                 </Typography>
               </Box>
             </Box>
-            <Button
-              variant="contained"
-              startIcon={<EditIcon />}
-              onClick={() => navigate(`/projects/${id}/edit`)}
-              sx={{
-                backgroundColor: "rgba(255, 255, 255, 0.2)",
-                color: "white",
-                border: "1px solid rgba(255, 255, 255, 0.3)",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.3)",
-                },
-              }}
-            >
-              Edit Project
-            </Button>
+            <Box display="flex" gap={2}>
+              <Button
+                variant="contained"
+                startIcon={<PdfIcon />}
+                onClick={() => setQuotationModal(true)}
+                sx={{
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  color: "white",
+                  border: "1px solid rgba(255, 255, 255, 0.3)",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.3)",
+                  },
+                }}
+              >
+                Generate Quotation
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<EditIcon />}
+                onClick={() => navigate(`/projects/${id}/edit`)}
+                sx={{
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  color: "white",
+                  border: "1px solid rgba(255, 255, 255, 0.3)",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.3)",
+                  },
+                }}
+              >
+                Edit Project
+              </Button>
+            </Box>
           </Box>
         </Box>
 
@@ -1474,6 +1493,14 @@ const ProjectView = () => {
           </Box>
         </Box>
       )}
+
+      {/* Quotation Generator Modal */}
+      <QuotationGenerator
+        projectId={id}
+        projectName={project?.name}
+        open={quotationModal}
+        onClose={() => setQuotationModal(false)}
+      />
     </Box>
   );
 };

@@ -757,7 +757,6 @@ const Projects = () => {
             }}
           >
             <Table sx={{ minWidth: 800 }}>
-              {" "}
               {/* Set minimum width for table */}
               <TableHead>
                 <TableRow
