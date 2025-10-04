@@ -136,6 +136,7 @@ const Navbar = (props) => {
     customerService: false,
     riskManagement: false,
     debtCollection: false,
+    "Construction Management": false,
   });
   const [menuItems, setMenuItems] = useState([]);
 
@@ -195,6 +196,11 @@ const Navbar = (props) => {
           path: "/budget",
         },
       ],
+    },
+    {
+      text: "Issues",
+      icon: <Warning />,
+      path: "/issues",
     },
     {
       text: "Construction Map",

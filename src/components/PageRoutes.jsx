@@ -15,6 +15,7 @@ import Equipment from "./Equipment/Equipment";
 import Labor from "./Labor/Labor";
 import Budget from "./budget/Budget";
 import BudgetView from "./budget/BudgetView";
+import Issues from "./Issues/Issues";
 import ConstructionMap from "../ConstructionMap";
 import Documents from "./Documents/Documents";
 import UsersTable from "./Users/UsersTable";
@@ -73,6 +74,7 @@ function PageRoutes() {
             <Route path="labor" element={<Labor />} />
             <Route path="budget" element={<Budget />} />
             <Route path="budget/:id" element={<BudgetView />} />
+            <Route path="issues" element={<Issues />} />
             <Route path="map" element={<ConstructionMap />} />
             <Route path="documents" element={<Documents />} />
             <Route path="analytics" element={<Analytics />} />
